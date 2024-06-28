@@ -8,7 +8,7 @@
 # ----------------------------------------
 # 1. Install dependencies only when needed
 # ----------------------------------------
-FROM node:20.5-slim AS deps
+FROM node:20.15-slim AS deps
 
 WORKDIR /app
 

@@ -1,6 +1,6 @@
 {
-  "name": "rsd-documentation",
-  "version": "2.0.0",
+  "name": "kin-rpd-documentation",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

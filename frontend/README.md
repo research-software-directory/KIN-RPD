@@ -10,22 +10,25 @@ SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
 SPDX-License-Identifier: CC-BY-4.0
 -->
 
-# Research Software Directory (RSD) - Frontend
+# KIN_RPD - Frontend
 
-Based on the features in the legacy application and the current requirements we selected [Next.js](https://nextjs.org/docs) and MUI-5 (https://mui.com/getting-started/usage/) frameworks for:
+This frontend uses [RSD frontend v2.17.0](https://github.com/research-software-directory/RSD-as-a-service/blob/v2.17.0/frontend/README.md) as a starting point.
 
-- Easy integration with generic SSO oAuth services like ORCID, SURFconext, Microsoft etc.
-- SEO support for custom meta tags and dynamic build sitemap.xml file
-- Rapid development of user interface, in particular, the input/admin pages of the legacy application require improvements
+## Changes
+
+- use npm instead of yarn
+- colors:
+  - based on primary color used [this site to create variations](https://www.colorhexa.com/71ad84)
+  - based on background color used [this site to create variations](https://www.colorhexa.com/306070)
 
 ## Development
 
 ### Locally running frontend in dev mode
 
-- install dependencies `yarn install`
+- install dependencies `npm install`
 - create `.env.local` file. Use `.env.example` from the project root as template.
-- run all app modules `docker compose up`
-- open another terminal and run `yarn dev` to start frontend in development mode
+- run all app modules `make start`
+- open another terminal and run `npm run dev` to start frontend in development mode
 
 ### Frontend dev mode via Docker
 
@@ -72,40 +75,6 @@ For oAuth implementation we need env variables. From the project root directory,
 # .env.local: http://localhost/api/v1, .env.production.local: http://backend:3500
 POSTGREST_URL=http://localhost/api/v1
 ```
-
-### Intercepting HTTP requests
-
-It can be useful to intercept HTTP requests made by the Next.js server in order to identify potential bottlenecks and to see if the requests made are correct. In order to do so, add the following snippet to the end of `frontend/pages/_app.tsx`:
-
-```javascript
-function replaceFetch(originalFetch) {
-	const newFetch = async function(url, conf) {
-		const tik = Date.now();
-		const resp = await originalFetch(url, conf);
-		const tok = Date.now();
-		console.log(`${tok - tik} ms for URL: ${url}`);
-		return resp;
-	}
-
-	global.fetch = newFetch;
-}
-
-if (!global.originalFetch) {
-	const originalFetch = global.fetch;
-	global.originalFetch = originalFetch;
-
-	replaceFetch(originalFetch);
-}
-
-// because Next.js overwrites global.fetch again...
-setInterval(() => {
-	const originalFetch = global.originalFetch;
-
-	replaceFetch(originalFetch);
-}, 10);
-```
-
-It will print each HTTP request and the time it took to complete.
 
 ## Folders
 
@@ -169,18 +138,18 @@ The setup is performed according to [official Next documentation](https://nextjs
 
 ### Unit testing scripts
 
-- `yarn test:watch`: to run test in watch mode. The tests will run on each change in the test/component file(s)
-- `yarn test:coverage`: to run tests and show the test coverage report. This script is used in GH action.
-- `yarn test:memlimit`: for minimal memory consumption. When basic test scripts **yarn test** and **yarn test:coverage** causing the memory overflow on your machine use this script to limit the number of concurrent workers and memory usage.
-- `yarn test:memory`: for examining memory usage during the tests. In node version 18 (and 16) some changes are made in V8 engine memory management that cause the memory leaks when running tests with Jest. See [issue](https://github.com/facebook/jest/issues/11956)
+- `npm run test:watch`: to run test in watch mode. The tests will run on each change in the test/component file(s)
+- `npm run test:coverage`: to run tests and show the test coverage report. This script is used in GH action.
+- `npm run test:memlimit`: for minimal memory consumption. When basic test scripts **npm run test** and **npm run test:coverage** causing the memory overflow on your machine use this script to limit the number of concurrent workers and memory usage.
+- `npm run test:memory`: for examining memory usage during the tests. In node version 18 (and 16) some changes are made in V8 engine memory management that cause the memory leaks when running tests with Jest. See [issue](https://github.com/facebook/jest/issues/11956)
 
 ### Setup steps performed
 
 ```bash
 # install dependencies
-yarn add -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom
+npm run add -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom
 # install whatwg-fetch to address next-auth fetch requests on node js (node-fetch)
-yarn add -D whatwg-fetch
+npm run add -D whatwg-fetch
 
 ```
 
@@ -210,40 +179,40 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Updates and upgrades
 
-Upgrading minor version changes can be usually done using `yarn outdated` and `yarn upgrade`. Major updates are more demanding and might require changes in the source code.
+Upgrading minor version changes can be usually done using `npm outdated` and `npm upgrade`. Major updates are more demanding and might require changes in the source code.
 
-Since RSD went live in August 2022 we started using exact versions in the package.json to avoid unexpected upgrades. This means that we manually check for outdated packages and perform "controlled" upgrades. At the same time we run security audits using `yarn audit`.
+Since RSD went live in August 2022 we started using exact versions in the package.json to avoid unexpected upgrades. This means that we manually check for outdated packages and perform "controlled" upgrades. At the same time we run security audits using `npm audit`.
 
 ### Next and React
 
 ```bash
 # upgrade next, react and typescript
-yarn add next@latest react@latest react-dom@latest eslint-config-next@latest typescript
+npm i next@latest react@latest react-dom@latest eslint-config-next@latest typescript
 # upgrade types
-yarn add -D @types/node @types/react @types/react-dom
+npm i -D @types/node @types/react @types/react-dom
 ```
 
 ### Material UI
 
 ```bash
 # upgrade material ui
-yarn add @mui/material @mui/icons-material @emotion/react @emotion/server @emotion/styled
+npm i @mui/material @mui/icons-material @emotion/react @emotion/server @emotion/styled
 ```
 
 ### Testing
 
 ```bash
 # react testing lib
-yarn add -D @testing-library/react@latest @testing-library/jest-dom@latest jest@latest jest-environment-jsdom@latest @types/jest@latest
+npm i -D @testing-library/react@latest @testing-library/jest-dom@latest jest@latest jest-environment-jsdom@latest @types/jest@latest
 ```
 
 ### Others
 
 ```bash
 # cookie for tokens
-yarn add cookie
+npm i cookie
 # type
-yarn add -D @types/cookie
+npm i -D @types/cookie
 ```
 
 ## Maintenance
@@ -252,7 +221,7 @@ For the maintenance we use [unimported](https://github.com/smeijer/unimported#re
 
 ```bash
 # execute in the frontend folder
-yarn unimported
+npm run unimported
 ```
 
 - Removing unused files:

@@ -11,12 +11,11 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-version: "3.0"
+# version: "3.0"
 
 services:
   database:
-    build: ./database
-    image: rsd/database:2.4.1
+    image: ghcr.io/research-software-directory/rsd-saas/database:v2.17.0
     ports:
       # enable connection from outside (development mode)
       - "5432:5432"
@@ -35,8 +34,7 @@ services:
       - net
 
   backend:
-    build: ./backend-postgrest
-    image: rsd/backend-postgrest:1.13.0
+    image: ghcr.io/research-software-directory/rsd-saas/backend:v2.17.0
     expose:
       - 3500
     environment:
@@ -52,8 +50,7 @@ services:
       - net
 
   auth:
-    build: ./authentication
-    image: rsd/auth:1.5.0
+    image: ghcr.io/research-software-directory/rsd-saas/auth:v2.17.0
     ports:
       - 5005:5005
     expose:
@@ -104,13 +101,33 @@ services:
         "nl.esciencecenter.rsd.authentication.Main"
       ]
 
+  scrapers:
+    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v2.17.0
+    environment:
+      # it uses values from .env file
+      - POSTGREST_URL
+      - PGRST_JWT_SECRET
+      - MAX_REQUESTS_GITHUB
+      - MAX_REQUESTS_GITLAB
+      - MAX_REQUESTS_ROR
+      - API_CREDENTIALS_GITHUB
+      - ZENODO_ACCESS_TOKEN
+      - MAX_REQUESTS_DOI
+      - CROSSREF_CONTACT_EMAIL
+      - LIBRARIES_IO_ACCESS_TOKEN
+    depends_on:
+      - database
+      - backend
+    networks:
+      - net
+
   frontend:
     build:
       context: ./frontend
       # dockerfile to use for build
       dockerfile: Dockerfile
     # update version number to correspond to frontend/package.json
-    image: rsd/frontend:2.16.0
+    image: kin-rpd/frontend:0.0.1
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -155,55 +172,12 @@ services:
     networks:
       - net
 
-  scrapers:
-    build: ./scrapers
-    image: rsd/scrapers:1.8.1
-    environment:
-      # it uses values from .env file
-      - POSTGREST_URL
-      - PGRST_JWT_SECRET
-      - MAX_REQUESTS_GITHUB
-      - MAX_REQUESTS_GITLAB
-      - MAX_REQUESTS_ROR
-      - API_CREDENTIALS_GITHUB
-      - ZENODO_ACCESS_TOKEN
-      - MAX_REQUESTS_DOI
-      - CROSSREF_CONTACT_EMAIL
-      - LIBRARIES_IO_ACCESS_TOKEN
-    depends_on:
-      - database
-      - backend
-    networks:
-      - net
-
-  codemeta:
-    build: ./codemeta
-    image: rsd/codemeta:v1.2.1
-    expose:
-      - "8000"
-    environment:
-      - POSTGREST_URL
-    depends_on:
-      - backend
-    networks:
-      - net
-
-  swagger:
-    image: swaggerapi/swagger-ui:v4.15.0
-    expose:
-      - "8080"
-    environment:
-      - API_URL=${POSTGREST_URL_EXTERNAL}
-      - SUPPORTED_SUBMIT_METHODS=[]
-    networks:
-      - net
-
   documentation:
     build:
       context: ./documentation
       # dockerfile to use for build
       dockerfile: Dockerfile
-    image: rsd/documentation:2.0.1
+    image: kin-rpd/documentation:0.0.1
     expose:
       - "80"
     networks:
@@ -212,7 +186,7 @@ services:
   nginx:
     build:
       context: ./nginx
-    image: rsd/nginx:1.1.4
+    image: kin-rpd/nginx:0.0.1
     ports:
       - "80:80"
       - "443:443"
@@ -221,8 +195,6 @@ services:
       - backend
       - auth
       - frontend
-      - codemeta
-      - swagger
       - documentation
     networks:
       - net
@@ -235,7 +207,7 @@ services:
   #----------------------------------------------
   data-generation:
     build: ./data-generation
-    image: rsd/generation:1.4.2
+    image: kin-rpd/generation:0.0.1
     environment:
       # it needs to be here to use values from .env file
       - PGRST_JWT_SECRET

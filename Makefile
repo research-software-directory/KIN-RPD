@@ -76,18 +76,18 @@ dev: frontend/.env.local
 	cd frontend && yarn dev
 
 # run end-to-end test locally
-e2e-tests:
-	docker compose down --volumes
-	docker compose build --parallel database backend auth frontend nginx
-	docker compose up --detach --scale scrapers=0
-	sleep 10
-	docker compose --file e2e/docker-compose.yml build
-	docker compose --file e2e/docker-compose.yml up
-	docker compose down
-	docker compose --file e2e/docker-compose.yml down --volumes
+# e2e-tests:
+# 	docker compose down --volumes
+# 	docker compose build --parallel database backend auth frontend nginx
+# 	docker compose up --detach --scale scrapers=0
+# 	sleep 10
+# 	docker compose --file e2e/docker-compose.yml build
+# 	docker compose --file e2e/docker-compose.yml up
+# 	docker compose down
+# 	docker compose --file e2e/docker-compose.yml down --volumes
 
-run-backend-tests:
-	docker compose --file backend-tests/docker-compose.yml down --volumes
-	docker compose --file backend-tests/docker-compose.yml build --parallel
-	docker compose --file backend-tests/docker-compose.yml up --exit-code-from postgrest-tests
-	docker compose --file backend-tests/docker-compose.yml down --volumes
+# run-backend-tests:
+# 	docker compose --file backend-tests/docker-compose.yml down --volumes
+# 	docker compose --file backend-tests/docker-compose.yml build --parallel
+# 	docker compose --file backend-tests/docker-compose.yml up --exit-code-from postgrest-tests
+# 	docker compose --file backend-tests/docker-compose.yml down --volumes
