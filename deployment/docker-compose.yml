@@ -1,21 +1,10 @@
-# SPDX-FileCopyrightText: 2022 - 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
-# SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-# SPDX-FileCopyrightText: 2022 - 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
-# SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
-# SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
-# SPDX-FileCopyrightText: 2022 Helmholtz Centre for Environmental Research (UFZ)
-# SPDX-FileCopyrightText: 2022 dv4all
-# SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-#
-# SPDX-License-Identifier: Apache-2.0
-
 # THIS DOCKER FILE REQUIRES .env FILE
 version: "3.0"
 
 services:
   database:
     container_name: database
-    image: ghcr.io/research-software-directory/rsd-saas/database:latest
+    image: ghcr.io/research-software-directory/rsd-saas/database:v2.17.0
     expose:
       - 5432
     environment:
@@ -35,7 +24,7 @@ services:
 
   backend:
     container_name: backend
-    image: ghcr.io/research-software-directory/rsd-saas/backend:latest
+    image: ghcr.io/research-software-directory/rsd-saas/backend:v2.17.0
     expose:
       - 3500
     environment:
@@ -53,7 +42,7 @@ services:
 
   auth:
     container_name: auth
-    image: ghcr.io/research-software-directory/rsd-saas/auth:latest
+    image: ghcr.io/research-software-directory/rsd-saas/auth:v2.17.0
     expose:
       - 7000
     environment:
@@ -96,9 +85,31 @@ services:
       - net
     restart: unless-stopped
 
+  scrapers:
+    container_name: scrapers
+    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v2.17.0
+    environment:
+      # it uses values from .env file
+      - POSTGREST_URL
+      - PGRST_JWT_SECRET
+      - MAX_REQUESTS_GITHUB
+      - MAX_REQUESTS_GITLAB
+      - API_CREDENTIALS_GITHUB
+      - MAX_REQUESTS_ROR
+      - ZENODO_ACCESS_TOKEN
+      - MAX_REQUESTS_DOI
+      - CROSSREF_CONTACT_EMAIL
+      - LIBRARIES_IO_ACCESS_TOKEN
+    depends_on:
+      - database
+      - backend
+    networks:
+      - net
+    restart: unless-stopped
+
   frontend:
     container_name: frontend
-    image: ghcr.io/research-software-directory/rsd-saas/frontend:latest
+    image: ghcr.io/research-software-directory/kin-rpd/frontend:latest
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -140,56 +151,9 @@ services:
       - net
     restart: unless-stopped
 
-  scrapers:
-    container_name: scrapers
-    image: ghcr.io/research-software-directory/rsd-saas/scrapers:latest
-    environment:
-      # it uses values from .env file
-      - POSTGREST_URL
-      - PGRST_JWT_SECRET
-      - MAX_REQUESTS_GITHUB
-      - MAX_REQUESTS_GITLAB
-      - API_CREDENTIALS_GITHUB
-      - MAX_REQUESTS_ROR
-      - ZENODO_ACCESS_TOKEN
-      - MAX_REQUESTS_DOI
-      - CROSSREF_CONTACT_EMAIL
-      - LIBRARIES_IO_ACCESS_TOKEN
-    depends_on:
-      - database
-      - backend
-    networks:
-      - net
-    restart: unless-stopped
-
-  codemeta:
-    container_name: codemeta
-    image: ghcr.io/research-software-directory/rsd-saas/codemeta:latest
-    expose:
-      - "8000"
-    environment:
-      - POSTGREST_URL
-    depends_on:
-      - backend
-    networks:
-      - net
-    restart: unless-stopped
-
-  swagger:
-    container_name: swagger
-    image: swaggerapi/swagger-ui:v4.15.0
-    expose:
-      - "8080"
-    environment:
-      - API_URL=${POSTGREST_URL_EXTERNAL}
-      - SUPPORTED_SUBMIT_METHODS=[]
-    networks:
-      - net
-    restart: unless-stopped
-
   documentation:
     container_name: documentation
-    image: ghcr.io/research-software-directory/rsd-saas/documentation:latest
+    image: ghcr.io/research-software-directory/kin-rpd/documentation:latest
     expose:
       - "80"
     networks:
@@ -198,7 +162,7 @@ services:
 
   nginx:
     container_name: nginx
-    image: ghcr.io/research-software-directory/rsd-saas/nginx:latest
+    image: ghcr.io/research-software-directory/kin-rpd/nginx:latest
     ports:
       - "80:80"
       - "443:443"
