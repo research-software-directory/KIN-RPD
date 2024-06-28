@@ -1,0 +1,33 @@
+{
+  // ESLint
+  "eslint.workingDirectories": [
+    "./frontend",
+  ],
+  // Formating with ESLint:
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true,
+  },
+  // Tailwind plugin integration
+  "css.validate": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html"
+  },
+  // Backend
+  "[java]": {
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.useTabStops": true,
+    "editor.insertSpaces": false,
+  },
+  "cSpell.words": [
+    "dompurify"
+  ],
+}

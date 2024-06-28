@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2022 - 2023 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+# SPDX-FileCopyrightText: 2022 - 2023 Netherlands eScience Center
+#
+# SPDX-License-Identifier: Apache-2.0
+
+FROM node:21.4.0-bullseye-slim
+WORKDIR /usr/app
+COPY ./package.json /usr/app
+RUN npm install
+COPY ./img /usr/app/img
+COPY ./images.js /usr/app
+COPY ./real-data.js /usr/app
+COPY ./main.js /usr/app
+CMD npx wait-on --timeout 10000 $POSTGREST_URL && node main.js

@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: 2021 - 2022 Dusan Mijatovic (dv4all)
+# SPDX-FileCopyrightText: 2021 - 2022 dv4all
+# SPDX-FileCopyrightText: 2021 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+# SPDX-FileCopyrightText: 2021 - 2024 Netherlands eScience Center
+# SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+.idea
+**/target
+**.iml
+
+**/nbactions.xml
+**/nb-configuration.xml
+
+# .vscode
+**/launch.json
+
+node_modules
+
+.pnp
+.pnp.js
+
+# testing
+coverage
+
+# next.js
+.next
+out
+
+# frontend production build
+build
+
+# misc
+.DS_Store
+*.pem
+
+# debug node temp files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files except example
+.env
+.env.*
+!.env.example
+!.env.e2e
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+.history
+
+**.tar
