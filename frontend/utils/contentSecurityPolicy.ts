@@ -36,6 +36,7 @@ let sharedPolicy = `
   img-src 'self' data: https://*;
   base-uri 'none';
   object-src 'none';
+  frame-src https://www.youtube.com/;
 `
 // default script def - use unsafe-inline for backward compatibilty
 // https://developer.chrome.com/docs/lighthouse/best-practices/csp-xss/?utm_source=lighthouse&utm_medium=devtools#ensure-csp-is-backwards-compatible

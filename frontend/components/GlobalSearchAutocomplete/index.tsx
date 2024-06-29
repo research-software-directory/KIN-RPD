@@ -61,7 +61,6 @@ export default function GlobalSearchAutocomplete(props: Props) {
   }, [lastValue])
 
   const defaultValues = [
-    {name: 'Go to Software page', slug: '', source: 'software'},
     {name: 'Go to Projects page', slug: '', source: 'projects'},
     {name: 'Go to Organisations page', slug: '', source: 'organisations'},
   ]

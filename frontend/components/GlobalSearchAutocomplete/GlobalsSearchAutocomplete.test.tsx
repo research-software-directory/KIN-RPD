@@ -35,7 +35,7 @@ it('shows 3 navigation option on focus', async () => {
 
   // should show 3 navigation options
   const listItems = screen.getAllByTestId('global-search-list-item')
-  expect(listItems.length).toEqual(3)
+  expect(listItems.length).toEqual(2)
 })
 
 it('calls search api on input', async () => {

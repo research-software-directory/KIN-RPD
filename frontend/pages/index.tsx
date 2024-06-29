@@ -8,9 +8,8 @@
 
 import {app} from '~/config/app'
 import {getHomepageCounts} from '~/components/home/getHomepageCounts'
-import HelmholtzHome from '~/components/home/helmholtz'
-import ImperialCollegeHome from '~/components/home/imperial'
-import RsdHome,{RsdHomeProps} from '~/components/home/rsd'
+import KinRpdHome from '~/components/home/kin'
+import {RsdHomeProps} from '~/components/home/rsd'
 import PageMeta from '~/components/seo/PageMeta'
 import CanonicalUrl from '~/components/seo/CanonicalUrl'
 import useRsdSettings from '~/config/useRsdSettings'
@@ -22,7 +21,7 @@ export type HomeProps = {
 }
 
 const pageTitle = `Home | ${app.title}`
-const pageDesc = 'The Research Software Directory is designed to show the impact research software has on research and society. We stimulate the reuse of research software and encourage proper citation of research software to ensure researchers and RSEs get credit for their work.'
+const pageDesc = 'The Research Project Directory is designed to show the impact research software has on research and society. We stimulate the reuse of research software and encourage proper citation of research software to ensure researchers and RSEs get credit for their work.'
 
 export default function Home({counts,news}: HomeProps) {
   const {host} = useRsdSettings()
@@ -30,31 +29,10 @@ export default function Home({counts,news}: HomeProps) {
   // console.group('Home')
   // console.log('counts...', counts)
   // console.log('news...', news)
+  // console.log('host...', host)
   // console.groupEnd()
 
-  if (host && host.name) {
-    switch (host.name.toLocaleLowerCase()) {
-      case 'helmholtz':
-        return <HelmholtzHome />
-      case 'imperial':
-        return <ImperialCollegeHome counts={counts} news={news} />
-      default:
-        // RSD default homepage
-        return (
-          <>
-            {/* Page Head meta tags */}
-            <PageMeta
-              title={pageTitle}
-              description={pageDesc}
-            />
-            {/* canonical url meta tag */}
-            <CanonicalUrl/>
-            <RsdHome {...counts} news={news} />
-          </>
-        )
-    }
-  }
-  // RSD default home page
+  // KIN home page
   return (
     <>
       {/* Page Head meta tags */}
@@ -64,7 +42,7 @@ export default function Home({counts,news}: HomeProps) {
       />
       {/* canonical url meta tag */}
       <CanonicalUrl/>
-      <RsdHome {...counts} news={news} />
+      <KinRpdHome {...counts} news={news} />
     </>
   )
 }

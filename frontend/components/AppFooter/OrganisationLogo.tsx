@@ -24,7 +24,7 @@ export default function OrganisationLogo({host}: { host: RsdHost }) {
     )
   }
   if (host?.logo_url) {
-    const {name,logo_url,website}=host
+    const {name,logo_url}=host
     return (
       <div className="flex items-center">
         <span className="h-[4rem] w-[16rem]">

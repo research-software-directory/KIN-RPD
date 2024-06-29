@@ -15,8 +15,8 @@ import useRsdSettings from '~/config/useRsdSettings'
 import AddMenu from './AddMenu'
 import LoginButton from '~/components/login/LoginButton'
 import JavascriptSupportWarning from './JavascriptSupportWarning'
-import LogoApp from '~/assets/LogoApp.svg'
-import LogoAppSmall from '~/assets/LogoAppSmall.svg'
+// import LogoApp from '~/assets/LogoApp.svg'
+// import LogoAppSmall from '~/assets/LogoAppSmall.svg'
 import GlobalSearchAutocomplete from '~/components/GlobalSearchAutocomplete'
 import FeedbackPanelButton from '~/components/feedback/FeedbackPanelButton'
 import ResponsiveMenu from './ResponsiveMenu'
@@ -50,19 +50,18 @@ export default function AppHeader() {
         className="flex-1 flex flex-col px-4 xl:flex-row items-start lg:container lg:mx-auto">
         <div className="w-full flex-1 flex items-center justify-between">
           <Link href="/" passHref className="hover:text-inherit" aria-label="Link to home page">
-            <LogoApp
-              className="hidden 2xl:block"
-              loading='eager'
-              // lighthouse audit requires explicit width and height
-              width="100%"
-              height="1.5rem"
-            />
-            <LogoAppSmall
-              className="2xl:hidden"
-              loading='eager'
-              // lighthouse audit requires explicit width and height
-              width="7rem"
-              height="1.5rem"
+            <img
+              src="/apple-touch-icon.png"
+              alt="KIN logo"
+              title="Klimaatonderzoek Initiatief Nederland"
+              style={{
+                height: '3.5rem',
+                width: 'auto',
+                padding: '0.5rem',
+                objectFit: 'contain',
+                backgroundColor: '#fff',
+                borderRadius:'50%'
+              }}
             />
           </Link>
 

@@ -20,7 +20,8 @@ beforeEach(() => {
 it('sets content security policy header for development', () => {
   const nonce = setContentSecurityPolicyHeader(res as any)
   const policyName = 'Content-Security-Policy-Report-Only'
-  const policyText = `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*; base-uri 'none'; object-src 'none'; script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' https:`
+  const policyText = `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*; base-uri 'none'; object-src 'none'; frame-src https://www.youtube.com/; script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' https:`
+
 
   expect(mockSetHeader).toBeCalledTimes(1)
   // const calledWith = mockSetHeader
@@ -32,7 +33,7 @@ it('sets content security policy header for production', () => {
   process.env.MATOMO_URL = 'https://mamtomo.com/test-url'
   const nonce = setContentSecurityPolicyHeader(res as any)
   const policyName = 'Content-Security-Policy'
-  const policyText = `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*; base-uri 'none'; object-src 'none'; script-src 'nonce-${nonce}' 'strict-dynamic' https://mamtomo.com/test-url 'unsafe-inline' https:`
+  const policyText = `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*; base-uri 'none'; object-src 'none'; frame-src https://www.youtube.com/; script-src 'nonce-${nonce}' 'strict-dynamic' https://mamtomo.com/test-url 'unsafe-inline' https:`
 
 
   // "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*; base-uri 'none'; object-src 'none'; script-src 'self' 'unsafe-inline' https://mamtomo.com/test-url 'nonce-b771ce36-a563-4e69-b969-0a758ac0762e'"

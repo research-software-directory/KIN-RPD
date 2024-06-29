@@ -22,12 +22,14 @@ export default function AppFooter () {
       <div className="grid grid-cols-1 gap-8 px-4 md:grid-cols-[2fr,1fr] lg:container lg:mx-auto">
         <div className="pt-8 md:py-8">
           <p className="text-lg">
-            The Research Software Directory promotes the impact, re-use and citation of research software.
+            KIN connects, broadens, deepens, and unlocks knowledge for transitions towards a climate-neutral and climate-resilient society
           </p>
-
           <ContactEmail email={host?.email} headers={host?.emailHeaders} />
-          <div className="py-4"></div>
-          <OrganisationLogo host={host} />
+          {/* <div className="py-4"></div> */}
+          <div className="bg-base-100 w-[20rem] p-4 rounded-md mt-4">
+            <OrganisationLogo host={host} />
+          </div>
+
         </div>
         <div className="pb-8 md:py-8 flex flex-col gap-2">
           <MarkdownPages pages={pages ?? []} />
