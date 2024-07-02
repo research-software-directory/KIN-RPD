@@ -1,5 +1,6 @@
 # THIS DOCKER FILE REQUIRES .env FILE
-version: "3.0"
+
+# version: "3.0"
 
 services:
   database:
@@ -166,19 +167,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - lets-encrypt:/etc/letsencrypt
     depends_on:
       - database
       - backend
       - auth
       - frontend
-      - codemeta
-      - swagger
       - documentation
     networks:
       - net
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - lets-encrypt:/etc/letsencrypt
     restart: unless-stopped
 
 # define name for docker network

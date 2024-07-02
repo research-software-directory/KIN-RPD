@@ -181,7 +181,7 @@ jobs:
           name: ${{needs.release_tag.outputs.tag}}
           body: ${{needs.release_tag.outputs.changelog}}
           draft: true
-          prerelease: false
+          prerelease: ${{inputs.pre_release}}
           files: deployment.zip
 
   # citation:

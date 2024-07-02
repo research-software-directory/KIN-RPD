@@ -15,12 +15,21 @@ docker compose --version
 
 ## Environment variables
 
-RSD modules require a number of environment variables to work properly. The values should be provided in `.env` file which should be at the same location as the `docker-compose.yml` file. An example environment file `.env.example` is provided. Rename this file to `.env` and provide the required secrets.
+KIN-RPD requires a number of environment variables to work properly. The values should be provided in `.env` file which should be at the same location as the `docker-compose.yml` file. An example environment file `.env.example` is provided. Rename this file to `.env` and provide the required secrets.
 
 ## NGINX configuration
 
-The default `nginx.conf` file is provided. The nginx image is based on nginx:1.21.6 with certbot already installed.
+The default `nginx.conf` file is provided. The nginx image is based on nginx:1.25.4 with certbot already installed.
 To enable certbox certificate for your domain you will need to add your domains to `nginx.conf file`. The `docker-compose.yml` file expects `nginx.conf` file to be in the same folder.
+
+## Used RSD services/modules
+
+KIN-RPD is adapted version of RSD. It requires the following RSD services to function properly:
+
+- rsd-saas/database: This is RSD postgres database with all tables and functions. KIN-RPD uses RSD database to store data.
+- rsd-saas/backend: This is RSD postgREST api service, registered at /api/v1 route. KIN-RPD uses RSD backend service.
+- rsd-saas/auth: This is RSD authentication service. KIN-RPD uses RSD auth service for user authentication.
+- rsd-saas/scrapers: This is RSD scrapers service used to scrape citations and other data. KIN-RPD uses RSD scraper services for scraping citations.
 
 ## Start
 
