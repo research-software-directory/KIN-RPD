@@ -3,6 +3,15 @@ name: release
 
 on:
   workflow_dispatch:
+    inputs:
+      pre_release:
+        required: true
+        description: Create pre-release version, eq. 1.0.0-rc.0
+        type: boolean
+        default: false
+  push:
+    branches:
+      - release
 
 jobs:
   release_tag:
@@ -35,6 +44,10 @@ jobs:
           skip-git-pull: true
           # skip tag push - it will not push but it will tag
           git-push: false
+          # set to true to flag rc, eg 0.1.0-rc.0
+          pre-release: ${{inputs.pre_release}}
+          # initial version if no tag present
+          fallback-version: 0.0.1
 
   log_release_tag:
     needs: release_tag

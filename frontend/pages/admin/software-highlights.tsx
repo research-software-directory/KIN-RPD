@@ -13,7 +13,9 @@ import AdminPageWithNav from '~/components/admin/AdminPageWithNav'
 import {adminPages} from '~/components/admin/AdminNav'
 import AdminSoftwareHighlight from '~/components/admin/software-highlights/index'
 
-const pageTitle = `${adminPages['organisations'].title} | Admin page | ${app.title}`
+// disable softwareHighlights option, 2024-07-02
+// change this to softwareHighlights when enabled
+const pageTitle = `${adminPages['pages'].title} | Admin page | ${app.title}`
 
 export default function AdminSoftwareHighlightsPage() {
 
@@ -26,7 +28,7 @@ export default function AdminSoftwareHighlightsPage() {
       <Head>
         <title>{pageTitle}</title>
       </Head>
-      <AdminPageWithNav title={adminPages['softwareHighlights'].title}>
+      <AdminPageWithNav title={adminPages['pages'].title}>
         <AdminSoftwareHighlight />
       </AdminPageWithNav>
     </DefaultLayout>

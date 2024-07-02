@@ -12,15 +12,17 @@ import AdminPageWithNav from '~/components/admin/AdminPageWithNav'
 import {adminPages} from '~/components/admin/AdminNav'
 import AdminCategories from '~/components/admin/categories'
 
-const pageTitle = `${adminPages['categories'].title} | Admin page | ${app.title}`
+// disable categories option, 2024-07-02
+// change this to categories when enabled
+const pageTitle = `${adminPages['pages'].title} | Admin page | ${app.title}`
 
 export default function AdminCategoriesPage() {
   return (
     <DefaultLayout>
       <Head>
         <title>{pageTitle}</title>
-      </Head>
-      <AdminPageWithNav title={adminPages['categories'].title}>
+      </Head>pages
+      <AdminPageWithNav title={adminPages['pages'].title}>
         <AdminCategories />
       </AdminPageWithNav>
     </DefaultLayout>
