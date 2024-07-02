@@ -11,15 +11,15 @@ type OrganisationMetricsProps = {
 export default function OrganisationCardMetrics({software_cnt,project_cnt}:OrganisationMetricsProps) {
   return (
     <>
-      {/* Counter */}
-      <div>
+      {/* Counter disable software option, 2024-07-02 */}
+      {/* <div>
         <div className='text-5xl font-light'>
           {software_cnt ?? 0}
         </div>
         <div className='text-center text-sm'>
           software <br />package{software_cnt === 1 ? '' : 's'}
         </div>
-      </div>
+      </div> */}
       {/* Counter */}
       <div>
         <div className='text-5xl font-light'>

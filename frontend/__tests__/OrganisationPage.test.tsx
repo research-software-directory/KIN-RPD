@@ -105,32 +105,33 @@ describe('pages/organisations/[...slug].tsx', () => {
     // screen.debug(aboutPage)
   })
 
-  it('renders organisation software page as default when organisation.description=null', async () => {
-    // not a maintainer - public page
-    mockIsMaintainerOfOrganisation.mockResolvedValueOnce(false)
-    // when no about page content, software is default landing page
-    mockProps.organisation.description = null
-    mockProps.tab = null
-    // mockProps.tab = 'software'
-    // mock software list response
-    mockSoftwareForOrganisation.mockResolvedValue({
-      status: 206,
-      count: mockSoftware.length,
-      data: mockSoftware as any
-    })
-    render(
-      <WithAppContext options={{session:mockSession}}>
-        <OrganisationPage {...mockProps} />
-      </WithAppContext>
-    )
-    // wait loader to be removed
-    // await waitForElementToBeRemoved(screen.getByRole('progressbar'))
-    // we need to await for all events to run
-    const software = await screen.findAllByTestId('software-grid-card')
-    expect(software.length).toEqual(mockSoftware.length)
-    // validate api call - TODO! FIGURE WHY IS CALLED TWICE!!!
-    expect(mockSoftwareForOrganisation).toBeCalledTimes(1)
-  })
+  // disable software option, 2024-07-02
+  // it('renders organisation software page as default when organisation.description=null', async () => {
+  //   // not a maintainer - public page
+  //   mockIsMaintainerOfOrganisation.mockResolvedValueOnce(false)
+  //   // when no about page content, software is default landing page
+  //   mockProps.organisation.description = null
+  //   mockProps.tab = null
+  //   // mockProps.tab = 'software'
+  //   // mock software list response
+  //   mockSoftwareForOrganisation.mockResolvedValue({
+  //     status: 206,
+  //     count: mockSoftware.length,
+  //     data: mockSoftware as any
+  //   })
+  //   render(
+  //     <WithAppContext options={{session:mockSession}}>
+  //       <OrganisationPage {...mockProps} />
+  //     </WithAppContext>
+  //   )
+  //   // wait loader to be removed
+  //   // await waitForElementToBeRemoved(screen.getByRole('progressbar'))
+  //   // we need to await for all events to run
+  //   const software = await screen.findAllByTestId('software-grid-card')
+  //   expect(software.length).toEqual(mockSoftware.length)
+  //   // validate api call - TODO! FIGURE WHY IS CALLED TWICE!!!
+  //   expect(mockSoftwareForOrganisation).toBeCalledTimes(1)
+  // })
 
   it('renders organisation projects page when page=projects', async () => {
     // not a maintainer - public page

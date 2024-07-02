@@ -34,7 +34,8 @@ export default function OrganisationCard({organisation}: { organisation: Organis
     <div className="relative">
       <Link
         data-testid="organisation-card-link"
-        href={`/organisations/${organisation.rsd_path}?tab=software&order=is_featured`}
+        // default projects option, 2024-07-02
+        href={`/organisations/${organisation.rsd_path}?tab=projects&order=is_featured`}
         className="flex h-full hover:text-inherit"
         passHref
       >
@@ -61,12 +62,13 @@ export default function OrganisationCard({organisation}: { organisation: Organis
                 software_cnt={organisation.software_cnt}
                 project_cnt={organisation.project_cnt}
               />
+              {/* disable tenant for KIN-RPD instance, 2024-07-02 */}
               {/* if is not tenant we render empty placeholder */}
-              {organisation.is_tenant === false ?
+              {/* {organisation.is_tenant === false ?
                 <div className="w-[2rem]">&nbsp;</div>
                 :
                 <TenantBadge/>
-              }
+              } */}
             </div>
           </CardContentFrame>
         </div>

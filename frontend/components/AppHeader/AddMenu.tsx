@@ -75,12 +75,13 @@ export default function AddMenu() {
         // disable adding styles to body (overflow:hidden & padding-right)
         disableScrollLock={disable}
       >
-        <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/software/add')}>
+        {/* disable software option, 2024-07-02 */}
+        {/* <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/software/add')}>
           <ListItemIcon>
             <TerminalIcon/>
           </ListItemIcon>
           New Software
-        </MenuItem>
+        </MenuItem> */}
 
         <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/projects/add')}>
           <ListItemIcon>

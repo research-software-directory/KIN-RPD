@@ -50,9 +50,9 @@ export default function FeedbackPanelButton({feedback_email, issues_page_url, cl
   function mailBody(): string | undefined {
     if (typeof location === 'undefined') return
 
-    return encodeURIComponent(`Hi RSD Team,
+    return encodeURIComponent(`Hi Team,
 
-I would like to give some feedback about the RSD for the browser ${browserNameAndVersion()} on the page ${location.href}:
+I would like to give some feedback about the KIN-RPD for the browser ${browserNameAndVersion()} on the page ${location.href}:
 ---
 ${text}
 ---

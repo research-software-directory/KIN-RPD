@@ -13,7 +13,7 @@ export function saveLocationCookie() {
   if (typeof location == 'undefined') return
   // for specific routes
   switch (location.pathname.toLowerCase()) {
-    // ingnore these paths
+    // ignore these paths
     case '/auth':
     case '/login':
     case '/logout':
@@ -21,13 +21,13 @@ export function saveLocationCookie() {
     case '/login/failed':
       break
     case '/':
-      // root is send to /software
-      document.cookie = `rsd_pathname=${location.href}software?order=mention_cnt;path=/auth;SameSite=None;Secure`
+      // root is send to /projects
+      document.cookie = `rsd_pathname=${location.href}projects?order=mention_cnt;path=/auth;SameSite=None;Secure`
       break
     default:
       // write simple browser cookie
       // auth module use this cookie to redirect
-      // after succefull authentications
+      // after successful authentications
       document.cookie = `rsd_pathname=${location.href};path=/auth;SameSite=None;Secure`
   }
 }

@@ -47,10 +47,10 @@ it('ignores these paths', () => {
   })
 })
 
-it('when root write cookie to redirect to software', () => {
+it('when root write cookie to redirect to projects', () => {
   // should ignore this path
   window.location.pathname = '/'
-  const expectedCookie = 'rsd_pathname=http://localhost/software?order=mention_cnt;path=/auth;SameSite=None;Secure'
+  const expectedCookie = 'rsd_pathname=http://localhost/projects?order=mention_cnt;path=/auth;SameSite=None;Secure'
   document.cookie = ''
   // call function
   saveLocationCookie()

@@ -1,7 +1,6 @@
 {
   "host": {
     "name": "kin-rpd",
-    "email": "rsd@esciencecenter.nl",
     "emailHeaders": [],
     "logo_url": "/images/logo-KIN.svg",
     "website": "https://hetkin.nl",
@@ -48,7 +47,7 @@
       "colors": {
         "base-100": "#fff",
         "base-200": "#eeeeee",
-        "base-300": "#e1eee5",
+        "base-300": "#e5e3e3",
         "base-400": "#bdbdbd",
         "base-500": "#9e9e9e",
         "base-600": "#3f7f94",
@@ -56,14 +55,14 @@
         "base-800": "#386f82",
         "base-900": "#306070",
         "base-content": "#306070",
-        "base-content-secondary": "rgba(34,36,37,0.7)",
+        "base-content-secondary": "rgba(48,96,112,0.7)",
         "base-content-disabled": "rgba(34,36,37,0.45)",
         "primary": "#01A2D6",
         "primary-content": "#fff",
         "secondary": "#306070",
         "secondary-content": "#fff",
-        "accent": "#71AD93",
-        "accent-content": "#fff",
+        "accent": "#a3ccb9",
+        "accent-content": "#306070",
         "error": "#8A1D12",
         "error-content": "#fff",
         "warning": "#ed6c02",
@@ -93,7 +92,7 @@
       "colors": {
         "base-100": "#306070",
         "base-200": "#56956a",
-        "base-300": "#4d855e",
+        "base-300": "#e1eee5",
         "base-400": "#757575",
         "base-500": "#9e9e9e",
         "base-600": "#bdbdbd",

@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import logger from '~/utils/logger'
-import {createJsonHeaders} from '~/utils/fetchHelpers'
+import {createJsonHeaders, getBaseUrl} from '~/utils/fetchHelpers'
 import {sortBySearchFor} from '~/utils/sortFn'
 
 export type GlobalSearchResults = {
@@ -24,9 +24,10 @@ export type GlobalSearchResults = {
  */
 export async function getGlobalSearch(searchText: string, token: string,) {
   try {
+    // disable software search, 2024-07-02
     // call the function query
-    const query = `rpc/global_search?query=${searchText}&limit=30&order=rank.asc,index_found.asc`
-    let url = `/api/v1/${query}`
+    const query = `query=${searchText}&source=in.("projects","organisations")&limit=30&order=rank.asc,index_found.asc`
+    let url = `${getBaseUrl()}/rpc/global_search?${query}`
 
     const resp = await fetch(url, {
       method: 'GET',
