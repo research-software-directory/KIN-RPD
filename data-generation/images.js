@@ -5,6 +5,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import fs from 'fs/promises';
+import {getFromBackend, mimeTypeFromFileName,postToBackend} from "./utils.js"
+
 export const images = [
 	'img/213x640-pexels-1262302.png',
 	'img/426x640-pexels-357573.jpg',
@@ -52,3 +55,67 @@ export const softwareLogos = [
 	'img/software/Tux.svg',
 	'img/software/Xenon_logo.svg',
 ];
+
+
+// returns the IDs of the images after they have been posted to the database
+export async function getLocalImageIds(fileNames) {
+	const imageAsBase64Promises = [];
+
+	for (let index = 0; index < fileNames.length; index++) {
+		const fileName = fileNames[index];
+		imageAsBase64Promises[index] = fs.readFile(fileName, {encoding: 'base64'}).then(base64 => {
+			return {
+				data: base64,
+				mime_type: mimeTypeFromFileName(fileName),
+			};
+		});
+	}
+
+	const imagesAsBase64 = await Promise.all(imageAsBase64Promises);
+	// create images
+	let images = await postToBackend('/image?select=id', imagesAsBase64);
+	// same images posted - no return
+	if (images.length === 0){
+		// get images from backend
+		images = await getFromBackend('/image?select=id')
+	}
+	const ids = images.map(a => a.id);
+	return ids;
+}
+
+
+// returns the IDs of the images after they have been posted to the database
+export async function downloadAndGetImages(urlGenerator, amount) {
+	const imageAsBase64Promises = [];
+	const timeOuts = [];
+	for (let index = 0; index < amount; index++) {
+		const url = urlGenerator();
+		imageAsBase64Promises.push(
+			Promise.race([
+				fetch(url)
+					.then(resp => {
+						clearTimeout(timeOuts[index]);
+						return resp.arrayBuffer();
+					})
+					.then(ab => Buffer.from(ab))
+					.then(bf => bf.toString('base64')),
+				new Promise((res, rej) => (timeOuts[index] = setTimeout(res, 3000))).then(() => {
+					console.warn('Timeout for ' + url + ', skipping');
+					return null;
+				}),
+			]),
+		);
+	}
+	const imagesAsBase64 = await Promise.all(imageAsBase64Promises);
+
+	const imagesWithoutNulls = imagesAsBase64
+		.filter(img => img !== null)
+		.map(base64 => {
+			return {data: base64, mime_type: 'image/jpeg'};
+		});
+
+	const resp = await postToBackend('/image?select=id', imagesWithoutNulls);
+	const idsAsObjects = await resp.json();
+	const ids = idsAsObjects.map(idAsObject => idAsObject.id);
+	return ids;
+}
