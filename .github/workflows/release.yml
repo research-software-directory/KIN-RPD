@@ -133,9 +133,9 @@ jobs:
       - name: zip deployment files
         run: |
           zip --junk-paths deployment.zip \
+            ./deployment/nginx.conf \
             ./deployment/docker-compose.yml \
-            ./nginx/nginx.conf \
-            .env.example \
+            ./deployment/env.example \
             ./deployment/README.md
 
       - name: Upload deployment.zip
@@ -183,21 +183,4 @@ jobs:
           draft: true
           prerelease: ${{inputs.pre_release}}
           files: deployment.zip
-
-  # citation:
-  #   # it needs to be checked on string value
-  #   if: needs.release_tag.outputs.skipped == 'false'
-  #   needs: [ release_tag, deployment_files, release_draft ]
-  #   name: citations
-  #   uses: ./.github/workflows/_cff.yml
-  #   with:
-  #     artifact: citation
-  #     branch: main
-  #     commit_message: "chore(release): update citation file"
-  #   secrets:
-  #     # need to pass PAT using secrets prop to reusable workflow (module)
-  #     # the secrets are not passed automatically to child modules
-  #     # see https://docs.github.com/en/enterprise-cloud@latest/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
-  #     token: ${{ secrets.PAT_RELEASE }}
-
 
