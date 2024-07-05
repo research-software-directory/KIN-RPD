@@ -21,7 +21,7 @@ export type HomeProps = {
 }
 
 const pageTitle = `Home | ${app.title}`
-const pageDesc = 'The Research Project Directory is designed to show the impact research software has on research and society. We stimulate the reuse of research software and encourage proper citation of research software to ensure researchers and RSEs get credit for their work.'
+const pageDesc = 'KIN connects, broadens, deepens, and unlocks knowledge for transitions towards a climate-neutral and climate-resilient society.'
 
 export default function Home({counts,news}: HomeProps) {
   const {host} = useRsdSettings()
@@ -42,7 +42,7 @@ export default function Home({counts,news}: HomeProps) {
       />
       {/* canonical url meta tag */}
       <CanonicalUrl/>
-      <KinRpdHome {...counts} news={news} />
+      <KinRpdHome />
     </>
   )
 }

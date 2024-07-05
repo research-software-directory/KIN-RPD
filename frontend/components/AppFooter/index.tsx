@@ -26,7 +26,7 @@ export default function AppFooter () {
           </p>
           <ContactEmail email={host?.email} headers={host?.emailHeaders} />
           {/* <div className="py-4"></div> */}
-          <div className="bg-base-100 w-[20rem] p-4 rounded-md mt-4">
+          <div className="bg-base-100 w-[24rem] p-4 rounded-md mt-4">
             <OrganisationLogo host={host} />
           </div>
 

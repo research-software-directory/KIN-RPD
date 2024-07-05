@@ -3,7 +3,7 @@
     "name": "kin-rpd",
     "emailHeaders": [],
     "logo_url": "/images/logo-KIN.svg",
-    "website": "https://hetkin.nl",
+    "website": "https://hetkin.nl/en/home-en/",
     "feedback": {
       "enabled": true,
       "url": "rsd@esciencecenter.nl",
@@ -31,14 +31,9 @@
       "target": "_blank"
     },
     {
-      "label": "Het KIN website",
+      "label": "Het KIN",
       "url": "https://hetkin.nl/",
       "target": "_blank"
-    },
-    {
-      "label": "News",
-      "url": "/news",
-      "target": "_self"
     }
   ],
   "theme": {

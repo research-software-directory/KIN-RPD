@@ -13,32 +13,14 @@ import 'aos/dist/aos.css'
 
 import AppHeader from '~/components/AppHeader'
 import AppFooter from '~/components/AppFooter'
-import {TopNewsProps} from '~/components/news/apiNews'
 import Arc from '~/components/home/rsd/arc.svg'
-import StatsSection from './StatsSection'
 import JumboBanner from './JumboBanner'
-import TopNewsSection from './TopNewsSection'
 import HomepageDivider from './HomepageDivider'
 import AboutUsSection from './AboutUsSection'
 import OurProgramsSection from './OurProgramsSection'
-
-
 import ContributeSection from './ContributeSection'
 
-export type RsdHomeProps = {
-  software_cnt: number,
-  open_software_cnt: number,
-  project_cnt: number,
-  organisation_cnt: number,
-  contributor_cnt: number,
-  software_mention_cnt: number,
-  news: TopNewsProps[]
-}
-
-export default function RsdHome({
-  project_cnt, organisation_cnt,
-  contributor_cnt, software_mention_cnt,news
-}: RsdHomeProps) {
+export default function RsdHome() {
   // Initialize AOS library
   useEffect(() => {
     AOS.init({offset: 16})
@@ -52,23 +34,9 @@ export default function RsdHome({
       {/* Jumbo Banner  */}
       <JumboBanner />
 
-      {/* KIN stats  */}
-      <StatsSection
-        project_cnt={project_cnt}
-        organisation_cnt={organisation_cnt}
-        contributor_cnt={contributor_cnt}
-        software_mention_cnt={software_mention_cnt}
-      />
-
       <div className="bg-base-800">
         {/* Arc separator  */}
         <Arc className="w-full text-base-100 dark:text-base-900 -translate-y-1"></Arc>
-        {/* Get started section  */}
-        {/* <GetStartedSection /> */}
-        {/* Top news items, ONLY if there are some */}
-        <TopNewsSection news={news} />
-        {/*  Divider  */}
-        <HomepageDivider />
         {/* Our Programs Section */}
         <OurProgramsSection />
         {/*  Divider  */}
@@ -79,11 +47,6 @@ export default function RsdHome({
         <HomepageDivider />
         {/* About us section  */}
         <AboutUsSection />
-        {/*  Divider  */}
-        {/* <HomepageDivider /> */}
-        {/* Logos  */}
-        {/* <LogoSection /> */}
-        {/* Footer */}
         <div className="mt-20"></div>
         <AppFooter />
       </div >

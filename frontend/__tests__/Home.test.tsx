@@ -54,17 +54,10 @@ describe('pages/index.tsx', () => {
     expect(page).toBeInTheDocument()
   })
 
-  it('renders counts on KIN Home page', () => {
+  it('renders Our Programs section on KIN Home page', () => {
     render(WrappedComponentWithProps(Home,{props}))
-    // software_cnt
-    // const software = screen.getByText(`${props.counts.software_cnt} Software`)
-    // expect(software).toBeInTheDocument()
-    // project_cnt
-    const project = screen.getByText(`${props.counts.project_cnt} Projects`)
+    const project = screen.getByText('Our Programs')
     expect(project).toBeInTheDocument()
-    // organisation_cnt
-    const organisation = screen.getByText(`${props.counts.organisation_cnt} Organisations`)
-    expect(organisation).toBeInTheDocument()
   })
 
   // it('renders Helmholtz Home page when host=helmholtz', () => {

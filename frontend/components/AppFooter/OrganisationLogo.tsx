@@ -13,8 +13,7 @@ export default function OrganisationLogo({host}: { host: RsdHost }) {
     const {name,logo_url,website}=host
     return (
       <div className="flex items-center">
-        <a href={website} target="_blank"
-          className="h-[4rem] w-[16rem]" rel="noreferrer">
+        <a href={website} target="_blank" rel="noreferrer">
           <LogoAvatar
             name={name}
             src={logo_url}
@@ -27,7 +26,7 @@ export default function OrganisationLogo({host}: { host: RsdHost }) {
     const {name,logo_url}=host
     return (
       <div className="flex items-center">
-        <span className="h-[4rem] w-[16rem]">
+        <span>
           <LogoAvatar
             name={name}
             src={logo_url}
