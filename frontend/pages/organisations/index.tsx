@@ -39,7 +39,7 @@ type OrganisationsOverviewPageProps = {
 }
 
 const pageTitle = `Organisations | ${app.title}`
-const pageDesc = 'List of organizations involved in the development of research software.'
+const pageDesc = 'List of organizations involved in KIN projects.'
 
 export default function OrganisationsOverviewPage({
   organisations = [], count, page, rows, search
