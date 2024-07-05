@@ -4,6 +4,7 @@ import {headers} from './auth.js';
 
 const usedLowerCaseStrings = new Set();
 
+// demo url https://ubuntu2204sudo.demo-nlesc.src.surf-hosted.nl/
 const backendUrl = process.env.POSTGREST_URL || 'http://localhost/api/v1';
 
 export async function postToBackend(endpoint, body) {

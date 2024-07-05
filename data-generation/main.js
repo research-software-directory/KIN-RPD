@@ -27,18 +27,18 @@ console.log("mentions...", idsMentions.length)
 const [
 	// idsSoftware,
 	idsProjects,
-	idsNews,
+	// idsNews,
 	idsMeta
 ] = await Promise.all([
 	// generateSoftware({orcids,idsMentions}),
 	generateProject({orcids,idsMentions}),
-	generateNews(),
+	// generateNews(),
 	generateMetaPages()
 ])
 
 // console.log("software...", idsSoftware.length)
 console.log("projects...", idsProjects.length)
-console.log("news...", idsNews.length)
+// console.log("news...", idsNews.length)
 console.log("meta pages...", idsMeta.length)
 
 // organisations and communities
