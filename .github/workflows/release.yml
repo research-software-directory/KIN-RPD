@@ -135,7 +135,7 @@ jobs:
           zip --junk-paths deployment.zip \
             ./deployment/nginx.conf \
             ./deployment/docker-compose.yml \
-            ./deployment/env.example \
+            ./deployment/.env.example \
             ./deployment/README.md
 
       - name: Upload deployment.zip
