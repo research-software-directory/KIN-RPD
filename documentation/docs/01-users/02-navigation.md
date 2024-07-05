@@ -7,8 +7,6 @@ There are many ways to discover interesting research software on the RSD. The ma
 * The projects overview (reachable by clicking "Projects" in the header)
 * The organizations overview (reachable by clicking "Organizations" in the header)
 
-For more advanced users, we also offer a [REST API](/API/rest-api/), allowing you to use the RSD as a data source for other applications.
-
 ![image](img/landing-page.webp)
 
 ## Global search
