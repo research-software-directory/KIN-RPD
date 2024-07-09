@@ -59,3 +59,16 @@ In the provided `docker-compose.yml` file we define a volume where the database 
 The internal docker network is also defined.
 
 You can use volume mount in the frontend image to provide custom settings that will overwrite default theme and styles.
+
+## Update KIN-RPD images
+
+The current approach uses `latest` tag for the kin-rpd images. You can then pull new version and restart the services.
+
+```bash
+# pull images
+docker compose pull
+# restart containers
+docker compose up --detach --remove-orphans
+# optionally remove obsolete images
+docker image prune
+```
