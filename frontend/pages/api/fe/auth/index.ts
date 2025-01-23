@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2022 - 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 //
@@ -23,6 +23,7 @@ import {helmholtzInfo} from './helmholtzid'
 import {localInfo} from './local'
 import {orcidInfo} from './orcid'
 import {azureInfo} from './azure'
+import {linkedinInfo} from './linkedin'
 import logger from '~/utils/logger'
 
 export type ApiError = {
@@ -38,9 +39,6 @@ export type Provider = {
 
 type Data = Provider[] | ApiError
 
-// cached list of providers
-let loginProviders:Provider[] = []
-
 async function getRedirectInfo(provider: string) {
   // select provider
   switch (provider.toLocaleLowerCase()) {
@@ -55,6 +53,8 @@ async function getRedirectInfo(provider: string) {
       return orcidInfo()
     case 'azure':
       return azureInfo()
+    case 'linkedin':
+      return linkedinInfo()
     default:
       const message = `${provider} NOT SUPPORTED, check your spelling`
       logger(`api/fe/auth/providers: ${message}`, 'error')
@@ -62,38 +62,29 @@ async function getRedirectInfo(provider: string) {
   }
 }
 
-async function getProvidersInfo(){
-  // only if we did not loaded info previously
-  if (loginProviders.length === 0){
-    // extract list of providers, default value surfconext
-    const strProviders = process.env.RSD_AUTH_PROVIDERS || 'surfconext'
-    // split providers to array on ;
-    const providers = strProviders.split(';')
+async function getProvidersInfo() {
+  // extract list of providers, default value surfconext
+  const strProviders = process.env.RSD_AUTH_PROVIDERS || 'surfconext'
+  // split providers to array on ;
+  const providers = strProviders.split(';')
 
-    // add all requests
-    const promises: Promise<Provider|null>[] = []
-    providers.forEach(provider => {
-      promises.push(
-        getRedirectInfo(provider)
-      )
-    })
-    // return providers with redirectUrl
-    const resp = await Promise.allSettled(promises)
-    // filter null responses (if any)
-    const info: Provider[] = []
-    resp.forEach(item => {
-      if (item.status === 'fulfilled') {
-        info.push(item.value as Provider)
-      }
-    })
-    // save response into cached variable
-    loginProviders = [
-      ...info
-    ]
-    return loginProviders
-  }
-  // console.log("getProvidersInfo...cached...loginProviders")
-  return loginProviders
+  // add all requests
+  const promises: Promise<Provider | null>[] = []
+  providers.forEach(provider => {
+    promises.push(
+      getRedirectInfo(provider)
+    )
+  })
+  // return providers with redirectUrl
+  const resp = await Promise.allSettled(promises)
+  // filter null responses (if any)
+  const info: Provider[] = []
+  resp.forEach(item => {
+    if (item.status === 'fulfilled' && item.value !== null) {
+      info.push(item.value)
+    }
+  })
+  return info
 }
 
 export default async function handler(

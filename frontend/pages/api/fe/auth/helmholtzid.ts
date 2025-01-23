@@ -3,8 +3,9 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -15,14 +16,15 @@
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiRequest, NextApiResponse} from 'next'
-import {getAuthorisationEndpoint, RedirectToProps, getRedirectUrl} from '~/auth/api/authHelpers'
 import logger from '~/utils/logger'
+import {RedirectToProps, getRedirectUrl} from '~/auth/api/authHelpers'
+import {getAuthEndpoint} from '~/auth/api/authEndpoint'
 import {Provider, ApiError} from '.'
 
 type Data = Provider | ApiError
 
 const claims = {
-  id_token:{
+  id_token: {
     schac_home_organization: null,
     name: null,
     email: null
@@ -33,8 +35,8 @@ async function helmholtzRedirectProps() {
   // extract wellknow url from env
   const wellknownUrl = process.env.HELMHOLTZID_WELL_KNOWN_URL ?? null
   if (wellknownUrl) {
-    // extract authorisation endpoint from wellknow response
-    const authorization_endpoint = await getAuthorisationEndpoint(wellknownUrl)
+    // get (cached) authorisation endpoint from wellknown url
+    const authorization_endpoint = await getAuthEndpoint(wellknownUrl, 'helmholtzid')
     if (authorization_endpoint) {
       // construct all props needed for redirectUrl
       // use default values if env not provided
@@ -60,7 +62,7 @@ async function helmholtzRedirectProps() {
 }
 
 export async function helmholtzInfo() {
-  // extract all props from env and wellknow endpoint
+  // extract all props from env and wellknown endpoint
   const redirectProps = await helmholtzRedirectProps()
   if (redirectProps) {
     // create return url and the name to use in login button
@@ -82,7 +84,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   try {
-    // extract all props from env and wellknow endpoint
+    // extract all props from env and wellknown endpoint
     // and create return url and the name to use in login button
     const loginInfo = await helmholtzInfo()
     if (loginInfo) {
