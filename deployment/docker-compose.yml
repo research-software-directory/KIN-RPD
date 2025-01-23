@@ -43,7 +43,7 @@ services:
 
   auth:
     container_name: auth
-    image: ghcr.io/research-software-directory/rsd-saas/auth:v2.17.0
+    image: ghcr.io/research-software-directory/rsd-saas/auth:v2.28.0
     expose:
       - 7000
     environment:
@@ -56,28 +56,22 @@ services:
       - SURFCONEXT_CLIENT_ID
       - SURFCONEXT_REDIRECT
       - SURFCONEXT_WELL_KNOWN_URL
-      - SURFCONEXT_SCOPES
-      - HELMHOLTZID_CLIENT_ID
-      - HELMHOLTZID_REDIRECT
-      - HELMHOLTZID_WELL_KNOWN_URL
-      - HELMHOLTZID_SCOPES
-      - HELMHOLTZID_USE_ALLOW_LIST
-      - HELMHOLTZID_ALLOW_LIST
       - ORCID_CLIENT_ID
       - ORCID_REDIRECT
       - ORCID_REDIRECT_COUPLE
       - ORCID_WELL_KNOWN_URL
-      - ORCID_SCOPES
       - AZURE_CLIENT_ID
       - AZURE_REDIRECT
       - AZURE_WELL_KNOWN_URL
-      - AZURE_SCOPES
       - AZURE_ORGANISATION
-      - HELMHOLTZID_ALLOW_EXTERNAL_USERS
+      - LINKEDIN_CLIENT_ID
+      - LINKEDIN_REDIRECT
+      - LINKEDIN_WELL_KNOWN_URL
       - AUTH_SURFCONEXT_CLIENT_SECRET
       - AUTH_HELMHOLTZID_CLIENT_SECRET
       - AUTH_ORCID_CLIENT_SECRET
       - AUTH_AZURE_CLIENT_SECRET
+      - AUTH_LINKEDIN_CLIENT_SECRET
       - PGRST_JWT_SECRET
     depends_on:
       - database
@@ -125,11 +119,6 @@ services:
       - SURFCONEXT_WELL_KNOWN_URL
       - SURFCONEXT_SCOPES
       - SURFCONEXT_RESPONSE_MODE
-      - HELMHOLTZID_CLIENT_ID
-      - HELMHOLTZID_REDIRECT
-      - HELMHOLTZID_WELL_KNOWN_URL
-      - HELMHOLTZID_SCOPES
-      - HELMHOLTZID_RESPONSE_MODE
       - ORCID_CLIENT_ID
       - ORCID_REDIRECT
       - ORCID_REDIRECT_COUPLE
@@ -142,6 +131,10 @@ services:
       - AZURE_LOGIN_PROMPT
       - AZURE_DISPLAY_NAME
       - AZURE_DESCRIPTION_HTML
+      - LINKEDIN_CLIENT_ID
+      - LINKEDIN_REDIRECT
+      - LINKEDIN_WELL_KNOWN_URL
+      - CROSSREF_CONTACT_EMAIL
     expose:
       - 3000
     depends_on:
