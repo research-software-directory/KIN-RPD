@@ -42,7 +42,7 @@ export default function Home({counts,news}: HomeProps) {
       />
       {/* canonical url meta tag */}
       <CanonicalUrl/>
-      <KinRpdHome />
+      <KinRpdHome news={news} />
     </>
   )
 }

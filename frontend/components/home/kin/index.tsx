@@ -14,13 +14,15 @@ import 'aos/dist/aos.css'
 import AppHeader from '~/components/AppHeader'
 import AppFooter from '~/components/AppFooter'
 import Arc from '~/components/home/rsd/arc.svg'
+import {TopNewsProps} from '~/components/news/apiNews'
 import JumboBanner from './JumboBanner'
 import HomepageDivider from './HomepageDivider'
 import AboutUsSection from './AboutUsSection'
 import OurProgramsSection from './OurProgramsSection'
 import ContributeSection from './ContributeSection'
+import TopNewsSection from './TopNewsSection'
 
-export default function RsdHome() {
+export default function RsdHome({news}:{news:TopNewsProps[]}) {
   // Initialize AOS library
   useEffect(() => {
     AOS.init({offset: 16})
@@ -37,6 +39,8 @@ export default function RsdHome() {
       <div className="bg-base-800">
         {/* Arc separator  */}
         <Arc className="w-full text-base-100 dark:text-base-900 -translate-y-1"></Arc>
+        {/* Top 3 news items, ONLY if there are some */}
+        <TopNewsSection news={news} />
         {/* Our Programs Section */}
         <OurProgramsSection />
         {/*  Divider  */}
