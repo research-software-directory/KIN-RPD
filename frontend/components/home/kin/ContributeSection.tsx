@@ -33,7 +33,7 @@ export default function ContributeSection() {
       <div>
         <h2 className="flex justify-center text-3xl lg:text-4xl font-rsd-titles font-bold "
           data-aos="fade" data-aos-duration="400" data-aos-easing="ease-in-out">
-          Do You Want to Contribute?
+          How to use VEDA?
         </h2>
         <p className="text-center text-lg mt-5" data-aos="fade"
           data-aos-delay="100" data-aos-duration="400" data-aos-easing="ease-in-out">
@@ -49,24 +49,6 @@ export default function ContributeSection() {
               target={button.contact.target}
             />
           </div>
-          {/* <div className="flex justify-center" data-aos="fade-up" data-aos-duration="600"
-            data-aos-delay="100"
-            data-aos-easing="ease-in-out">
-            <GradientBorderButton
-              text={button.docs.label}
-              url={button.docs.url}
-              target={button.docs.target}
-            />
-          </div>
-          <div className="flex justify-center" data-aos="fade-up" data-aos-duration="600"
-            data-aos-delay="200"
-            data-aos-easing="ease-in-out">
-            <GradientBorderButton
-              text={button.faq.label}
-              url={button.faq.url}
-              target={button.faq.target}
-            />
-          </div> */}
         </div>
       </div>
     </section>

@@ -18,7 +18,7 @@ import {TopNewsProps} from '~/components/news/apiNews'
 import JumboBanner from './JumboBanner'
 import HomepageDivider from './HomepageDivider'
 import AboutUsSection from './AboutUsSection'
-import OurProgramsSection from './OurProgramsSection'
+// import OurProgramsSection from './OurProgramsSection'
 import ContributeSection from './ContributeSection'
 import TopNewsSection from './TopNewsSection'
 
@@ -42,9 +42,9 @@ export default function RsdHome({news}:Readonly<{news:TopNewsProps[]}>) {
         {/* Top 3 news items, ONLY if there are some */}
         <TopNewsSection news={news} />
         {/* Our Programs Section */}
-        <OurProgramsSection />
+        {/* <OurProgramsSection /> */}
         {/*  Divider  */}
-        <HomepageDivider />
+        {/* <HomepageDivider /> */}
         {/* Contribute section  */}
         <ContributeSection />
         {/*  Divider  */}
