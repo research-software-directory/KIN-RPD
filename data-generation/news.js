@@ -9,7 +9,7 @@ export async function generateNews(){
   const news = await postToBackend('/news', createNews())
   const newsIds = news.map(n=>n.id)
 
-  const newsData = Promise.all([
+  const newsData = await Promise.all([
     postToBackend('/image_for_news', generateImagesForNews(newsIds, newsImageIds))
   ])
 

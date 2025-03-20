@@ -15,44 +15,78 @@ const orcids = generateOrcids();
 const [
 	accounts,
 	idsMentions
-] = await Promise.all([
+] = await Promise.allSettled([
 	generateAccounts(orcids),
 	generateMentions()
 ])
 
-console.log("accounts...", accounts.length)
-console.log("mentions...", idsMentions.length)
+if (accounts.status==='fulfilled'){
+	console.log("accounts...DONE...", accounts.value.length)
+}else{
+	console.log("accounts...FAILED...", accounts.reason)
+}
+
+if(idsMentions.status==='fulfilled'){
+	console.log("mentions...DONE...", idsMentions.value.length)
+}else{
+	console.log("mentions...FAILED...", idsMentions.reason)
+}
 
 // software, projects, news and meta pages
 const [
 	// idsSoftware,
 	idsProjects,
-	// idsNews,
+	idsNews,
 	idsMeta
-] = await Promise.all([
+] = await Promise.allSettled([
 	// generateSoftware({orcids,idsMentions}),
-	generateProject({orcids,idsMentions}),
-	// generateNews(),
+	generateProject({
+		orcids,
+		idsMentions:idsMentions.value
+	}),
+	generateNews(),
 	generateMetaPages()
 ])
 
-// console.log("software...", idsSoftware.length)
-console.log("projects...", idsProjects.length)
-// console.log("news...", idsNews.length)
-console.log("meta pages...", idsMeta.length)
+if (idsProjects.status==='fulfilled'){
+	// console.log("software...", idsSoftware.length)
+	console.log("projects...DONE...", idsProjects.value.length)
+}else{
+	console.log("projects...FAILED...", idsProjects.reason)
+}
 
-// organisations and communities
+if (idsNews.status==='fulfilled'){
+	console.log("news...DONE...", idsNews.value.length)
+}else{
+	console.log("news...FAILED...", idsNews.reason)
+}
+
+if (idsMeta.status==='fulfilled'){
+	// console.log("news...", idsNews.length)
+	console.log("meta pages...DONE...", idsMeta.value.length)
+}else{
+	console.log("meta pages...FAILED...", idsMeta.reason)
+}
+
+// organisations, news and communities
 const [
 	idsOrganisations,
 	// idsCommunities,
-] = await Promise.all([
-	generateOrganisation({idsSoftware:[],idsProjects,idsMentions}),
+] = await Promise.allSettled([
+	generateOrganisation({
+		idsSoftware:[],
+		idsProjects:idsProjects.value,
+		idsMentions: idsMentions.value
+	}),
 	// generateCommunities({idsSoftware}),
 ])
 
-console.log("organisations...", idsOrganisations.length)
+if (idsOrganisations.status==='fulfilled'){
+	console.log("organisations...DONE...", idsOrganisations.value.length)
+}else{
+	console.log("organisations...FAILED...", idsOrganisations.reason)
+}
 
-// console.log("communities...", idsCommunities.length)
 console.log('Done');
 
 // This is unfortunately needed, because when using docker compose, the node process might hang for a long time

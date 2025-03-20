@@ -18,18 +18,31 @@ export async function generateProject({orcids,idsMentions,amount = 500}){
   const projects = await postToBackend('/project', createProjects(projectImageIds,amount))
   const idsProjects = projects.map(p=>p.id)
 
-  const projectData = await Promise.all([
-    postToBackend('/team_member', await generateTeamMembers(idsProjects,peopleWithOrcid,projectImageIds)),
-    postToBackend('/url_for_project', generateUrlsForProjects(idsProjects)),
-    postToBackend('/keyword_for_project', generateKeywordsForEntity(idsProjects, idsKeywords, 'project')),
-    postToBackend('/output_for_project', generateMentionsForEntity(idsProjects, idsMentions, 'project')),
-    postToBackend('/impact_for_project', generateMentionsForEntity(idsProjects, idsMentions, 'project')),
-    postToBackend(
-      '/research_domain_for_project',
-      generateResearchDomainsForProjects(idsProjects, idsResearchDomains)
-    ),
-    postToBackend('/project_for_project', generateSoftwareForSoftware(idsProjects))
+	const teamMembers = generateTeamMembers(idsProjects,peopleWithOrcid,projectImageIds)
+  const projectUrls = generateUrlsForProjects(idsProjects)
+	const keywords = generateKeywordsForEntity(idsProjects, idsKeywords, 'project')
+	const output = generateMentionsForEntity(idsProjects, idsMentions, 'project')
+	const impact = generateMentionsForEntity(idsProjects, idsMentions, 'project')
+	const researchDomains = generateResearchDomainsForProjects(idsProjects, idsResearchDomains)
+	const relatedProjects = generateSoftwareForSoftware(idsProjects)
+
+	const responses = await Promise.allSettled([
+    postToBackend('/team_member', teamMembers),
+    postToBackend('/url_for_project', projectUrls),
+    postToBackend('/keyword_for_project', keywords),
+    postToBackend('/output_for_project', output),
+    postToBackend('/impact_for_project', impact),
+    postToBackend('/research_domain_for_project', researchDomains),
+    postToBackend('/project_for_project', relatedProjects)
   ])
+
+	responses.forEach((resp,idx)=>{
+		if (resp.status==="fulfilled"){
+			console.log("Project section...", idx, "...OK")
+		}else{
+			console.log("Project section...", idx, "...FAILED: ",resp.reason)
+		}
+	})
 
   return idsProjects
 }
@@ -86,10 +99,11 @@ export function createProjects(projectImageIds,amount = 500) {
 	return result;
 }
 
-export async function generateTeamMembers(projectIds, peopleWithOrcids, contributorImageIds=[],minPerProject = 0, maxPerProject = 15) {
+export function generateTeamMembers(projectIds, peopleWithOrcids, contributorImageIds=[],minPerProject = 0, maxPerProject = 15) {
   const result = [];
 
 	for (const projectId of projectIds) {
+
 		const amount = faker.number.int({
 			max: maxPerProject,
 			min: minPerProject,

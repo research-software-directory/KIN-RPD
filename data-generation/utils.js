@@ -136,7 +136,7 @@ export function mimeTypeFromFileName(fileName) {
 	if (fileName.endsWith('.png')) {
 		return 'image/png';
 	} else if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) {
-		return 'image/jpg';
+		return 'image/jpeg';
 	} else if (fileName.endsWith('.svg')) {
 		return 'image/svg+xml';
 	} else return null;

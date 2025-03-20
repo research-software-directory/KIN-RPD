@@ -4,7 +4,7 @@
 
 services:
   database:
-    image: ghcr.io/research-software-directory/rsd-saas/database:v2.17.0
+    image: ghcr.io/research-software-directory/rsd-saas/database:v2.29.0
     ports:
       # enable connection from outside (development mode)
       - "5432:5432"
@@ -23,7 +23,7 @@ services:
       - net
 
   backend:
-    image: ghcr.io/research-software-directory/rsd-saas/backend:v2.17.0
+    image: ghcr.io/research-software-directory/rsd-saas/backend:v2.29.0
     expose:
       - 3500
     environment:
@@ -39,7 +39,7 @@ services:
       - net
 
   auth:
-    image: ghcr.io/research-software-directory/rsd-saas/auth:v2.28.0
+    image: ghcr.io/research-software-directory/rsd-saas/auth:v2.29.0
     ports:
       - 5005:5005
     expose:
@@ -85,7 +85,7 @@ services:
       ]
 
   scrapers:
-    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v2.17.0
+    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v2.29.0
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -110,7 +110,7 @@ services:
       # dockerfile to use for build
       dockerfile: Dockerfile
     # update version number to correspond to frontend/package.json
-    image: kin-rpd/frontend:0.0.2
+    image: kin-rpd/frontend:0.1.0
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -161,7 +161,7 @@ services:
       context: ./documentation
       # dockerfile to use for build
       dockerfile: Dockerfile
-    image: kin-rpd/documentation:0.0.1
+    image: kin-rpd/documentation:0.1.0
     expose:
       - "80"
     networks:
