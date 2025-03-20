@@ -67,8 +67,8 @@ export async function orcidInfo() {
       name: 'ORCID',
       redirectUrl,
       html: `
-        Sign in with ORCID is supported <strong>only for persons approved by the RSD administrators</strong>.
-        Contact us on rsd@esciencecenter.nl if you wish to login with your ORCID.
+        Sign in with ORCID is supported <strong>only for persons approved by the administrators</strong>.
+        Contact us if you wish to login with your ORCID.
       `
     }
   }

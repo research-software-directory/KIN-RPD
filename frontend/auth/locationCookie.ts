@@ -22,7 +22,7 @@ export function saveLocationCookie() {
       break
     case '/':
       // root is send to /projects
-      document.cookie = `rsd_pathname=${location.href}projects?order=mention_cnt;path=/auth;SameSite=None;Secure`
+      document.cookie = `rsd_pathname=${location.href}projects?order=impact_cnt;path=/auth;SameSite=None;Secure`
       break
     default:
       // write simple browser cookie

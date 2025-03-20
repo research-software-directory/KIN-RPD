@@ -96,7 +96,7 @@ export default function LoginDialog({providers,open, onClose}: LoginDialogProps)
           </List>
           {host.login_info_url &&
             <p className="text-base-content-disabled text-sm">
-              You can find more information on signing in to the RSD in our <a href={host.login_info_url} target="_blank" rel="noreferrer"><strong>documentation</strong></a>.
+              You can find more information on signing in in our <a href={host.login_info_url} target="_blank" rel="noreferrer"><strong>documentation</strong></a>.
             </p>
           }
         </>
