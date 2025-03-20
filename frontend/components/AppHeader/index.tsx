@@ -51,16 +51,13 @@ export default function AppHeader() {
         <div className="w-full flex-1 flex items-center justify-between">
           <Link href="/" passHref className="hover:text-inherit" aria-label="Link to home page">
             <img
-              src="/apple-touch-icon.png"
-              alt="KIN logo"
+              src={host.logo_url}
+              alt="VEDA by KIN logo"
               title="Klimaatonderzoek Initiatief Nederland"
               style={{
                 height: '3.5rem',
                 width: 'auto',
-                padding: '0.5rem',
-                objectFit: 'contain',
-                backgroundColor: '#fff',
-                borderRadius:'50%'
+                objectFit: 'contain'
               }}
             />
           </Link>
