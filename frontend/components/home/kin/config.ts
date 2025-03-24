@@ -8,8 +8,8 @@
 export const config = {
   button: {
     discover: {
-      label: 'Discover Software',
-      url: '/software?order=mention_cnt',
+      label: 'Explore VEDA',
+      url: '/projects?order=impact_cnt',
       target:'_self'
     },
     signUp: {

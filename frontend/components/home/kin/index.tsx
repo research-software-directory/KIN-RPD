@@ -18,11 +18,11 @@ import {TopNewsProps} from '~/components/news/apiNews'
 import JumboBanner from './JumboBanner'
 import HomepageDivider from './HomepageDivider'
 import AboutUsSection from './AboutUsSection'
-import OurProgramsSection from './OurProgramsSection'
+// import OurProgramsSection from './OurProgramsSection'
 import ContributeSection from './ContributeSection'
 import TopNewsSection from './TopNewsSection'
 
-export default function RsdHome({news}:{news:TopNewsProps[]}) {
+export default function RsdHome({news}:Readonly<{news:TopNewsProps[]}>) {
   // Initialize AOS library
   useEffect(() => {
     AOS.init({offset: 16})
@@ -38,13 +38,13 @@ export default function RsdHome({news}:{news:TopNewsProps[]}) {
 
       <div className="bg-base-800">
         {/* Arc separator  */}
-        <Arc className="w-full text-base-100 dark:text-base-900 -translate-y-1"></Arc>
+        <Arc className="w-full text-base-100 dark:text-base-900 -translate-y-1"/>
         {/* Top 3 news items, ONLY if there are some */}
         <TopNewsSection news={news} />
         {/* Our Programs Section */}
-        <OurProgramsSection />
+        {/* <OurProgramsSection /> */}
         {/*  Divider  */}
-        <HomepageDivider />
+        {/* <HomepageDivider /> */}
         {/* Contribute section  */}
         <ContributeSection />
         {/*  Divider  */}

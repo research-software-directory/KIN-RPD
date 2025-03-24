@@ -54,9 +54,9 @@ describe('pages/index.tsx', () => {
     expect(page).toBeInTheDocument()
   })
 
-  it('renders Our Programs section on KIN Home page', () => {
+  it('renders Contribute section on KIN Home page', () => {
     render(WrappedComponentWithProps(Home,{props}))
-    const project = screen.getByText('Our Programs')
+    const project = screen.getByText('How to use VEDA?')
     expect(project).toBeInTheDocument()
   })
 
