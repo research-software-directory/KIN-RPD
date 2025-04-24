@@ -3,9 +3,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import Image from 'next/legacy/image'
 import GradientBorderButton from './GradientBorderButton'
 import {config} from './config'
+import HowToUseVeda from '~/assets/HowToUseVeda.svg'
 
 const {button} = config
 
@@ -15,20 +15,7 @@ export default function ContributeSection() {
       id="learn-more"
       className="p-5 md:p-10 grid gap-12 grid-cols-1 sm:grid-cols-2 max-w-screen-xl mt-20 mx-auto">
       <div className="relative">
-        <div
-          className='sm:absolute top-0 lg:-top-10 xl:-top-20 left-0 z-0'
-        >
-          <Image
-            src="/images/uniting-the-world-to-tackle-climate-change.webp"
-            width="1100"
-            height="800"
-            layout="intrinsic"
-            alt="rsd-illustration"
-            style={{
-              borderRadius:'50%'
-            }}
-          />
-        </div>
+        <HowToUseVeda className="w-[100%]"/>
       </div>
       <div>
         <h2 className="flex justify-center text-3xl lg:text-4xl font-rsd-titles font-bold "
