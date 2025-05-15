@@ -43,11 +43,7 @@ export default function AccordionForDarkTheme({
         expandIcon={
           <ExpandMoreIcon />
         }
-        // aria-controls={`panel1-content-${type}`}
-        // id={`panel1-header-${type}`}
         sx={{
-          position: 'sticky',
-          top: 0,
           backgroundColor: 'secondary.main',
           padding: '0rem',
           '&:hover': {

@@ -38,12 +38,13 @@ export const adminPages = {
     icon: <DescriptionIcon />,
     path: '/admin/public-pages',
   },
-  softwareHighlights:{
-    title: 'Software highlights',
-    subtitle: '',
-    icon: <FluorescentIcon />,
-    path: '/admin/software-highlights',
-  },
+  // disable software option, 2024-07-02
+  // softwareHighlights:{
+  //   title: 'Software highlights',
+  //   subtitle: '',
+  //   icon: <FluorescentIcon />,
+  //   path: '/admin/software-highlights',
+  // },
   orcid:{
     title: 'ORCID users',
     subtitle: '',
@@ -68,24 +69,26 @@ export const adminPages = {
     icon: <DomainAddIcon />,
     path: '/admin/organisations',
   },
-  communities: {
-    title: 'Communities',
-    subtitle: '',
-    icon: <Diversity3Icon />,
-    path: '/admin/communities',
-  },
+  // disable software option, 2024-07-02
+  // communities: {
+  //   title: 'Communities',
+  //   subtitle: '',
+  //   icon: <Diversity3Icon />,
+  //   path: '/admin/communities',
+  // },
   keywords:{
     title: 'Keywords',
     subtitle: '',
     icon: <SpellcheckIcon />,
     path: '/admin/keywords',
   },
-  categories:{
-    title: 'Categories',
-    subtitle: '',
-    icon: <CategoryIcon />,
-    path: '/admin/categories',
-  },
+  // disable software option, 2024-07-02
+  // categories:{
+  //   title: 'Categories',
+  //   subtitle: '',
+  //   icon: <CategoryIcon />,
+  //   path: '/admin/categories',
+  // },
   mentions: {
     title: 'Mentions',
     subtitle: '',

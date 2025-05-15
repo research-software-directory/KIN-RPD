@@ -67,7 +67,7 @@ export type ProjectOverviewPageProps = {
 }
 
 const pageTitle = `Projects | ${app.title}`
-const pageDesc = 'The list of research projects in the Research Software Directory.'
+const pageDesc = 'The list of research projects in the KIN RPD.'
 
 export default function ProjectsOverviewPage({
   search, order,

@@ -54,6 +54,7 @@ export interface ProjectPageProps extends ScriptProps{
   output: MentionItemProps[],
   impact: MentionItemProps[],
   team: Person[],
+  // disable software option, 2024-07-02
   relatedSoftware: SoftwareOverviewItemProps[],
   relatedProjects: RelatedProject[]
 }
@@ -169,7 +170,8 @@ export async function getServerSideProps(context:any) {
       output,
       impact,
       team,
-      relatedSoftware,
+      // disable software option, 2024-07-02
+      // relatedSoftware,
       relatedProjects,
       links,
       isMaintainer
@@ -182,7 +184,8 @@ export async function getServerSideProps(context:any) {
       // Impact
       getImpactByProject({project: project.id, token}),
       getTeamForProject({project: project.id, token}),
-      getRelatedSoftwareForProject({project: project.id, token, frontend: false}),
+      // disable software option, 2024-07-02
+      // getRelatedSoftwareForProject({project: project.id, token, frontend: false}),
       getRelatedProjectsForProject({project: project.id, token, frontend: false}),
       getLinksForProject({project: project.id, token, frontend: false}),
       isMaintainerOfProject({slug, account:userInfo?.account, token, frontend: false}),
@@ -202,7 +205,8 @@ export async function getServerSideProps(context:any) {
         output,
         impact,
         team,
-        relatedSoftware,
+        // disable software option, 2024-07-02
+        relatedSoftware:[],
         relatedProjects,
         links
       },

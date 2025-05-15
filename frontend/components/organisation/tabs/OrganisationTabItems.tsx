@@ -36,12 +36,13 @@ export type OrganisationTabProps = {
  * NOTE! When changing the tab options also update
  * TabContent.tsx file to load proper component.
  */
-export const organistionTabItems:OrganisationTabProps = {
+export const organisationTabItems:OrganisationTabProps = {
+  // disable software option, 2024-07-02
   software: {
     id:'software',
     label:({software_cnt})=>`Software (${software_cnt ?? 0})`,
     icon: <TerminalIcon />,
-    isVisible: (props) => true,
+    isVisible: (props) => false,
   },
   projects:{
     id:'projects',
@@ -49,11 +50,12 @@ export const organistionTabItems:OrganisationTabProps = {
     icon: <ListAltIcon />,
     isVisible: (props) => true,
   },
+  // disable releases option, 2024-07-02
   releases: {
     id:'releases',
     label:({release_cnt})=>`Releases (${release_cnt ?? 0})`,
     icon: <StyleOutlinedIcon />,
-    isVisible: (props) => true,
+    isVisible: (props) => false,
   },
   units:{
     id:'units',

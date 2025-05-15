@@ -56,41 +56,44 @@ export type UserMenuProps = {
   showSearch: boolean
 }
 
-export const userMenu:UserMenuProps[] = [{
-  id:'software',
-  label:({software_cnt})=>`Software (${software_cnt ?? 0})`,
-  icon: <TerminalIcon />,
-  status: 'Software you maintain',
-  showSearch: true
-},{
-  id:'projects',
-  label: ({project_cnt})=>`Projects (${project_cnt ?? 0})`,
-  icon: <ListAltIcon />,
-  status: 'Projects you maintain',
-  showSearch: true
-},{
-  id:'organisations',
-  label: ({organisation_cnt})=>`Organisations (${organisation_cnt ?? 0})`,
-  icon: <BusinessIcon />,
-  status: 'Organisations you maintain',
-  showSearch: true
-},{
-  id:'communities',
-  label: ({community_cnt})=>`Communities (${community_cnt ?? 0})`,
-  icon: <Diversity3Icon />,
-  status: 'Communities you maintain',
-  showSearch: true
-},{
-  id:'project-quality',
-  label: () => 'Project metadata overview',
-  icon: <TableViewIcon />,
-  status: 'Overview of the completeness of project pages you maintain',
-  showSearch: false
-},{
-  id:'settings',
-  label: () => 'Settings',
-  icon: <SettingsIcon />,
-  status: 'Your profile settings',
-  showSearch: false
-},
+export const userMenu:UserMenuProps[] = [
+// disable software option, 2024-07-02
+// {
+//   id:'software',
+//   label:({software_cnt})=>`Software (${software_cnt ?? 0})`,
+//   icon: <TerminalIcon />,
+//   status: 'Software you maintain',
+//   showSearch: true
+// },
+  {
+    id:'projects',
+    label: ({project_cnt})=>`Projects (${project_cnt ?? 0})`,
+    icon: <ListAltIcon />,
+    status: 'Projects you maintain',
+    showSearch: true
+  },{
+    id:'organisations',
+    label: ({organisation_cnt})=>`Organisations (${organisation_cnt ?? 0})`,
+    icon: <BusinessIcon />,
+    status: 'Organisations you maintain',
+    showSearch: true
+  },{
+    id:'communities',
+    label: ({community_cnt})=>`Communities (${community_cnt ?? 0})`,
+    icon: <Diversity3Icon />,
+    status: 'Communities you maintain',
+    showSearch: true
+  },{
+    id:'project-quality',
+    label: () => 'Project metadata overview',
+    icon: <TableViewIcon />,
+    status: 'Overview of the completeness of project pages you maintain',
+    showSearch: false
+  },{
+    id:'settings',
+    label: () => 'Settings',
+    icon: <SettingsIcon />,
+    status: 'Your profile settings',
+    showSearch: false
+  },
 ]

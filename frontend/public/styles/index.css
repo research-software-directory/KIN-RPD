@@ -325,3 +325,41 @@ https: //fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500&display=sw
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* ALLER from fonts.cdn */
+
+@font-face {
+  font-family: 'Aller';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Aller'), url(aller/v12/Aller_Rg.woff) format('woff');
+}
+@font-face {
+  font-family: 'Aller';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Aller'), url(aller/v12/Aller_It.woff) format('woff');
+}
+@font-face {
+  font-family: 'Aller';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Aller'), url(aller/v12/Aller_Bd.woff) format('woff');
+}
+@font-face {
+  font-family: 'Aller';
+  font-style: italic;
+  font-weight: 700;
+  src: local('Aller'), url(aller/v12/Aller_BdIt.woff) format('woff');
+}
+@font-face {
+  font-family: 'Aller Display';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Aller Display'), url(aller/v12/AllerDisplay.woff) format('woff');
+}
+@font-face {
+  font-family: 'Aller Light';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Aller Light'), url(aller/v12/Aller_LtIt.woff) format('woff');
+}

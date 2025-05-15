@@ -22,7 +22,7 @@ it('should have AddMenu options',async()=>{
   fireEvent.click(menuButton as HTMLElement)
   // select all menu options
   const menuOptions = screen.queryAllByTestId('add-menu-option')
-  // assert only 2 items
-  expect(menuOptions.length).toEqual(2)
+  // assert only 1 item
+  expect(menuOptions.length).toEqual(1)
   // screen.debug()
 })

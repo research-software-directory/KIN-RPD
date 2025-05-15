@@ -1,13 +1,13 @@
 {
   "host": {
     "name": "kin-rpd",
-    "email": "rsd@esciencecenter.nl",
+    "email": "veda@hetkin.nl",
     "emailHeaders": [],
-    "logo_url": "/images/logo-KIN.svg",
-    "website": "https://hetkin.nl",
+    "logo_url": "/images/veda-beta-logo.svg",
+    "website": "https://hetkin.nl/en/",
     "feedback": {
       "enabled": true,
-      "url": "rsd@esciencecenter.nl",
+      "url": "veda@hetkin.nl",
       "issues_page_url": "https://github.com/research-software-directory/KIN-RPD/issues"
     },
     "login_info_url":"https://research-software-directory.github.io/documentation/getting-access.html",
@@ -32,14 +32,9 @@
       "target": "_blank"
     },
     {
-      "label": "Het KIN website",
+      "label": "Het KIN",
       "url": "https://hetkin.nl/",
       "target": "_blank"
-    },
-    {
-      "label": "News",
-      "url": "/news",
-      "target": "_self"
     }
   ],
   "theme": {
@@ -48,7 +43,7 @@
       "colors": {
         "base-100": "#fff",
         "base-200": "#eeeeee",
-        "base-300": "#e1eee5",
+        "base-300": "#e5e3e3",
         "base-400": "#bdbdbd",
         "base-500": "#9e9e9e",
         "base-600": "#3f7f94",
@@ -56,21 +51,21 @@
         "base-800": "#386f82",
         "base-900": "#306070",
         "base-content": "#306070",
-        "base-content-secondary": "rgba(34,36,37,0.7)",
+        "base-content-secondary": "rgba(48,96,112,0.7)",
         "base-content-disabled": "rgba(34,36,37,0.45)",
-        "primary": "#01A2D6",
+        "primary": "#01a2d6",
         "primary-content": "#fff",
         "secondary": "#306070",
         "secondary-content": "#fff",
-        "accent": "#71AD93",
+        "accent": "#01a2d6",
         "accent-content": "#fff",
-        "error": "#8A1D12",
+        "error": "#EC5F59",
         "error-content": "#fff",
         "warning": "#ed6c02",
         "warning-content": "#fff",
         "info": "#0288d1",
         "info-content": "#fff",
-        "success": "#307070",
+        "success": "#71ad93",
         "success-content": "#fff",
         "glow-start": "#db2777",
         "glow-end": "#9333ea"
@@ -93,7 +88,7 @@
       "colors": {
         "base-100": "#306070",
         "base-200": "#56956a",
-        "base-300": "#4d855e",
+        "base-300": "#e1eee5",
         "base-400": "#757575",
         "base-500": "#9e9e9e",
         "base-600": "#bdbdbd",
@@ -107,15 +102,15 @@
         "primary-content": "#fff",
         "secondary": "#306070",
         "secondary-content": "#fff",
-        "accent": "#73095d",
+        "accent": "#6C4E71",
         "accent-content": "#fff",
-        "error": "#e53935",
+        "error": "#EC5F59",
         "error-content": "#000",
         "warning": "#ed6c02",
         "warning-content": "#000",
         "info": "#0288d1",
         "info-content": "#000",
-        "success": "#2e7d32",
+        "success": "#71ad93",
         "success-content": "#fff",
         "glow-start": "#db2777",
         "glow-end": "#9333ea"
@@ -135,8 +130,8 @@
       }
     },
     "typography": {
-      "defaultFontFamily": "aller, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif,'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
-      "titlesFontFamily": "aller, Roboto, sans-serif",
+      "defaultFontFamily": "Aller, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif,'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'",
+      "titlesFontFamily": "Aller, Roboto, sans-serif",
       "fontWeightLight": 200,
       "fontWeightRegular": 400,
       "fontWeightMedium": 500,

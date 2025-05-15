@@ -14,7 +14,6 @@ import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
 
 import {app} from '~/config/app'
-import {useUserSettings} from '~/config/UserSettingsContext'
 import PageTitle from '~/components/layout/PageTitle'
 import Searchbox from '~/components/form/Searchbox'
 import {OrganisationList} from '~/types/Organisation'
@@ -24,7 +23,7 @@ import {getOrganisationsList} from '~/components/organisation/apiOrganisations'
 import PageMeta from '~/components/seo/PageMeta'
 import AppFooter from '~/components/AppFooter'
 import AppHeader from '~/components/AppHeader'
-import {getUserSettings, setDocumentCookie} from '~/utils/userSettings'
+import {getUserSettings} from '~/utils/userSettings'
 import useSearchParams from '~/components/search/useSearchParams'
 import OrganisationGrid from '~/components/organisation/overview/OrganisationGrid'
 import PageBackground from '~/components/layout/PageBackground'
@@ -40,7 +39,7 @@ type OrganisationsOverviewPageProps = {
 }
 
 const pageTitle = `Organisations | ${app.title}`
-const pageDesc = 'List of organizations involved in the development of research software.'
+const pageDesc = 'List of organizations involved in KIN projects.'
 
 export default function OrganisationsOverviewPage({
   organisations = [], count, page, rows, search

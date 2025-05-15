@@ -73,7 +73,8 @@ describe('pages/user/[section].tsx', () => {
     )
 
     const navItems = screen.getAllByTestId('user-nav-item')
-    expect(navItems.length).toEqual(5)
+    // KIN-RPD has 4 items
+    expect(navItems.length).toEqual(4)
   })
 
   it('renders user settings section', async() => {
