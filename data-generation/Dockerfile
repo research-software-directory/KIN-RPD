@@ -5,10 +5,11 @@
 
 FROM node:21.4.0-bullseye-slim
 WORKDIR /usr/app
-COPY ./package.json /usr/app
-RUN npm install
-COPY ./img /usr/app/img
-COPY ./images.js /usr/app
-COPY ./real-data.js /usr/app
-COPY ./main.js /usr/app
+# copy
+COPY package.json package-lock.json ./
+# install
+RUN npm install --frozen-lockfile --silent
+# copy all files
+COPY . .
+
 CMD npx wait-on --timeout 10000 $POSTGREST_URL && node main.js
