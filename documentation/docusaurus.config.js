@@ -13,8 +13,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'RSD documentation',
-  tagline: 'RSD documentation',
+  title: 'KIN documentation',
+  tagline: 'KIN documentation',
   favicon: 'favicon.ico',
 
   // Set the production url of your site here
@@ -79,30 +79,27 @@ const config = {
       // Replace with your project's social card
       // image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'RSD',
+        title: 'RPD',
         logo: {
-          alt: 'RSD logo',
-          src: 'circle.webp',
+          alt: 'KIN logo',
+          src: 'apple-touch-icon.png',
+          height: '200px'
         },
         hideOnScroll: false,
         items: [
           {
-            label: "Users",
-            to: "/users/",
+            label: "Projects",
+            to: "/users/adding-projects/",
             position: "left"
           },
           {
-            label: 'API',
-            to:'/API/',
-            position: 'left',
-          },{
-            label: 'Hosting',
-            to:'/rsd-instance/',
-            position: 'left',
+            label: "Organisations",
+            to: "/users/organisation/",
+            position: "left"
           },
           {
-            label: 'Contributors',
-            to:'/contribute/',
+            label: 'Administration',
+            to:'/rsd-instance/administration/',
             position: 'left',
           },
           {
@@ -110,17 +107,17 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://research.software',
+            href: 'https://hetkin.nl',
             position: 'right',
-            label: 'RSD live',
+            label: 'Het KIN',
           },
+          // {
+          //   href: 'https://ubuntu2204sudo.demo-nlesc.src.surf-hosted.nl/',
+          //   position: 'right',
+          //   label: 'KIN RPD demo',
+          // },
           {
-            href: 'https://research-software.dev',
-            position: 'right',
-            label: 'RSD demo',
-          },
-          {
-            href: 'https://github.com/research-software-directory/RSD-as-a-service',
+            href: 'https://github.com/research-software-directory/KIN-RPD/tree/main',
             label: 'GitHub',
             position: 'right',
           },
