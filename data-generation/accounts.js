@@ -6,6 +6,7 @@ export async function generateAccounts(orcids){
   const accounts = await postAccountsToBackend(100);
   const ids = accounts.map(a => a.id)
   const logins = await postToBackend('/login_for_account', generateLoginForAccount(ids, orcids))
+	const profiles = await postToBackend('/user_profile', generateUserProfiles(ids))
 	// console.log('accounts, login_for_accounts done');
 	return ids
 }
@@ -80,3 +81,28 @@ export function generateLoginForAccount(accountIds, orcids) {
 	return login_for_accounts;
 }
 
+function generateUserProfiles(accountIds) {
+	const user_profiles = accountIds.map(account => {
+		let given_names = faker.person.firstName();
+		let family_names = faker.person.lastName();
+		// user_profile table props
+		return {
+			account,
+			given_names,
+			family_names,
+			email_address: faker.internet.email({
+				firstName: given_names,
+				lastName: family_names,
+			}),
+			role: faker.person.jobTitle(),
+			affiliation: faker.company.name(),
+			is_public:
+				faker.helpers.maybe(() => true, {
+					probability: 0.5,
+				}) ?? false,
+			avatar_id: null,
+			description: null,
+		};
+	});
+	return user_profiles;
+}

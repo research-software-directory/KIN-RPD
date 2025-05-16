@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -41,10 +41,12 @@ const defaultValues:{
 jest.mock('~/utils/useSpdxLicenses')
 
 // MOCK addLicensesForSoftware, deleteLicense
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockAddLicensesForSoftware = jest.fn(props => Promise.resolve({
   status: 201,
   message: 'new-license-id'
 }))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteLicense = jest.fn(props=>Promise.resolve('OK' as any))
 jest.mock('~/utils/editSoftware', () => ({
   addLicensesForSoftware: jest.fn(props => mockAddLicensesForSoftware(props)),
@@ -52,6 +54,7 @@ jest.mock('~/utils/editSoftware', () => ({
 }))
 
 // MOCK getLicensesFromDoi
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetLicensesFromDoi = jest.fn(props => Promise.resolve([] as any))
 jest.mock('~/utils/getInfoFromDatacite', () => ({
   getLicensesFromDoi: jest.fn(props=>mockGetLicensesFromDoi(props))
@@ -98,7 +101,6 @@ it('can add NEW license', async() => {
   defaultValues.licenses = []
   defaultValues.concept_doi = null
 
-
   // render
   render(
     <WithAppContext options={{session: mockSession}}>
@@ -113,10 +115,11 @@ it('can add NEW license', async() => {
   const combo = screen.getByRole('combobox')
   fireEvent.change(combo, {target: {value: newLicense.name}})
 
-  // find Add option
-  const addLicense = await screen.findByRole('option', {
-    name: `Add "${newLicense.name}"`
-  })
+  // find Add option by testId
+  const addLicense = await screen.findByTestId('add-license-option')
+  // const addLicense = await screen.findByRole('option', {
+  //   name: `Add "${newLicense.name}"`
+  // })
   // select to add new license
   fireEvent.click(addLicense)
 
@@ -139,8 +142,8 @@ it('can add NEW license', async() => {
   fireEvent.click(saveBtn)
 
   await waitFor(() => {
-    expect(mockAddLicensesForSoftware).toBeCalledTimes(1)
-    expect(mockAddLicensesForSoftware).toBeCalledWith({
+    expect(mockAddLicensesForSoftware).toHaveBeenCalledTimes(1)
+    expect(mockAddLicensesForSoftware).toHaveBeenCalledWith({
       'license': {
         ...newLicense,
         software: softwareState.software.id
@@ -191,12 +194,12 @@ it('can import license from DOI', async() => {
 
   await waitFor(() => {
     // validate import api call
-    expect(mockGetLicensesFromDoi).toBeCalledTimes(1)
-    expect(mockGetLicensesFromDoi).toBeCalledWith(defaultValues.concept_doi)
+    expect(mockGetLicensesFromDoi).toHaveBeenCalledTimes(1)
+    expect(mockGetLicensesFromDoi).toHaveBeenCalledWith(defaultValues.concept_doi)
 
     // validate license save api call
-    expect(mockAddLicensesForSoftware).toBeCalledTimes(1)
-    expect(mockAddLicensesForSoftware).toBeCalledWith({
+    expect(mockAddLicensesForSoftware).toHaveBeenCalledTimes(1)
+    expect(mockAddLicensesForSoftware).toHaveBeenCalledWith({
       'license': {
         license: licenseForSoftware[0].license,
         name: licenseForSoftware[0].name,
@@ -240,16 +243,14 @@ it('can add license from list', async() => {
   const combo = screen.getByRole('combobox')
   fireEvent.change(combo, {target: {value: newLicense.name}})
 
-  // find Add option
-  const addLicense = await screen.findByRole('option', {
-    title: newLicense.license
-  })
+  // only option should be newLicense
+  const addLicense = await screen.findByRole('option')
   // select to add new license
   fireEvent.click(addLicense)
 
   await waitFor(() => {
-    expect(mockAddLicensesForSoftware).toBeCalledTimes(1)
-    expect(mockAddLicensesForSoftware).toBeCalledWith({
+    expect(mockAddLicensesForSoftware).toHaveBeenCalledTimes(1)
+    expect(mockAddLicensesForSoftware).toHaveBeenCalledWith({
       'license': {
         ...newLicense,
         'software': softwareState.software.id
@@ -293,8 +294,8 @@ it('can remove license', async () => {
   fireEvent.click(delBtn)
 
   await waitFor(() => {
-    expect(mockDeleteLicense).toBeCalledTimes(1)
-    expect(mockDeleteLicense).toBeCalledWith({
+    expect(mockDeleteLicense).toHaveBeenCalledTimes(1)
+    expect(mockDeleteLicense).toHaveBeenCalledWith({
       'id': defaultValues.licenses[0].data.id,
       'token': mockSession.token,
     })

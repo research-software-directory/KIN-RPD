@@ -1,11 +1,14 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {Matomo} from './nodeCookies'
 import {initMatomoCustomUrl} from './setMatomoPage'
 
-let setCustomUrl:Function
+let setCustomUrl:(matomo:Matomo)=>void
 
 // mock push fn
 const mockPush = jest.fn()
@@ -60,5 +63,5 @@ it('push custom page to matomo ONLY after initial url changed', () => {
   setCustomUrl(matomo)
   // calls push 4 times to setReferrerUrl,
   // setCustomUrl, setDocumentTitle, trackPageView
-  expect(mockPush).toBeCalledTimes(4)
+  expect(mockPush).toHaveBeenCalledTimes(4)
 })

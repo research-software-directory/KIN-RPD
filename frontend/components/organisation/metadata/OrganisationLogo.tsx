@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 
 import {useSession} from '~/auth'
-import useSnackbar from '../../snackbar/useSnackbar'
-import {patchOrganisation} from '../../../utils/editOrganisation'
-import LogoAvatar from '~/components/layout/LogoAvatar'
+import {patchOrganisation} from '~/utils/editOrganisation'
 import {deleteImage, getImageUrl, upsertImage} from '~/utils/editImage'
-import OrganisationLogoMenu from './OrganisationLogoMenu'
+import useSnackbar from '~/components/snackbar/useSnackbar'
+import Logo from '~/components/layout/Logo'
 import useOrganisationContext from '../context/useOrganisationContext'
 
 type OrganisationLogoProps = {
@@ -29,7 +29,7 @@ export default function OrganisationLogo({isMaintainer}:OrganisationLogoProps) {
   const {id,name,logo_id} = useOrganisationContext()
   const {showErrorMessage} = useSnackbar()
   // currently shown image
-  const [logo, setLogo] = useState<string|null>(null)
+  const [logo, setLogo] = useState<string|null>(logo_id ?? null)
 
   // console.group('OrganisationLogo')
   // console.log('id...', id)
@@ -38,12 +38,6 @@ export default function OrganisationLogo({isMaintainer}:OrganisationLogoProps) {
   // console.log('logo...', logo)
   // console.log('isMaintainer...', isMaintainer)
   // console.groupEnd()
-
-  // Update logo when new value
-  // received from parent
-  useEffect(() => {
-    if (logo_id) setLogo(logo_id)
-  },[logo_id])
 
   async function addLogo({data, mime_type}: ImageDataProps) {
     // split base64 to use only encoded content
@@ -99,7 +93,7 @@ export default function OrganisationLogo({isMaintainer}:OrganisationLogoProps) {
       // console.log('removeLogo...',resp)
       if (resp.status === 200) {
         // delete logo without check
-        const del = await deleteImage({
+        deleteImage({
           id: logo,
           token
         })
@@ -111,27 +105,21 @@ export default function OrganisationLogo({isMaintainer}:OrganisationLogoProps) {
   }
 
   return (
-    <>
-      <LogoAvatar
-        name={name ?? ''}
-        src={getImageUrl(logo) ?? undefined}
-        sx={{
-          backgroundColor: logo ? 'inherit' : 'text.disabled',
-          height: '10rem',
-          'img': {
-            objectFit: 'contain',
-            objectPosition: 'center'
-          }
-        }}
-      />
-      {isMaintainer &&
-        <OrganisationLogoMenu
-          logo={logo}
-          onAddLogo={addLogo}
-          onRemoveLogo={removeLogo}
-        />
-      }
-    </>
+    <Logo
+      name={name ?? ''}
+      logo={logo}
+      onAddLogo={addLogo}
+      onRemoveLogo={removeLogo}
+      canEdit={isMaintainer}
+      src={getImageUrl(logo) ?? undefined}
+      sx={{
+        backgroundColor: logo ? 'inherit' : 'text.disabled',
+        height: '10rem',
+        'img': {
+          objectFit: 'contain',
+          objectPosition: 'center'
+        }
+      }}
+    />
   )
-
 }

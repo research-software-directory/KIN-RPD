@@ -1,15 +1,17 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
+// SPDX-FileCopyrightText: 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {createContext, Dispatch, SetStateAction, useState, useContext, useEffect} from 'react'
-import verifyJwt, {decodeJwt} from './jwtUtils'
 import {IncomingMessage, OutgoingMessage} from 'http'
-import cookie from 'cookie'
-import logger from '../utils/logger'
+import {parse} from 'cookie'
+import logger from '~/utils/logger'
+import verifyJwt, {decodeJwt} from './jwtUtils'
 import {refreshSession} from './refreshSession'
 
 // refresh schedule margin 5min. before expiration time
@@ -17,6 +19,9 @@ import {refreshSession} from './refreshSession'
 const testMargin = process.env.REFRESH_MARGIN_MSEC ? parseInt(process.env.REFRESH_MARGIN_MSEC) : undefined
 export const REFRESH_MARGIN = testMargin ?? 5 * 60 * 1000
 export type RsdRole = 'rsd_admin' | 'rsd_user'
+export type RsdUserData = {
+  [property: string]: string[]
+}
 export type RsdUser = {
   iss: 'rsd_auth'
   role: RsdRole
@@ -25,7 +30,8 @@ export type RsdUser = {
   // uid
   account: string
   // display name
-  name: string
+  name: string,
+  data?: RsdUserData,
 }
 
 export type Session = {
@@ -129,7 +135,7 @@ export function useSession(){
 }
 
 /**
- * Calculate expirition time from now in milliseconds
+ * Calculate expiration time from now in milliseconds
  * @param exp in seconds
  * @returns difference in milliseconds
  */
@@ -171,7 +177,7 @@ export function getSessionSeverSide(req: IncomingMessage|undefined, res: Outgoin
   // get token from cookie
   const token = getRsdTokenNode(req)
   // create session from token
-  const session = createSession(token)
+  const session = createSession(token ?? null)
   // remove invalid cookie
   if (session.status === 'invalid') {
     // console.log('remove rsd cookies...')
@@ -193,7 +199,7 @@ export function getRsdTokenNode(req: IncomingMessage){
   // check for cookies
   if (req?.headers?.cookie) {
     // parse cookies from node request
-    const cookies = cookie.parse(req.headers.cookie)
+    const cookies = parse(req.headers.cookie)
     // validate and decode
     const token = cookies?.rsd_token
     return token

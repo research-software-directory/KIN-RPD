@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 dv4all
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {fireEvent, render, screen, waitFor, waitForElementToBeRemoved,act} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor, waitForElementToBeRemoved} from '@testing-library/react'
 
 import {WithAppContext, mockSession} from '~/utils/jest/WithAppContext'
 import {WithFormContext} from '~/utils/jest/WithFormContext'
@@ -14,14 +14,21 @@ import {WithSoftwareContext} from '~/utils/jest/WithSoftwareContext'
 import AutosaveSoftwareMarkdown from './AutosaveSoftwareMarkdown'
 
 // MOCK patchSoftwareTable
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchSoftwareTable = jest.fn(props => Promise.resolve('OK'))
 jest.mock('./patchSoftwareTable', () => ({
   patchSoftwareTable: jest.fn(props=>mockPatchSoftwareTable(props))
 }))
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetRemoteMarkdown = jest.fn(props => Promise.resolve('Remote markdown'))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockApiRemoteMarkdown = jest.fn(props => Promise.resolve({
+  status:200,
+  message: 'Remote markdown'
+}))
 jest.mock('~/utils/getSoftware', () => ({
-  getRemoteMarkdown: jest.fn(props=>mockGetRemoteMarkdown(props))
+  getRemoteMarkdown: jest.fn(props=>mockGetRemoteMarkdown(props)),
+  apiRemoteMarkdown: jest.fn(props=>mockApiRemoteMarkdown(props))
 }))
 
 beforeEach(() => {
@@ -79,8 +86,12 @@ it('shows loaded description_url', async() => {
     description_url: 'https://github.com/project/README.md'
   }
   // mock remote api response
-  const expectedMarkdown = 'Remote markdown for testing'
-  mockGetRemoteMarkdown.mockResolvedValueOnce(expectedMarkdown)
+  const expectedMarkdown = {
+    status:200,
+    message:'Remote markdown for testing'
+  }
+
+  mockApiRemoteMarkdown.mockResolvedValueOnce(expectedMarkdown)
 
   render(
     <WithAppContext options={{session: mockSession}}>
@@ -94,7 +105,7 @@ it('shows loaded description_url', async() => {
 
   // expect document URL
   const documentUrl = screen.getByRole('radio', {
-    name: 'Document URL'
+    name: 'Markdown URL'
   })
   expect(documentUrl).toBeChecked()
   // select document_url
@@ -103,7 +114,7 @@ it('shows loaded description_url', async() => {
   // wait loader to be removed
   await waitForElementToBeRemoved(screen.getByRole('progressbar'))
   // validate remote markdown response
-  screen.getByText(expectedMarkdown)
+  screen.getByText(expectedMarkdown.message)
 })
 
 it('saves custom markdown', async() => {
@@ -155,8 +166,8 @@ it('saves custom markdown', async() => {
   })
 
   await waitFor(() => {
-    expect(mockPatchSoftwareTable).toBeCalledTimes(1)
-    expect(mockPatchSoftwareTable).toBeCalledWith({
+    expect(mockPatchSoftwareTable).toHaveBeenCalledTimes(1)
+    expect(mockPatchSoftwareTable).toHaveBeenCalledWith({
       'data': {
         'description': expectedMarkdown,
         'description_type': 'markdown',
@@ -194,7 +205,7 @@ it('saves remote markdown', async() => {
 
   // check remote markdown
   const remoteUrl = screen.getByRole('radio', {
-    name: 'Document URL'
+    name: 'Markdown URL'
   })
   fireEvent.click(remoteUrl)
   expect(remoteUrl).toBeChecked()
@@ -207,7 +218,7 @@ it('saves remote markdown', async() => {
   expect(markdown).not.toBeChecked()
 
   await waitFor(() => {
-    expect(mockPatchSoftwareTable).toBeCalledTimes(1)
+    expect(mockPatchSoftwareTable).toHaveBeenCalledTimes(1)
   })
 
   // write url
@@ -218,8 +229,8 @@ it('saves remote markdown', async() => {
 
   await waitFor(() => {
     // called twice - first at change to link
-    expect(mockPatchSoftwareTable).toBeCalledTimes(2)
-    expect(mockPatchSoftwareTable).toBeCalledWith({
+    expect(mockPatchSoftwareTable).toHaveBeenCalledTimes(2)
+    expect(mockPatchSoftwareTable).toHaveBeenCalledWith({
       'data': {
         'description': null,
         'description_type': 'link',

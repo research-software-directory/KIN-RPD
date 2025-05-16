@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
 // SPDX-FileCopyrightText: 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
@@ -20,6 +20,7 @@ import {getBaseUrl} from '~/utils/fetchHelpers'
 import {softwareListUrl} from '~/utils/postgrestUrl'
 import {getSoftwareList} from '~/utils/getSoftware'
 import {ssrSoftwareParams} from '~/utils/extractQueryParam'
+import {getUserSettings} from '~/utils/userSettings'
 import {SoftwareOverviewItemProps} from '~/types/SoftwareTypes'
 import MainContent from '~/components/layout/MainContent'
 import PageBackground from '~/components/layout/PageBackground'
@@ -41,15 +42,19 @@ import useSoftwareOverviewParams from '~/components/software/overview/useSoftwar
 import SoftwareOverviewContent from '~/components/software/overview/SoftwareOverviewContent'
 import SoftwareFilters from '~/components/software/overview/filters/index'
 import {
-  softwareKeywordsFilter, softwareLanguagesFilter,
-  softwareLicensesFilter
+  softwareCategoriesFilter,
+  softwareKeywordsFilter,
+  softwareLanguagesFilter,
+  softwareLicensesFilter,
+  softwareRsdHostsFilter
 } from '~/components/software/overview/filters/softwareFiltersApi'
 import SoftwareFiltersModal from '~/components/software/overview/filters/SoftwareFiltersModal'
-import {getUserSettings} from '~/utils/userSettings'
 import {softwareOrderOptions} from '~/components/software/overview/filters/OrderSoftwareBy'
-import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
 import {getRsdSettings} from '~/config/getSettingsServerSide'
 import {useUserSettings} from '~/config/UserSettingsContext'
+import {HostsFilterOption} from '~/components/filter/RsdHostFilter'
+import {getRemoteRsd} from '~/components/admin/remote-rsd/apiRemoteRsd'
+import {CategoryOption} from '~/components/filter/CategoriesFilter'
 
 type SoftwareOverviewProps = {
   search?: string | null
@@ -59,13 +64,17 @@ type SoftwareOverviewProps = {
   languagesList: LanguagesFilterOption[],
   licenses?: string[] | null,
   licensesList: LicensesFilterOption[],
-  order?: string | null,
+  categories?: string[] | null,
+  categoriesList?: CategoryOption[]
+  rsd_host?: string,
+  hostsList: HostsFilterOption[]
+  order: string,
   page: number,
   rows: number,
   count: number,
-  layout: LayoutType,
   software: SoftwareOverviewItemProps[],
-  highlights: SoftwareHighlight[]
+  highlights: SoftwareHighlight[],
+  hasRemotes: boolean
 }
 
 const pageTitle = `Software | ${app.title}`
@@ -74,18 +83,17 @@ const pageDesc = 'The list of research software registered in the Research Softw
 export default function SoftwareOverviewPage({
   search, keywords,
   prog_lang, licenses,
-  order, page, rows,
-  count, layout,
+  rsd_host, order, page,
+  rows, count,
   keywordsList, languagesList,
-  licensesList, software, highlights
+  categories, categoriesList,
+  licensesList, hostsList,
+  software, highlights, hasRemotes
 }: SoftwareOverviewProps) {
   const smallScreen = useMediaQuery('(max-width:640px)')
   const {createUrl} = useSoftwareOverviewParams()
-  const {setPageLayout} = useUserSettings()
+  const {rsd_page_layout,setPageLayout} = useUserSettings()
   const [modal,setModal] = useState(false)
-  // if no layout - default is masonry
-  const initView = layout ?? 'masonry'
-  const [view, setView] = useState<LayoutType>(initView)
   const numPages = Math.ceil(count / rows)
   const filterCnt = getFilterCount()
 
@@ -94,16 +102,21 @@ export default function SoftwareOverviewPage({
   // console.log('keywords...', keywords)
   // console.log('prog_lang...', prog_lang)
   // console.log('licenses...', licenses)
+  // console.log('rsd_host...', rsd_host)
   // console.log('order...', order)
   // console.log('page...', page)
   // console.log('rows...', rows)
   // console.log('count...', count)
-  // console.log('layout...', layout)
+  // console.log('rsd_page_layout...', rsd_page_layout)
   // console.log('keywordsList...', keywordsList)
   // console.log('languagesList...', languagesList)
   // console.log('licensesList...', licensesList)
+  // console.log('hostsList...', hostsList)
+  // console.log('categories...', categories)
+  // console.log('categoriesList...', categoriesList)
   // console.log('software...', software)
   // console.log('highlights...', highlights)
+  // console.log('hasRemotes...', hasRemotes)
   // console.groupEnd()
 
   function getFilterCount() {
@@ -112,15 +125,9 @@ export default function SoftwareOverviewPage({
     if (prog_lang) count++
     if (licenses) count++
     if (search) count++
+    if (categories) count++
+    if (rsd_host) count++
     return count
-  }
-
-  function setLayout(view: LayoutType) {
-    // update local view
-    setView(view)
-    // save to context and cookie
-    setPageLayout(view)
-    // setDocumentCookie(view,'rsd_page_layout')
   }
 
   return (
@@ -148,7 +155,7 @@ export default function SoftwareOverviewPage({
             All software
           </h1>
           {/* Page grid with 2 sections: left filter panel and main content */}
-          <div className="flex-1 grid md:grid-cols-[2fr,3fr] lg:grid-cols-[1fr,3fr] xl:grid-cols-[1fr,4fr] my-4 gap-8">
+          <div className="flex-1 grid md:grid-cols-[2fr_3fr] lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_4fr] my-4 gap-8">
             {/* Filters panel large screen */}
             {smallScreen===false &&
               <FiltersPanel>
@@ -159,8 +166,13 @@ export default function SoftwareOverviewPage({
                   languagesList={languagesList}
                   licenses={licenses ?? []}
                   licensesList={licensesList}
-                  orderBy={order ?? ''}
+                  categories={categories ?? []}
+                  categoryList={categoriesList ?? []}
+                  rsd_host={rsd_host}
+                  hostsList={hostsList}
+                  orderBy={order}
                   filterCnt={filterCnt}
+                  hasRemotes={hasRemotes}
                 />
               </FiltersPanel>
             }
@@ -172,14 +184,15 @@ export default function SoftwareOverviewPage({
                 count={count}
                 search={search}
                 placeholder={keywords?.length ? 'Find within selection' : 'Find software'}
-                layout={view}
-                setView={setLayout}
+                layout={rsd_page_layout}
+                setView={setPageLayout}
                 setModal={setModal}
               />
               {/* Software content: masonry, cards or list */}
               <SoftwareOverviewContent
-                layout={view}
+                layout={rsd_page_layout}
                 software={software}
+                hasRemotes={hasRemotes}
               />
               {/* Pagination */}
               <div className="flex justify-center mt-8">
@@ -189,8 +202,9 @@ export default function SoftwareOverviewPage({
                     page={page}
                     renderItem={item => {
                       if (item.page !== null) {
+                        const url = createUrl('page', item.page.toString())
                         return (
-                          <Link href={createUrl('page', item.page.toString())}>
+                          <Link href={url}>
                             <PaginationItem {...item}/>
                           </Link>
                         )
@@ -219,9 +233,14 @@ export default function SoftwareOverviewPage({
           languagesList={languagesList}
           licenses={licenses ?? []}
           licensesList={licensesList}
+          categories={categories ?? []}
+          categoryList={categoriesList ?? []}
+          rsd_host={rsd_host}
+          hostsList={hostsList}
           order={order ?? ''}
           filterCnt={filterCnt}
           setModal={setModal}
+          hasRemotes={hasRemotes}
         />
       }
     </>
@@ -231,25 +250,31 @@ export default function SoftwareOverviewPage({
 // fetching data server side
 // see documentation https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  let orderBy='slug.asc', offset=0
+  let offset=0
   // extract params from page-query
-  const {search, keywords, prog_lang, licenses, order, rows, page} = ssrSoftwareParams(context.query)
+  const {search, keywords, prog_lang, licenses, categories, rsd_host, order, rows, page} = ssrSoftwareParams(context.query)
   // extract user settings from cookie
-  const {rsd_page_layout, rsd_page_rows} = getUserSettings(context.req)
+  const {rsd_page_rows} = getUserSettings(context.req)
   // use url param if present else user settings
-  let page_rows = rows ?? rsd_page_rows
+  const page_rows = rows ?? rsd_page_rows
   // calculate offset when page & rows present
   if (page_rows && page) {
     offset = page_rows * (page - 1)
   }
 
-  if (order) {
-    // extract order direction from definitions
-    const orderInfo = softwareOrderOptions.find(item=>item.key===order)
-    // ordering options require "stable" secondary order
-    // to ensure proper pagination. We use slug for this purpose
-    if (orderInfo) orderBy=`${order}.${orderInfo.direction},slug.asc`
+  const allowedOrderings = softwareOrderOptions.map(o => o.key)
+  // default order
+  let softwareOrder = order ?? 'mention_cnt'
+  // remove order key if NOT in list of allowed
+  if (order && allowedOrderings.includes(order)===false) {
+    softwareOrder = 'mention_cnt'
   }
+
+  // extract order direction from definitions
+  const orderInfo = softwareOrderOptions.find(item=>item.key===softwareOrder)!
+  // ordering options require "stable" secondary order
+  // to ensure proper pagination. We use slug for this purpose
+  const orderBy = `${softwareOrder}.${orderInfo.direction},slug.asc`
 
   // construct postgREST api url with query params
   const url = softwareListUrl({
@@ -257,7 +282,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     search,
     keywords,
     licenses,
+    rsd_host,
     prog_lang,
+    categories,
     order: orderBy,
     limit: page_rows,
     offset
@@ -267,6 +294,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const settings = await getRsdSettings()
 
   // console.log('software...url...', url)
+  // console.log('rsd_host...', rsd_host)
+  // console.log('search...', search)
   // console.log('order...', order)
   // console.log('orderBy...', orderBy)
   // console.log('page_rows...', page_rows)
@@ -277,37 +306,57 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     keywordsList,
     languagesList,
     licensesList,
+    categoriesList,
+    hostsList,
+    // extract remotes count from fn response
+    {count:remotesCount},
     // extract highlights from fn response (we don't need count)
     {highlights}
   ] = await Promise.all([
     getSoftwareList({url}),
-    softwareKeywordsFilter({search, keywords, prog_lang, licenses}),
-    softwareLanguagesFilter({search, keywords, prog_lang, licenses}),
-    softwareLicensesFilter({search, keywords, prog_lang, licenses}),
+    softwareKeywordsFilter({search, keywords, prog_lang, licenses, categories, rsd_host}),
+    softwareLanguagesFilter({search, keywords, prog_lang, licenses, categories, rsd_host}),
+    softwareLicensesFilter({search, keywords, prog_lang, licenses, categories, rsd_host}),
+    softwareCategoriesFilter({search, keywords, prog_lang, licenses, categories, rsd_host}),
+    // get sources list based on other filters
+    softwareRsdHostsFilter({search, keywords, prog_lang, licenses, categories}),
+    // get remotes count
+    getRemoteRsd({page:0, rows:1}),
     page !== 1 ? Promise.resolve({highlights: []}) : getSoftwareHighlights({
       limit: settings.host?.software_highlights?.limit ?? 3,
       offset: 0
     })
   ])
 
-  // passed as props to the page
-  // see params of page function
+  // console.log('software...', software)
+
+  // return page properties
+  const props:SoftwareOverviewProps={
+    search,
+    keywords,
+    keywordsList,
+    prog_lang,
+    languagesList,
+    licenses,
+    licensesList,
+    categories,
+    categoriesList,
+    hostsList,
+    page: page ?? 0,
+    order: softwareOrder,
+    rows: page_rows,
+    count: software.count ?? 0,
+    software: software.data,
+    highlights,
+    hasRemotes: remotesCount > 0
+  }
+
+  // add rsd_host if not undefined
+  if (rsd_host){
+    props['rsd_host']=rsd_host
+  }
+
   return {
-    props: {
-      search,
-      keywords,
-      keywordsList,
-      prog_lang,
-      languagesList,
-      licenses,
-      licensesList,
-      page,
-      order,
-      rows: page_rows,
-      layout: rsd_page_layout,
-      count: software.count,
-      software: software.data,
-      highlights
-    },
+    props
   }
 }

@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -19,9 +19,9 @@ it('searchForCommunityKeyword calls api with proper params', async() => {
 
   mockResolvedValueOnce('OK')
 
-  const resp = await searchForCommunityKeyword({searchFor})
+  await searchForCommunityKeyword({searchFor})
 
   // validate api call
-  expect(global.fetch).toBeCalledTimes(1)
-  expect(global.fetch).toBeCalledWith(expectUrl, expectPayload)
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(global.fetch).toHaveBeenCalledWith(expectUrl, expectPayload)
 })

@@ -3,8 +3,9 @@
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -19,59 +20,90 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 
 import {useForm} from 'react-hook-form'
 
+import {useDebounce} from '~/utils/useDebounce'
+import ControlledSelect from '~/components/form/ControlledSelect'
 import ControlledTextField from '~/components/form/ControlledTextField'
 import SubmitButtonWithListener from '~/components/form/SubmitButtonWithListener'
 import {
+  getPackageManagerServices,
   getPackageManagerTypeFromUrl, NewPackageManager,
-  PackageManager, PackageManagerTypes
+  PackageManager, packageManagerSettings, PackageManagerTypes
 } from './apiPackageManager'
 import PackageManagerInfo from './PackageManagerInfo'
 import {config} from './config'
 
-type EditPackageManagerModalProps = {
+type EditPackageManagerModalProps = Readonly<{
   open: boolean,
   onCancel: () => void,
-  onSubmit: ({data, pos}: { data: NewPackageManager|PackageManager, pos?: number }) => void,
-  package_manager?: NewPackageManager|PackageManager,
-  // item position in the array
-  pos?: number
-}
+  onSubmit: (data: PackageManager | NewPackageManager) => void,
+  package_manager?: PackageManager | NewPackageManager,
+  isAdmin: boolean
+}>
 
-const formId='edit-testimonial-modal'
+const formId='edit-package-manager-modal'
 
-export default function EditPackageManagerModal({open, onCancel, onSubmit, package_manager, pos}: EditPackageManagerModalProps) {
+const packageManagerOptions = Object.keys(packageManagerSettings).map(key=>{
+  const name = packageManagerSettings[key as PackageManagerTypes].name
+  return {
+    value: key,
+    label: name
+  }
+})
+
+export default function EditPackageManagerModal({open, onCancel, onSubmit, package_manager, isAdmin}: EditPackageManagerModalProps) {
   const smallScreen = useMediaQuery('(max-width:600px)')
-  const {handleSubmit, watch, formState, reset, control, register, setValue} = useForm<NewPackageManager|PackageManager>({
+  const {handleSubmit, watch, formState, reset, control, register, setValue} = useForm<PackageManager|NewPackageManager>({
     mode: 'onChange',
     defaultValues: {
       ...package_manager
     }
   })
-
-  // extract
+  // extract form states and possible errors
   const {isValid, isDirty, errors} = formState
-  const formData = watch()
-  const [url] = watch(['url'])
+  // watch for value changes in the form
+  const [
+    url,
+    package_manager_form,
+    download_disabled,
+    reverse_dependency_disabled
+  ] = watch([
+    'url',
+    'package_manager',
+    'download_count_scraping_disabled_reason',
+    'reverse_dependency_count_scraping_disabled_reason'
+  ])
+  // take the last url value
+  const bouncedUrl = useDebounce(url, 700)
+  const packageManagerServices = getPackageManagerServices(package_manager_form)
 
   useEffect(() => {
     async function fetchPackageManagerType(){
       // extract manager type from url
-      const pm_key = await getPackageManagerTypeFromUrl(url)
+      const pm_key = await getPackageManagerTypeFromUrl(bouncedUrl)
       // save value
       setValue('package_manager', pm_key as PackageManagerTypes, {
         shouldValidate: true,
         shouldDirty: true
       })
     }
-    if (typeof errors['url'] === 'undefined' && url.length > 5) {
+    if (!errors?.url && url?.length > 5 &&
+      bouncedUrl === url &&
+      // only for new items
+      package_manager?.id === null
+    ) {
       fetchPackageManagerType()
     }
-  },[url,setValue,errors])
+  },[bouncedUrl,url,setValue,errors?.url,package_manager?.id])
 
   // console.group('EditPackageManagerModal')
   // console.log('isValid...', isValid)
   // console.log('isDirty...', isDirty)
   // console.log('url...', url)
+  // console.log('bouncedUrl...', bouncedUrl)
+  // console.log('package_manager...', package_manager)
+  // console.log('package_manager_form...', package_manager_form)
+  // console.log('packageManagerOptions...', packageManagerOptions)
+  // console.log('packageManagerServices...', packageManagerServices)
   // console.groupEnd()
 
   function handleCancel() {
@@ -79,10 +111,6 @@ export default function EditPackageManagerModal({open, onCancel, onSubmit, packa
     reset()
     // hide
     onCancel()
-  }
-
-  function passSubmit(data: NewPackageManager | PackageManager) {
-    onSubmit({data,pos})
   }
 
   return (
@@ -104,7 +132,7 @@ export default function EditPackageManagerModal({open, onCancel, onSubmit, packa
       </DialogTitle>
       <form
         id={formId}
-        onSubmit={handleSubmit(passSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         autoComplete="off"
       >
         {/* hidden inputs */}
@@ -128,19 +156,64 @@ export default function EditPackageManagerModal({open, onCancel, onSubmit, packa
             control={control}
             options={{
               name: 'url',
-              // variant: 'outlined',
-              // multiline: true,
-              // rows: 4,
               label: config.modal.url.label,
               useNull: true,
-              defaultValue: package_manager?.url,
+              defaultValue: url,
               helperTextMessage: errors['url']?.message ?? config.modal.url.help,
-              helperTextCnt: `${formData?.url?.length || 0}/${config.modal.url.validation.maxLength.value}`,
+              helperTextCnt: `${url?.length ?? 0}/${config.modal.url.validation.maxLength.value}`,
+              // disable url if item is edited (id!=null)
+              disabled: package_manager?.id !== null
             }}
             rules={config.modal.url.validation}
           />
           <div className="py-4"></div>
-          <PackageManagerInfo pm_key={formData.package_manager} />
+          {isAdmin && package_manager?.id !== null ?
+            <>
+              <ControlledTextField
+                control={control}
+                options={{
+                  name: 'download_count_scraping_disabled_reason',
+                  label: config.modal.download_scraping_disabled.label,
+                  useNull: true,
+                  defaultValue: download_disabled,
+                  helperTextMessage: config.modal.download_scraping_disabled.help(packageManagerServices.includes('downloads')),
+                  helperTextCnt: `${download_disabled?.length ?? 0}/${config.modal.download_scraping_disabled.validation.maxLength.value}`,
+                  disabled: package_manager?.id === null || !packageManagerServices.includes('downloads')
+                }}
+                rules={config.modal.download_scraping_disabled.validation}
+              />
+              <div className="py-4"></div>
+              <ControlledTextField
+                control={control}
+                options={{
+                  name: 'reverse_dependency_count_scraping_disabled_reason',
+                  label: config.modal.reverse_dependency_scraping_disabled.label,
+                  useNull: true,
+                  defaultValue: reverse_dependency_disabled,
+                  helperTextMessage: config.modal.reverse_dependency_scraping_disabled.help(packageManagerServices.includes('dependents')),
+                  helperTextCnt: `${reverse_dependency_disabled?.length ?? 0}/${config.modal.reverse_dependency_scraping_disabled.validation.maxLength.value}`,
+                  disabled: package_manager?.id === null || !packageManagerServices.includes('dependents')
+                }}
+                rules={config.modal.reverse_dependency_scraping_disabled.validation}
+              />
+              <div className="py-4"></div>
+              <ControlledSelect
+                name="package_manager"
+                label={config.modal.package_manager.label}
+                control={control}
+                options={packageManagerOptions}
+                rules={{}}
+                defaultValue={package_manager?.package_manager ?? null}
+                disabled={package_manager?.id === null}
+                helperTextMessage={config.modal.package_manager.help}
+                sx={{
+                  'width': '100%'
+                }}
+              />
+            </>
+            : <PackageManagerInfo pm_key={package_manager_form} />
+          }
+
         </DialogContent>
         <DialogActions sx={{
           padding: '1rem 1.5rem',
@@ -167,6 +240,7 @@ export default function EditPackageManagerModal({open, onCancel, onSubmit, packa
   function isSaveDisabled() {
     if (isValid === false) return true
     if (isDirty === false) return true
+    if (url !== bouncedUrl) return true
     return false
   }
 }

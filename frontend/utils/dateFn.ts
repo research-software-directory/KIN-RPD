@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -72,7 +72,7 @@ export function formatDateToStr(date: Date|undefined, locale = 'en-US',
 }
 
 /**
- * Get human readible time difference like: right now, X hours ago, X days ago etc..
+ * Get human readable time difference like: right now, X hours ago, X days ago etc..
  * @param isoString
  * @param since
  * @returns
@@ -110,7 +110,7 @@ export function getTimeAgoSince(since: Date, isoStringDate: string | null) {
     } else {
       return 'right now'
     }
-  } catch (e) {
+  } catch {
     // on fail return nothing
     return null
   }
@@ -125,7 +125,7 @@ export function getMonthYearDate(date: string, locale = 'en-us') {
       return monthDate.toLocaleDateString(locale, {year: 'numeric', month: 'short'})
     }
     return null
-  } catch (e:any) {
+  } catch {
     return null
   }
 }
@@ -140,4 +140,21 @@ export function getDateFromNow(days:number){
   newDate.setDate(newDate.getDate() + days)
   // return changed date
   return newDate
+}
+
+/**
+ * Returns string of date in the format YYYY-MM-DD
+ * @param date
+ * @param locale
+ * @returns
+ */
+export function getYearMonthDay(date:Date) {
+  // this locale uses desired formatting YYYY-MM-DD
+  const locale='fr-CA'
+  try {
+    // we need to use short formatting to return only date value: YYYY-MM-DD
+    return date.toLocaleDateString(locale, {year:'numeric', month:'2-digit', day:'2-digit'})
+  } catch {
+    return null
+  }
 }

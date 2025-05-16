@@ -14,6 +14,7 @@ import {
   ResearchDomain, SearchProject, TeamMember
 } from '~/types/Project'
 import {RelatedSoftwareOfProject} from '~/types/SoftwareTypes'
+import {CategoryPath} from '~/types/Category'
 import {getImageUrl} from './editImage'
 import {extractCountFromHeader} from './extractCountFromHeader'
 import {createJsonHeaders, getBaseUrl} from './fetchHelpers'
@@ -59,7 +60,7 @@ export async function getProjectItem({slug,token}:
   try{
     // get project by slug
     const query = `project?slug=eq.${slug}`
-    let url = `${getBaseUrl()}/${query}`
+    const url = `${getBaseUrl()}/${query}`
 
     const resp = await fetch(url, {
       method: 'GET',
@@ -219,7 +220,7 @@ export async function getKeywordsForProject({project, token, frontend = false}:
 export async function getLinksForProject({project, token, frontend = false}:
   { project: string, token: string, frontend?: boolean }) {
   try {
-    let query = `url_for_project?project=eq.${project}&order=position.asc`
+    const query = `url_for_project?project=eq.${project}&order=position.asc`
     let url = `${process.env.POSTGREST_URL}/${query}`
     if (frontend === true) {
       url = `/api/v1/${query}`
@@ -416,6 +417,28 @@ export async function searchForRelatedProjectByTitle({project, searchFor, token}
     return []
   } catch (e: any) {
     logger(`searchForRelatedProjectByTitle: ${e?.message}`, 'error')
+    return []
+  }
+}
+
+export async function getCategoriesForProject({project_id,token}:{project_id: string, token?: string}){
+  try {
+    const query = `project_id=${project_id}`
+    const url = `${getBaseUrl()}/rpc/category_paths_by_project_expanded?${query}`
+
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: createJsonHeaders(token)
+    })
+    if (resp.status === 200) {
+      const data:CategoryPath[] = await resp.json()
+      return data
+    } else {
+      logger(`getCategoriesForProject: ${resp.status} - ${resp.statusText} [${url}]`, 'error')
+      return []
+    }
+  } catch (e: any) {
+    logger(`getCategoriesForProject: ${e?.message}`, 'error')
     return []
   }
 }

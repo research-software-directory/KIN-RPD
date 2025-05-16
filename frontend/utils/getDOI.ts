@@ -1,15 +1,21 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {MentionItemProps} from '~/types/Mention'
-import {crossrefItemToMentionItem, getCrossrefItemByDoi} from './getCrossref'
-import {dataCiteGraphQLItemToMentionItem, getDataciteItemByDoiGraphQL, getDataciteItemsByDoiGraphQL} from './getDataCite'
+import {crossrefItemToMentionItem} from './getCrossref'
+import {
+  dataCiteGraphQLItemToMentionItem,
+  getDataciteItemByDoiGraphQL,
+  getDataciteItemsByDoiGraphQL
+} from './getDataCite'
 import logger from './logger'
 import {getOpenalexItemByDoi, getOpenalexItemsByDoi, openalexItemToMentionItem} from '~/utils/getOpenalex'
+
 
 type DoiRA = {
   DOI: string,
@@ -53,42 +59,30 @@ export async function getDoiRAList(doiList: string[]) {
   }
 }
 
-export async function getUrlFromDoiOrg(doi: string) {
-  try {
-    const url = ` https://doi.org/api/handles/${encodeURIComponent(doi)}?type=URL`
-    const resp = await fetch(url)
-    // debugger
-    if (resp.status === 200) {
-      const json: DoiUrlResponse = await resp.json()
-      // extract
-      if (json.values.length > 0) {
-        const item = json.values[0]
-        if (item.type.toLowerCase() === 'url') {
-          return item.data.value
-        }
-      }
-    }
-  } catch (e: any) {
-    logger(`getUrlFromDoiOrg: ${e?.message}`, 'error')
-  }
-}
-
 
 async function getItemFromCrossref(doi: string) {
-  const resp = await getCrossrefItemByDoi(doi)
+  const mentionResponse = await fetch(`/api/fe/mention/crossref?doi=${doi}`)
+  const resp = await mentionResponse.json()
   // debugger
   if (resp.status === 200) {
-    const mention = crossrefItemToMentionItem(resp.message)
-    return {
-      status: 200,
-      message: mention
+    try {
+      const mention = crossrefItemToMentionItem(resp.message)
+      return {
+        status: 200,
+        message: mention
+      }
+    } catch (e: any) {
+      return {
+        status: 400,
+        message: e?.message ?? `Unknown error when parsing Crossref mention with DOI ${doi}`
+      }
     }
   }
   // return error message
   return resp
 }
 
-export async function getItemsFromCrossref(dois: string[]){
+export async function getItemsFromCrossref(dois: string[]) {
   if (dois.length === 0) return []
 
   // debugger
@@ -104,7 +98,7 @@ export async function getItemsFromCrossref(dois: string[]){
     const upperIndex = Math.min((batch + 1) * 40, dois.length)
     for (let index = lowerIndex; index < upperIndex; index++) {
       const doi = dois[index]
-      const promise = new Promise((res, rej) => {
+      const promise = new Promise((res) => {
         setTimeout(res, 1000 * batch)
       }).then(async () => {
         const mentionResult = await getItemFromCrossref(doi)
@@ -187,48 +181,30 @@ export async function getMentionByDoi(doi: string) {
   if (doiRA && doiRA.RA) {
     switch (doiRA.RA.toLowerCase()) {
       case 'crossref':
-        // get from crossref
         return getItemFromCrossref(doi)
       case 'datacite':
-        // get from datacite
         return getItemFromDatacite(doi)
-      case 'op':
-        return getItemFromOpenalex(doi)
-      default:
+      case 'invalid doi':
+      case 'doi does not exist':
+      case 'unknown':
         return {
           status: 400,
-          message: `${doiRA.RA} not supported. RSD supports Crossref and DataCite api`
+          message: 'Invalid or unknown DOI'
         }
+      default:
+        return getItemFromOpenalex(doi)
     }
   }
   return {
     status: 400,
-    message: `Failed to retereive information for DOI: ${doi}. Check DOI value.`
+    message: `Failed to retrieve information for DOI: ${doi}. Check DOI value.`
   }
 }
 
 // This url will always redirect to the current url
 export function makeDoiRedirectUrl(doi: string) {
-  // we need to encode doi because it allows lot of
+  // we need to encode doi because it allows a lot of
   // "exotic" values like 10.1175/1520-0469(2003)60%3C1201:ALESIS%3E2.0.CO;2
   return `https://doi.org/${encodeURIComponent(doi)}`
 }
 
-const exampleUrlResponse = {
-  'responseCode': 1,
-  'handle': '10.5281/zenodo.3401363',
-  'values': [
-    {
-      'index': 1,
-      'type': 'URL',
-      'data': {
-        'format': 'string',
-        'value': 'https://zenodo.org/record/3401363'
-      },
-      'ttl': 86400,
-      'timestamp': '2019-09-06T13:29:11Z'
-    }
-  ]
-}
-
-type DoiUrlResponse = typeof exampleUrlResponse

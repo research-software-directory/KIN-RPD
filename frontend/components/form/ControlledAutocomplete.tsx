@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {JSX} from 'react'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -14,15 +15,16 @@ type ControlledAutocompleteProps = {
   name: string,
   label: string,
   options: string[],
-  helperTextMessage: string,
+  helperTextMessage?: string | JSX.Element,
   control: any
   rules: any
   variant?: 'standard' | 'outlined' | 'filled'
 }
 
 export default function ControlledAutocomplete({
-  name, label, control, rules, options, variant, helperTextMessage}: ControlledAutocompleteProps) {
-  // const [open,setOpen]=useState(false)
+  name, label, control, rules, options, variant, helperTextMessage
+}: ControlledAutocompleteProps) {
+
   return (
     <Controller
       name={name}
@@ -40,12 +42,21 @@ export default function ControlledAutocomplete({
             freeSolo={true}
             multiple={false}
             options={options}
-            onInputChange={(e, value) => {
-              // debugger
-              if (value === '') onChange(null)
-              onChange(value)
+            value={value}
+            onInputChange={(e, newVal) => {
+              // Save typed input into the controller (form data)
+              // Note! onChange triggers the dirty state
+              // we do not want to call it when data is not changed
+              if (newVal !== value){
+                // debugger
+                if (newVal === '') {
+                  onChange(null)
+                }else{
+                  onChange(newVal)
+                }
+              }
             }}
-            onChange={(e, item, reason) => {
+            onChange={(e, item) => {
               // debugger
               onChange(item)
             }}

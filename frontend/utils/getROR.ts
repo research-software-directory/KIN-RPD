@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {AutocompleteOption} from '../types/AutocompleteOptions'
-import {SearchOrganisation} from '../types/Organisation'
+import {OrganisationSource, SearchOrganisation} from '../types/Organisation'
 import {createJsonHeaders} from './fetchHelpers'
 import {getSlugFromString} from './getSlugFromString'
 import logger from './logger'
@@ -50,45 +51,29 @@ function buildAutocompleteOptions(rorItems: RORItem[]): AutocompleteOption<Searc
       label: item.name,
       data: {
         id: null,
-        slug,
         parent: null,
         primary_maintainer: null,
+        slug,
         name: item.name,
+        short_description: null,
+        description: null,
         ror_id: item.id,
+        website: item.links[0] ?? null,
         is_tenant: false,
-        website: item.links[0] ?? '',
+        country: item?.country?.country_name ?? null,
+        city: item?.addresses[0]?.city ?? null,
+        wikipedia_url: item.wikipedia_url ?? null,
+        ror_types: item.types ?? [],
         logo_id: null,
-        source: 'ROR' as 'ROR',
-        description: null
+        source: 'ROR' as OrganisationSource
       }
     }
   })
   return options
 }
 
-
-export async function getOrganisationMetadata(ror_id: string|null) {
-  try {
-    // check availability
-    if (ror_id === undefined || ror_id === null || ror_id.trim().length === 0) return null
-    // build url
-    const url = `https://api.ror.org/organizations/${ror_id}`
-    const resp = await fetch(url)
-    if (resp.status === 200) {
-      const json: RORItem = await resp.json()
-      return json
-    }
-    return null
-  } catch (e: any) {
-    logger(`getOrganisationMetadata failed. ${e.message}`)
-    return null
-  }
-}
-
-
-export type RORItem = typeof rorItem
-
 // example of ROR item response
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const rorItem = {
   'id': 'https://ror.org/008xxew50',
   'name': 'VU Amsterdam',
@@ -220,3 +205,5 @@ const rorItem = {
     }
   }
 }
+
+export type RORItem = typeof rorItem

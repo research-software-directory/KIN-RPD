@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -16,29 +18,38 @@ import {cfgOrganisations as config} from './config'
 import editProjectState from '../__mocks__/editProjectState'
 import mockOrganisationsOfProject from './__mocks__/organisationsOfProject.json'
 
+// MOCK removeOrganisationCategoriesFromProject
+jest.mock('./apiProjectOrganisations')
 // MOCK isMaintainerOfOrganisation
-const mockIsMainatainerOfOrganisation = jest.fn(props => Promise.resolve(false))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockIsMaintainerOfOrganisation = jest.fn(props => Promise.resolve(false))
 jest.mock('~/auth/permissions/isMaintainerOfOrganisation', () => ({
   __esModule: true,
-  default: jest.fn(props=>mockIsMainatainerOfOrganisation(props)),
-  isMaintainerOfOrganisation: jest.fn(props=>mockIsMainatainerOfOrganisation(props))
+  default: jest.fn(props=>mockIsMaintainerOfOrganisation(props)),
+  isMaintainerOfOrganisation: jest.fn(props=>mockIsMaintainerOfOrganisation(props)),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  canEditOrganisations: jest.fn(({organisations,...other})=>organisations)
 }))
 
 // MOCK getOrganisationsOfProject
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetOrganisationsOfProject = jest.fn(props => Promise.resolve([]))
 jest.mock('~/utils/getProjects', () => ({
   getOrganisationsOfProject: jest.fn(props=>mockGetOrganisationsOfProject(props))
 }))
 
 // MOCK deleteOrganisationFromProject
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteOrganisationFromProject = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK'
 }))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchOrganisationPositions = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK'
 }))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockAddOrganisationToProject = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'approved'
@@ -51,7 +62,9 @@ jest.mock('~/utils/editProject', () => ({
 }))
 
 // MOCK searchForOrganisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSearchForOrganisation = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockCreateOrganisation = jest.fn(props => Promise.resolve({
   status: 201,
   message: 'new-organisation-id'
@@ -146,8 +159,8 @@ describe('frontend/components/projects/edit/organisations/index.tsx', () => {
 
     await waitFor(() => {
       // validate search organisation called
-      expect(mockSearchForOrganisation).toBeCalledTimes(1)
-      expect(mockSearchForOrganisation).toBeCalledWith({
+      expect(mockSearchForOrganisation).toHaveBeenCalledTimes(1)
+      expect(mockSearchForOrganisation).toHaveBeenCalledWith({
         'searchFor': searchFor,
       })
     })
@@ -184,17 +197,21 @@ describe('frontend/components/projects/edit/organisations/index.tsx', () => {
 
     await waitFor(() => {
       // call createOrganisation api
-      expect(mockCreateOrganisation).toBeCalledTimes(1)
-      expect(mockCreateOrganisation).toBeCalledWith({
+      expect(mockCreateOrganisation).toHaveBeenCalledTimes(1)
+      expect(mockCreateOrganisation).toHaveBeenCalledWith({
         'organisation': {
+          'city': null,
+          'country': null,
           'is_tenant': false,
           'logo_id': null,
           'name': searchFor,
           'parent': null,
           'primary_maintainer': null,
           'ror_id': null,
+          'ror_types': null,
           'slug': expectSlug,
           'website': expectWebsite,
+          'wikipedia_url': null,
         },
         'token': mockSession.token,
       })
@@ -251,56 +268,14 @@ describe('frontend/components/projects/edit/organisations/index.tsx', () => {
     expect(organisations).toHaveLength(1)
 
     // validate api called to save
-    expect(mockAddOrganisationToProject).toBeCalledTimes(1)
-    expect(mockAddOrganisationToProject).toBeCalledWith({
+    expect(mockAddOrganisationToProject).toHaveBeenCalledTimes(1)
+    expect(mockAddOrganisationToProject).toHaveBeenCalledWith({
       'position': 1,
       'organisation': firstOrg.id,
       'project': editProjectState.project.id,
       'role': 'participating',
       'token': mockSession.token,
     })
-  })
-
-
-  it('maintainer of organisation can edit organisation', async() => {
-    // mock organisations response
-    mockGetOrganisationsOfProject.mockResolvedValueOnce(mockOrganisationsOfProject as any)
-    mockIsMainatainerOfOrganisation.mockResolvedValueOnce(true)
-    mockIsMainatainerOfOrganisation.mockResolvedValueOnce(false)
-
-    render(
-      <WithAppContext options={{session: mockSession}}>
-        <WithProjectContext state={editProjectState}>
-          <ProjectOrganisations />
-        </WithProjectContext>
-      </WithAppContext>
-    )
-
-    // wait for loader to be removed
-    await waitForElementToBeRemoved(screen.getByRole('progressbar'))
-
-    // render first project organisation with edit button
-    const editBtns = screen.getAllByTestId('EditIcon')
-    expect(editBtns.length).toEqual(1)
-
-    // click on edit button
-    fireEvent.click(editBtns[0])
-
-    const modal = await screen.findByRole('dialog')
-
-    // validate organisation name
-    const name = within(modal).getByRole('textbox', {
-      name: config.name.label
-    })
-    expect(name).toHaveValue(mockOrganisationsOfProject[0].name)
-
-    // cancel
-    const cancelBtn = within(modal).getByRole('button', {
-      name: 'Cancel'
-    })
-    fireEvent.click(cancelBtn)
-    // modal should not be visible
-    expect(modal).not.toBeVisible()
   })
 
   it('can remove organisation from project', async() => {
@@ -340,19 +315,57 @@ describe('frontend/components/projects/edit/organisations/index.tsx', () => {
     // validate api calls
     await waitFor(() => {
       // deleteOrganisation
-      expect(mockDeleteOrganisationFromProject).toBeCalledTimes(1)
-      expect(mockDeleteOrganisationFromProject).toBeCalledWith({
+      expect(mockDeleteOrganisationFromProject).toHaveBeenCalledTimes(1)
+      expect(mockDeleteOrganisationFromProject).toHaveBeenCalledWith({
         'organisation': mockOrganisationsOfProject[0].id,
         'project': editProjectState.project.id,
         'role': 'participating',
         'token': mockSession.token,
       })
       // patch organisation positions
-      expect(mockPatchOrganisationPositions).toBeCalledTimes(1)
+      expect(mockPatchOrganisationPositions).toHaveBeenCalledTimes(1)
       // confirm number of organisations remaining
       const remained = screen.getAllByTestId('organisation-list-item')
       expect(remained.length).toEqual(mockOrganisationsOfProject.length-1)
     })
+  })
+
+  it('shows organisation categories modal',async()=>{
+    // mock organisations response
+    mockGetOrganisationsOfProject.mockResolvedValueOnce(mockOrganisationsOfProject as any)
+
+    render(
+      <WithAppContext options={{session: mockSession}}>
+        <WithProjectContext state={editProjectState}>
+          <ProjectOrganisations />
+        </WithProjectContext>
+      </WithAppContext>
+    )
+
+    // wait for loader to be removed
+    await waitForElementToBeRemoved(screen.getByRole('progressbar'))
+
+    // renders project organisations
+    const organisations = screen.getAllByTestId('organisation-list-item')
+    expect(organisations.length).toEqual(mockOrganisationsOfProject.length)
+
+    // get edit categories button from first organisation
+    const categoriesBtn = within(organisations[0]).getByRole('button', {
+      name: 'edit categories'
+    })
+    // click edit categories
+    fireEvent.click(categoriesBtn)
+
+    // get organisation categories modal
+    const modal = await screen.findByRole('dialog')
+
+    // close modal
+    const cancelBtn = within(modal).getByRole('button', {
+      name: 'Cancel'
+    })
+    fireEvent.click(cancelBtn)
+    // confirm modal closed
+    expect(modal).not.toBeInTheDocument()
   })
 })
 

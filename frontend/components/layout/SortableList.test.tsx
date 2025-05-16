@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {render, screen} from '@testing-library/react'
+import {render} from '@testing-library/react'
 
 import SortableList from './SortableList'
 
@@ -30,7 +32,7 @@ it('renders list with items', () => {
     <SortableList {...mockProps} />
   )
 
-  expect(mockRender).toBeCalledTimes(mockProps.items.length)
+  expect(mockRender).toHaveBeenCalledTimes(mockProps.items.length)
 })
 
 

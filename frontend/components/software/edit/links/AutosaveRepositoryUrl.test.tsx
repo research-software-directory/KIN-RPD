@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -15,6 +15,7 @@ import AutosaveRepositoryUrl from './AutosaveRepositoryUrl'
 import {config} from './config'
 
 // MOCK patchSoftwareTable
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockAddToRepositoryTable = jest.fn(props => Promise.resolve('OK'))
 jest.mock('~/utils/editSoftware', () => ({
   addToRepositoryTable: jest.fn(props=>mockAddToRepositoryTable(props))
@@ -49,7 +50,7 @@ it('shows loaded info', () => {
   expect(repoUrl).toHaveValue(formValues.repository_url)
 })
 
-it('save repostory url and platform', async() => {
+it('save repository url and platform', async() => {
 
   const newRepo = 'https://github.com/test-repo'
 
@@ -77,7 +78,7 @@ it('save repostory url and platform', async() => {
   fireEvent.blur(repoUrl)
 
   await waitFor(() => {
-    expect(mockAddToRepositoryTable).toBeCalledTimes(1)
+    expect(mockAddToRepositoryTable).toHaveBeenCalledTimes(1)
   })
 
 })

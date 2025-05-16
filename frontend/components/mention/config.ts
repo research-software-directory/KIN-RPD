@@ -2,17 +2,19 @@
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
 // SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
+// SPDX-FileCopyrightText: 2025 Paula Stock (GFZ) <paula.stock@gfz.de>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {MentionByType, MentionTypeKeys} from '~/types/Mention'
-import {doiRegexStrict} from '~/components/software/edit/mentions/utils'
+import {DOI_REGEX_STRICT} from '~/components/software/edit/mentions/utils'
 
 export const findMention={
   // title: 'Add publication',
   // subtitle: 'We search in Crossref, DataCite and RSD databases',
-  label: 'Search by DOI or publication title',
-  help: 'Valid DOI or at least first 2 letters of publication title',
+  label: 'Search by DOI, OpenAlex ID or publication title',
+  help: 'Valid DOI, OpenAlex ID or at least first 2 letters of publication title',
   validation: {
     // custom validation rule, not in use by react-hook-form
     minLength: 2,
@@ -31,7 +33,7 @@ export const mentionModal = {
         message: 'Maximum length is 255'
       },
       pattern: {
-        value: doiRegexStrict,
+        value: DOI_REGEX_STRICT,
         message: 'The DOI should look like 10.XXX/XXX'
       }
     }
@@ -119,8 +121,8 @@ export const mentionModal = {
         message: 'Maximum length is 500'
       },
       pattern: {
-        value: /^https?:\/\/.+\..+/,
-        message: 'Url should start with http(s):// have at least one dot (.)'
+        value: /^https?:\/\/\S+$/,
+        message: 'Url must start with http(s):// and cannot contain white spaces'
       }
     }
   },
@@ -135,14 +137,14 @@ export const mentionModal = {
       }
     }
   },
-  external_id: {
-    label: 'External ID',
-    help: 'An ID used by e.g. OpenAlex',
+  openalex_id: {
+    label: 'OpenAlex ID',
+    help: 'The OpenAlex ID',
     validation: {
       required: false,
-      maxLength: {
-        value: 500,
-        message: 'Maximum length is 500'
+      pattern: {
+        value: /^https:\/\/openalex\.org\/[WwAaSsIiCcPpFf]\d{3,13}$/,
+        message: 'e.g. https://openalex.org/W3160330321'
       }
     }
   },
@@ -156,8 +158,8 @@ export const mentionModal = {
         message: 'Maximum length is 500'
       },
       pattern: {
-        value: /^https?:\/\/.+\..+/,
-        message: 'Url should start with http(s):// have at least one dot (.)'
+        value: /^https?:\/\/\S+$/,
+        message: 'Url must start with http(s):// and cannot contain white spaces'
       }
     }
   },

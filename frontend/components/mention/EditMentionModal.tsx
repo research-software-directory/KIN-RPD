@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
 // SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useEffect} from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -16,7 +15,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Alert from '@mui/material/Alert'
-// import AlertTitle from '@mui/material/AlertTitle'
 
 import {useForm} from 'react-hook-form'
 
@@ -56,15 +54,20 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
   const isAdmin = user?.role === 'rsd_admin'
 
   const smallScreen = useMediaQuery('(max-width:600px)')
-  const {handleSubmit, watch, formState, reset, control, register} = useForm<MentionItemProps>({
+  const {handleSubmit, watch, formState, reset, control, register, clearErrors} = useForm<MentionItemProps>({
     mode: 'onChange',
     defaultValues: {
       ...item
     }
   })
   // extract form states
-  const {isValid, isDirty} = formState
+  const {isValid, isDirty, errors} = formState
   const formData = watch()
+  // need to clear image_url error manually after the type change
+  // and dynamic rules change from required to not required
+  if (formData.mention_type !== 'highlight' && errors?.hasOwnProperty('image_url')) {
+    clearErrors('image_url')
+  }
 
   // console.group('EditMentionModal')
   // console.log('isValid...', isValid)
@@ -72,13 +75,6 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
   // console.log('errors...', errors)
   // console.log('formData...', formData)
   // console.groupEnd()
-
-  useEffect(() => {
-    if (item) {
-      //(re)set form to item values
-      reset(item)
-    }
-  }, [item, reset])
 
   function handleCancel(reason: any) {
     if (reason === 'backdropClick') {
@@ -134,23 +130,6 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
             width: ['100%'],
             padding: '1rem 1.5rem'
           }}>
-          {isAdmin &&
-        <>
-          <ControlledTextField
-            control={control}
-            options={{
-              name: 'doi',
-              label: config.doi.label,
-              useNull: true,
-              defaultValue: formData?.doi,
-              helperTextMessage: config.doi.help,
-              helperTextCnt: `${formData?.doi?.length || 0}/${config.doi.validation.maxLength.value}`,
-            }}
-            rules={config.doi.validation}
-          />
-          <div className="py-2"></div>
-        </>
-          }
           <ControlledTextField
             control={control}
             options={{
@@ -177,7 +156,7 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
             }}
             rules={config.authors.validation}
           />
-          <div className="grid grid-cols-[2fr,1fr] gap-4 py-4">
+          <div className="grid grid-cols-[2fr_1fr] gap-4 py-4">
             <ControlledTextField
               control={control}
               options={{
@@ -203,7 +182,7 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
               rules={config.publication_year.validation}
             />
           </div>
-          <div className="grid grid-cols-[2fr,1fr] gap-4 py-4">
+          <div className="grid grid-cols-[2fr_1fr] gap-4 py-4">
             <ControlledSelect
               name="mention_type"
               label={config.mentionType.label}
@@ -264,9 +243,16 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
               defaultValue: formData?.image_url,
               helperTextMessage: config.image_url.help,
               helperTextCnt: `${formData?.image_url?.length || 0}/${config.image_url.validation.maxLength.value}`,
+              // if type not highlight we remove required flag and disable input
               disabled: formData?.mention_type !== 'highlight'
             }}
-            rules={formData?.mention_type === 'highlight' ? config.image_url.validation : {}}
+            rules={formData?.mention_type === 'highlight' ?
+              config.image_url.validation :
+              {
+                // if type not highlight we remove required flag and disable input
+                required: false
+              }
+            }
           />
 
           <div className="py-2"></div>
@@ -283,27 +269,39 @@ export default function EditMentionModal({open, onCancel, onSubmit, item, pos, t
             rules={config.note.validation}
           />
           {isAdmin &&
-        <>
-          <div className="py-2"></div>
-          <ControlledTextField
-            control={control}
-            options={{
-              name: 'external_id',
-              label: config.external_id.label,
-              useNull: true,
-              defaultValue: formData?.external_id,
-              helperTextMessage: config.external_id.help,
-              helperTextCnt: `${formData?.external_id?.length || 0}/${config.external_id.validation.maxLength.value}`,
-            }}
-            rules={config.external_id.validation}
-          />
-          <div className="py-2"></div>
-        </>
+            <>
+              <div className="py-2"></div>
+              <ControlledTextField
+                control={control}
+                options={{
+                  name: 'doi',
+                  label: config.doi.label,
+                  useNull: true,
+                  defaultValue: formData?.doi,
+                  helperTextMessage: config.doi.help,
+                  helperTextCnt: `${formData?.doi?.length || 0}/${config.doi.validation.maxLength.value}`,
+                }}
+                rules={config.doi.validation}
+              />
+              <div className="py-2"></div>
+              <ControlledTextField
+                control={control}
+                options={{
+                  name: 'openalex_id',
+                  label: config.openalex_id.label,
+                  useNull: true,
+                  defaultValue: formData?.openalex_id,
+                  helperTextMessage: config.openalex_id.help,
+                }}
+                rules={config.openalex_id.validation}
+              />
+              <div className="py-2"></div>
+            </>
           }
           {!isAdmin &&
-        <Alert severity="warning" sx={{marginTop: '1rem'}}>
-          The information can not be edited after creation.
-        </Alert>}
+            <Alert severity="warning" sx={{marginTop: '1rem'}}>
+              The information can not be edited after creation.
+            </Alert>}
         </DialogContent>
         <DialogActions sx={{
           padding: '1rem 1.5rem',

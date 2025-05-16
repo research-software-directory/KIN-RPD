@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import {useSession} from '~/auth'
 import {deleteImage,getImageUrl,upsertImage} from '~/utils/editImage'
-import LogoAvatar from '~/components/layout/LogoAvatar'
 import useSnackbar from '~/components/snackbar/useSnackbar'
-import OrganisationLogoMenu from '~/components/organisation/metadata/OrganisationLogoMenu'
+import Logo from '~/components/layout/Logo'
 import {patchCommunityTable} from '../apiCommunities'
 
 type CommunityLogoProps = {
@@ -29,6 +29,10 @@ export default function CommunityLogo({id,name,logo_id,isMaintainer}:CommunityLo
   const {showErrorMessage} = useSnackbar()
   // currently shown image
   const [logo, setLogo] = useState<string|null>(logo_id)
+
+  useEffect(() => {
+    setLogo(logo_id)
+  }, [logo_id])
 
   // console.group('CommunityLogo')
   // console.log('id...', id)
@@ -92,7 +96,7 @@ export default function CommunityLogo({id,name,logo_id,isMaintainer}:CommunityLo
       // console.log('removeLogo...',resp)
       if (resp.status === 200) {
         // delete logo without check
-        const del = await deleteImage({
+        deleteImage({
           id: logo,
           token
         })
@@ -104,27 +108,21 @@ export default function CommunityLogo({id,name,logo_id,isMaintainer}:CommunityLo
   }
 
   return (
-    <>
-      <LogoAvatar
-        name={name ?? ''}
-        src={getImageUrl(logo) ?? undefined}
-        sx={{
-          backgroundColor: logo ? 'inherit' : 'text.disabled',
-          height: '10rem',
-          'img': {
-            objectFit: 'contain',
-            objectPosition: 'center'
-          }
-        }}
-      />
-      {isMaintainer &&
-        <OrganisationLogoMenu
-          logo={logo}
-          onAddLogo={addLogo}
-          onRemoveLogo={removeLogo}
-        />
-      }
-    </>
+    <Logo
+      name={name ?? ''}
+      logo={logo}
+      onAddLogo={addLogo}
+      onRemoveLogo={removeLogo}
+      canEdit={isMaintainer}
+      src={getImageUrl(logo) ?? undefined}
+      sx={{
+        backgroundColor: logo ? 'inherit' : 'text.disabled',
+        height: '10rem',
+        'img': {
+          objectFit: 'contain',
+          objectPosition: 'center'
+        }
+      }}
+    />
   )
-
 }

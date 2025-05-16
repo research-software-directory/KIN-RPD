@@ -10,14 +10,12 @@ import {rowsPerPageOptions} from '~/config/pagination'
 import {useUserSettings} from '~/config/UserSettingsContext'
 import DefaultLayout from '~/components/layout/DefaultLayout'
 import AdminPageWithNav from '~/components/admin/AdminPageWithNav'
-import {adminPages} from '~/components/admin/AdminNav'
+// import {adminPages} from '~/components/admin/AdminNav'
 import {SearchProvider} from '~/components/search/SearchContext'
 import {PaginationProvider} from '~/components/pagination/PaginationContext'
 import AdminCommunities from '~/components/admin/communities'
 
-// disable communities option, 2024-07-02
-// change this to communities when enabled
-const pageTitle = `${adminPages['pages'].title} | Admin page | ${app.title}`
+const pageTitle = `Communities - DISABLED | Admin page | ${app.title}`
 
 const pagination = {
   count: 0,
@@ -38,7 +36,7 @@ export default function AdminCommunitiesPage() {
       <Head>
         <title>{pageTitle}</title>
       </Head>
-      <AdminPageWithNav title={adminPages['pages'].title}>
+      <AdminPageWithNav title={pageTitle}>
         <SearchProvider>
           <PaginationProvider pagination={pagination}>
             <AdminCommunities />

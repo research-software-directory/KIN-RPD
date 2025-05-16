@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,33 +10,16 @@ import {getUserFromToken} from '~/auth'
 import {getUserSettings} from '~/utils/userSettings'
 import PageMeta from '~/components/seo/PageMeta'
 import CanonicalUrl from '~/components/seo/CanonicalUrl'
-import {KeywordFilterOption} from '~/components/filter/KeywordsFilter'
-import {LanguagesFilterOption} from '~/components/filter/ProgrammingLanguagesFilter'
-import {LicensesFilterOption} from '~/components/filter/LicensesFilter'
-import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
-import {EditCommunityProps, getCommunityBySlug} from '~/components/communities/apiCommunities'
+import {getCommunityBySlug} from '~/components/communities/apiCommunities'
 import CommunityPage from '~/components/communities/CommunityPage'
 import CommunitySoftware from '~/components/communities/software'
-import {SoftwareOfCommunity, ssrCommunitySoftwareProps} from '~/components/communities/software/apiCommunitySoftware'
-
-type CommunitySoftwareProps={
-  community: EditCommunityProps,
-  software: SoftwareOfCommunity[],
-  slug: string[],
-  isMaintainer: boolean,
-  rsd_page_rows: number,
-  rsd_page_layout: LayoutType,
-  count: number,
-  keywordsList: KeywordFilterOption[],
-  languagesList: LanguagesFilterOption[],
-  licensesList: LicensesFilterOption[],
-}
+import {ssrCommunitySoftwareProps} from '~/components/communities/software/apiCommunitySoftware'
+import {CommunitySoftwareProps} from './software'
 
 export default function CommunityRejectedSoftwarePage({
-  community,slug,isMaintainer,
-  rsd_page_rows, rsd_page_layout,
-  software, count, keywordsList,
-  languagesList, licensesList
+  community,slug,isMaintainer, software, count,
+  keywordsList, languagesList, licensesList,
+  categoryList
 }:CommunitySoftwareProps) {
 
   // console.group('CommunityRejectedSoftwarePage')
@@ -70,19 +53,16 @@ export default function CommunityRejectedSoftwarePage({
         community={community}
         slug={slug}
         isMaintainer={isMaintainer}
-        rsd_page_rows={rsd_page_rows}
-        rsd_page_layout={rsd_page_layout}
         selectTab='rejected'
       >
         <CommunitySoftware
           software={software}
           page={0}
           count={count}
-          rows={rsd_page_rows}
-          rsd_page_layout={rsd_page_layout}
           keywordsList={keywordsList}
           languagesList={languagesList}
           licensesList={licensesList}
+          categoryList={categoryList}
         />
       </CommunityPage>
     </>
@@ -96,7 +76,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
   try{
     const {params, req, query} = context
     // extract user settings from cookie
-    const {rsd_page_layout, rsd_page_rows} = getUserSettings(req)
+    const {rsd_page_rows} = getUserSettings(req)
 
     // extract user id from session
     const token = req?.cookies['rsd_token']
@@ -121,6 +101,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       keywordsList,
       languagesList,
       licensesList,
+      categoryList,
       // community with updated keywords
       community
     } = await ssrCommunitySoftwareProps({
@@ -128,6 +109,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       software_status: 'rejected',
       query: query,
       isMaintainer,
+      rsd_page_rows,
       token
     })
 
@@ -139,16 +121,15 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
         community,
         slug: [params?.slug],
         isMaintainer,
-        rsd_page_layout,
-        rsd_page_rows,
         count: software.count,
         software: software.data,
         keywordsList,
         languagesList,
-        licensesList
+        licensesList,
+        categoryList
       },
     }
-  }catch(e){
+  }catch{
     return {
       notFound: true,
     }

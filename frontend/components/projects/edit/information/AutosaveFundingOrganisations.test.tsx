@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -13,7 +15,9 @@ import {projectInformation as config} from './config'
 import mockFundingOrganisations from './__mocks__/fundingOrganisations.json'
 
 // MOCK searchForOrganisation api calls
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSearchForOrganisation = jest.fn(props => Promise.resolve([]))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockCreateOrganisation = jest.fn(props => Promise.resolve([] as any))
 jest.mock('~/utils/editOrganisation', () => ({
   searchForOrganisation: jest.fn(props => mockSearchForOrganisation(props)),
@@ -21,6 +25,7 @@ jest.mock('~/utils/editOrganisation', () => ({
 }))
 
 const mockAddOrganisationToProject = jest.fn(props => Promise.resolve({status:200,message:props}))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteOrganisationFromProject = jest.fn(props => Promise.resolve({status:200,message:[]}))
 jest.mock('~/utils/editProject', () => ({
   // ...jest.requireActual('~/utils/editProject'),
@@ -70,8 +75,8 @@ it('calls searchForOrganisation api with proper search term', async() => {
   // screen.debug(search)
 
   await waitFor(() => {
-    expect(mockSearchForOrganisation).toBeCalledTimes(1)
-    expect(mockSearchForOrganisation).toBeCalledWith({
+    expect(mockSearchForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockSearchForOrganisation).toHaveBeenCalledWith({
       'frontend': true,
       searchFor,
     })
@@ -117,8 +122,8 @@ it('can add funding organisation from rsd', async() => {
   fireEvent.click(options[0])
 
   await waitFor(() => {
-    expect(mockAddOrganisationToProject).toBeCalledTimes(1)
-    expect(mockAddOrganisationToProject).toBeCalledWith({
+    expect(mockAddOrganisationToProject).toHaveBeenCalledTimes(1)
+    expect(mockAddOrganisationToProject).toHaveBeenCalledWith({
       'organisation': foundOrgs[0].key,
       'position': null,
       'project': mockProps.id,
@@ -174,24 +179,28 @@ it('can add funding organisation from ROR', async() => {
 
   await waitFor(() => {
     // create new organisation in RSD
-    expect(mockCreateOrganisation).toBeCalledTimes(1)
-    expect(mockCreateOrganisation).toBeCalledWith({
+    expect(mockCreateOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockCreateOrganisation).toHaveBeenCalledWith({
       'organisation': {
+        'city': null,
+        'country': null,
         'is_tenant': false,
         'logo_id': foundOrgs[1].data.logo_id,
         'name': foundOrgs[1].data.name,
         'parent': null,
         'primary_maintainer': null,
         'ror_id': foundOrgs[1].data.ror_id,
+        'ror_types': null,
         'slug': 'vu-university-amsterdam',
-        'website': foundOrgs[1].data.website
+        'website': foundOrgs[1].data.website,
+        'wikipedia_url': null,
       },
       'token': 'TEST_TOKEN',
     })
 
     // add as funding organisations to project
-    expect(mockAddOrganisationToProject).toBeCalledTimes(1)
-    expect(mockAddOrganisationToProject).toBeCalledWith({
+    expect(mockAddOrganisationToProject).toHaveBeenCalledTimes(1)
+    expect(mockAddOrganisationToProject).toHaveBeenCalledWith({
       'organisation': expectedId,
       'position': null,
       'project': mockProps.id,
@@ -217,8 +226,8 @@ it('can remove funding organisation', async() => {
   fireEvent.click(deleteBtn)
 
   await waitFor(() => {
-    expect(mockDeleteOrganisationFromProject).toBeCalledTimes(1)
-    expect(mockDeleteOrganisationFromProject).toBeCalledWith({
+    expect(mockDeleteOrganisationFromProject).toHaveBeenCalledTimes(1)
+    expect(mockDeleteOrganisationFromProject).toHaveBeenCalledWith({
       'organisation': mockFundingOrganisations[0].id,
       'project': mockProps.id,
       'role': 'funding',

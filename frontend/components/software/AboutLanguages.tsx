@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2022 - 2023 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 //
@@ -18,7 +18,7 @@ import AboutLanguageItem from './AboutLanguageItem'
 
 /**
  * Calculate programming languages percentages.
- * Inlclude only languages > 1% of code base.
+ * Include only languages > 1% of code base.
  * Put all others in Other category.
  * @param languages
  * @returns
@@ -27,8 +27,8 @@ function calculateStats(languages: ProgramingLanguages) {
   try {
     // extract language keys
     const keys = Object.keys(languages)
-
-    let total = 0, totPct=0, totVal=0, totLang=[]
+    let total = 0, totPct=0, totVal=0
+    const totLang=[]
     // calculate total
     keys.forEach((key) => {
       total+=languages[key]
@@ -92,8 +92,8 @@ export default function AboutLanguages({languages, platform}:
   }
 
   return (
-    <>
-      <div className="pt-8 pb-2">
+    <div>
+      <div className="pb-2">
         <Code color="primary" />
         <span className="text-primary pl-2">{label}</span>
       </div>
@@ -103,6 +103,6 @@ export default function AboutLanguages({languages, platform}:
           return <AboutLanguageItem key={props.language} {...props} />
         })}
       </ul>
-    </>
+    </div>
   )
 }

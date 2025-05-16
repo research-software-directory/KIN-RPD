@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -15,7 +15,9 @@ import mockOrganisation from '../__mocks__/mockOrganisation'
 import mockProjects from './__mocks__/mockProjects.json'
 
 // mock user agreement call
-jest.mock('~/components/user/settings/useUserAgreements')
+jest.mock('~/components/user/settings/agreements/useUserAgreements')
+// mock project categories api
+jest.mock('~/components/organisation/projects/filters/useOrgProjectCategoriesList')
 
 const mockProps = {
   organisation: mockOrganisation,
@@ -23,6 +25,7 @@ const mockProps = {
 }
 
 // MOCK getProjectsForOrganisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUseOrganisationProjects = jest.fn((props) => ({
   loading: false,
   count: 0,
@@ -34,6 +37,7 @@ jest.mock('~/components/organisation/projects/useOrganisationProjects', () => ({
 }))
 
 // MOCK patchProjectForOrganisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchProjectForOrganisation = jest.fn((props) => Promise.resolve({
   status: 200,
   statusText: 'OK'
@@ -138,8 +142,8 @@ describe('frontend/components/organisation/projects/index.tsx', () => {
     fireEvent.click(pinBtn)
 
     // validate patchProject fn is called with expected params
-    expect(mockPatchProjectForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchProjectForOrganisation).toBeCalledWith({
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledWith({
       'data': {
         'is_featured': true,
       },
@@ -180,8 +184,8 @@ describe('frontend/components/organisation/projects/index.tsx', () => {
     fireEvent.click(pinBtn)
 
     // validate patchProject fn is called with expected params
-    expect(mockPatchProjectForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchProjectForOrganisation).toBeCalledWith({
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledWith({
       'data': {
         'is_featured': false,
       },
@@ -222,8 +226,8 @@ describe('frontend/components/organisation/projects/index.tsx', () => {
     fireEvent.click(actionBtn)
 
     // validate patchProject fn is called with expected params
-    expect(mockPatchProjectForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchProjectForOrganisation).toBeCalledWith({
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledWith({
       'data': {
         'status': 'rejected_by_relation'
       },
@@ -265,8 +269,8 @@ describe('frontend/components/organisation/projects/index.tsx', () => {
     fireEvent.click(actionBtn)
 
     // validate patchProject fn is called with expected params
-    expect(mockPatchProjectForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchProjectForOrganisation).toBeCalledWith({
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchProjectForOrganisation).toHaveBeenCalledWith({
       'data': {
         'status': 'approved'
       },

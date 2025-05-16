@@ -1,20 +1,20 @@
 // SPDX-FileCopyrightText: 2021 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2021 - 2023 dv4all
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
 // used to support fetch with Jest
 import 'whatwg-fetch'
-// specific
+// custom matchers for jest
 import '@testing-library/jest-dom'
 
 // retry 2 times
-jest.retryTimes(2, {
-  logErrorsBeforeRetry: false
-})
+// jest.retryTimes(1, {
+//   logErrorsBeforeRetry: false
+// })
 
 // TODO! investigate other options beside mocking
 // MOCK REACT-MARKDOWN library as it fails to load in current setup
@@ -47,6 +47,13 @@ jest.mock('remark-gfm', () => {
 // MOCK REMARK-BREAKS plugin as it fails to load in current setup
 // there seem to be problem with ESM modules and Jest loading these
 jest.mock('remark-breaks', jest.fn((...props) => {
+  // console.log('remark-breaks...', props)
+  return props
+}))
+
+// MOCK REHYPE-EXTERNAL-LINKS plugin as it fails to load in current setup
+// there seem to be problem with ESM modules and Jest loading these
+jest.mock('rehype-external-links', jest.fn((...props) => {
   // console.log('remark-breaks...', props)
   return props
 }))
@@ -87,5 +94,5 @@ afterEach(() => {
   // call node garbage collection after each test is performed.
   // In node v18/v16 there seem to be a change in memory management that causes memory leaks
   // when running tests in Jest. We manually call garbage collection after each test to reduce memory use.
-  global.gc && global.gc()
+  if (global.gc) global.gc()
 })

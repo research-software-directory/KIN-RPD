@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {JSX} from 'react'
 import TerminalIcon from '@mui/icons-material/Terminal'
 import BlockIcon from '@mui/icons-material/Block'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
@@ -37,7 +38,7 @@ export const communityTabItems:CommunityTabProps = {
     id:'software',
     label:({software_cnt})=>`Software (${software_cnt ?? 0})`,
     icon: <TerminalIcon />,
-    isVisible: (props) => true,
+    isVisible: () => true,
   },
   requests:{
     id:'requests',

@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {WithAppContext,mockSession} from '~/utils/jest/WithAppContext'
 import {WithProjectContext} from '~/utils/jest/WithProjectContext'
 
@@ -20,22 +20,23 @@ import mockImpactForProject from './__mocks__/impactForProject.json'
 import mockCrossrefItems from '~/utils/__mocks__/crossrefItems.json'
 import projectState from '../../__mocks__/editProjectState'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetImpactForProject = jest.fn((props) => Promise.resolve(mockImpactForProject))
 jest.mock('~/utils/getProjects', () => ({
   getMentionsForProject: jest.fn((props)=>mockGetImpactForProject(props))
 }))
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetMentionByDoiFromRsd = jest.fn((props) => Promise.resolve([] as any))
 jest.mock('~/utils/editMentions', () => ({
   ...jest.requireActual('~/utils/editMentions'),
   getMentionByDoiFromRsd: jest.fn(props=>mockGetMentionByDoiFromRsd(props))
 }))
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetMentionByDoi = jest.fn((props) => Promise.resolve([] as any))
 jest.mock('~/utils/getDOI', () => ({
   getMentionByDoi: jest.fn(props=>mockGetMentionByDoi(props))
 }))
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockFindPublicationByTitle = jest.fn((props) => Promise.resolve(mockImpactForProject))
 const mockAddNewImpactToProject = jest.fn(props => Promise.resolve({
   status: 200,
@@ -65,6 +66,7 @@ const mockProjectMentionContext={
   setCitationCnt:jest.fn(),
   setImpactCnt:jest.fn()
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUseProjectMentionContext = jest.fn(props=>mockProjectMentionContext)
 jest.mock('~/components/projects/edit/mentions/ProjectMentionContext',()=>({
   useProjectMentionContext: jest.fn(props=>mockUseProjectMentionContext(props))
@@ -165,14 +167,14 @@ describe('frontend/components/project/edit/mentions/impact/index.tsx', () => {
 
     await waitFor(() => {
       // call RSD api to find mention by DOI
-      expect(mockGetMentionByDoiFromRsd).toBeCalledTimes(1)
-      expect(mockGetMentionByDoiFromRsd).toBeCalledWith({
+      expect(mockGetMentionByDoiFromRsd).toHaveBeenCalledTimes(1)
+      expect(mockGetMentionByDoiFromRsd).toHaveBeenCalledWith({
         'doi': validDOI,
         'token': mockSession.token
       })
       // becase we did not found it in RSD we try doi.org
-      expect(mockGetMentionByDoi).toBeCalledTimes(1)
-      expect(mockGetMentionByDoi).toBeCalledWith(validDOI)
+      expect(mockGetMentionByDoi).toHaveBeenCalledTimes(1)
+      expect(mockGetMentionByDoi).toHaveBeenCalledWith(validDOI)
     })
 
   })
@@ -203,8 +205,8 @@ describe('frontend/components/project/edit/mentions/impact/index.tsx', () => {
 
     await waitFor(() => {
       // call RSD api to find mention by DOI
-      expect(mockFindPublicationByTitle).toBeCalledTimes(1)
-      expect(mockFindPublicationByTitle).toBeCalledWith({
+      expect(mockFindPublicationByTitle).toHaveBeenCalledTimes(1)
+      expect(mockFindPublicationByTitle).toHaveBeenCalledWith({
         'id': projectState.project.id,
         searchFor,
         'token': mockSession.token
@@ -249,7 +251,7 @@ describe('frontend/components/project/edit/mentions/impact/index.tsx', () => {
     expect(selectGroup).toBeInTheDocument()
 
     // select button - for expanding
-    const select = within(selectGroup).getByRole('button')
+    const select = within(selectGroup).getByRole('combobox')
     fireEvent.mouseDown(select)
     // validate all options present
     const options = screen.getAllByRole('option')
@@ -276,8 +278,8 @@ describe('frontend/components/project/edit/mentions/impact/index.tsx', () => {
     fireEvent.click(save)
 
     await waitFor(() => {
-      expect(mockAddNewImpactToProject).toBeCalledTimes(1)
-      expect(mockAddNewImpactToProject).toBeCalledWith({
+      expect(mockAddNewImpactToProject).toHaveBeenCalledTimes(1)
+      expect(mockAddNewImpactToProject).toHaveBeenCalledWith({
         'item': {
           'authors': null,
           'doi': null,
@@ -328,8 +330,8 @@ describe('frontend/components/project/edit/mentions/impact/index.tsx', () => {
     // screen.debug(items)
 
     await waitFor(() => {
-      expect(mockRemoveImpactForProject).toBeCalledTimes(1)
-      expect(mockRemoveImpactForProject).toBeCalledWith({
+      expect(mockRemoveImpactForProject).toHaveBeenCalledTimes(1)
+      expect(mockRemoveImpactForProject).toHaveBeenCalledWith({
         'mention': mockImpactForProject[0].id,
         'project': projectState.project.id,
         'token': mockSession.token,

@@ -1,12 +1,13 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {useCallback, useEffect, useState} from 'react'
 
 import {useSession} from '~/auth'
-import {Invitation, deleteMaintainerLink, getUnusedInvitations} from '~/components/maintainers/apiMaintainers'
+import {deleteMaintainerLink, getUnusedInvitations} from '~/components/maintainers/apiMaintainers'
+import {Invitation} from '~/components/maintainers/InvitationList'
 import useSnackbar from '~/components/snackbar/useSnackbar'
 import {createMaintainerLink} from '~/utils/editProject'
 
@@ -25,7 +26,7 @@ export function useProjectInvitations({project}:{project?:string}) {
     }).then(items=>{
       // update
       setUnusedInvitations(items)
-    }).catch(e=>{
+    }).catch(()=>{
       // update on error to empty array
       setUnusedInvitations([])
     })
@@ -33,7 +34,7 @@ export function useProjectInvitations({project}:{project?:string}) {
 
   useEffect(()=>{
     let abort = false
-    if (project && token){
+    if (project && token && abort===false){
       loadUnusedInvitations()
     }
     return ()=>{abort=true}

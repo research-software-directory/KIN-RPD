@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2023 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -14,6 +14,7 @@ import {
   EditOrganisation, Organisation,
   OrganisationRole,
   OrganisationsForSoftware,
+  OrganisationSource,
   PatchOrganisation,
   SearchOrganisation
 } from '../types/Organisation'
@@ -220,18 +221,20 @@ export async function deleteOrganisation({uuid,logo_id, token}:
   { uuid: string, logo_id: string|null, token: string }) {
   try {
     // delete organisation
-    const url = `/api/v1/organisation?id=eq.${uuid}`
+    const url = `${getBaseUrl()}/rpc/delete_organisation`
     const resp = await fetch(url, {
-      method: 'DELETE',
+      method: 'POST',
       headers: {
         ...createJsonHeaders(token)
-      }
+      },
+      body:JSON.stringify({
+        id: uuid
+      })
     })
     if ([200, 204].includes(resp.status) === true && logo_id) {
-      //try to remove image
       // try to remove old image
       // but don't wait for results
-      const del = await deleteImage({
+      deleteImage({
         id: logo_id,
         token
       })
@@ -255,7 +258,7 @@ export async function getRsdPathForOrganisation({uuid,token}:
   {uuid: string, token?: string}) {
   try {
     const query = `rpc/organisation_route?id=${uuid}`
-    let url = `${getBaseUrl()}/${query}`
+    const url = `${getBaseUrl()}/${query}`
     const resp = await fetch(url, {
       method: 'GET',
       headers: {
@@ -334,7 +337,7 @@ export function newOrganisationProps(props: NewOrganisation) {
     logo_mime_type: null,
     logo_id: null,
     website: null,
-    source: 'MANUAL' as 'MANUAL',
+    source: 'MANUAL' as OrganisationSource,
     primary_maintainer: props.primary_maintainer,
     role: props?.role ?? 'participating',
     canEdit: false,

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -17,6 +19,7 @@ import {testimonialInformation as config} from '../editSoftwareConfig'
 import mockTestimonials from './__mocks__/testimonials.json'
 
 // Mock editTestimonial api calls
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetTestimonialsForSoftware = jest.fn(props => Promise.resolve(mockTestimonials))
 const mockPostTestimonial = jest.fn(({testimonial}) => {
   return Promise.resolve({
@@ -24,15 +27,16 @@ const mockPostTestimonial = jest.fn(({testimonial}) => {
     message: testimonial
   })
 })
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteTestimonialById = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchTestimonialPositions = jest.fn(props => Promise.resolve([] as any))
-jest.mock('~/utils/editTestimonial', () => ({
+jest.mock('./apiSoftwareTestimonial', () => ({
   getTestimonialsForSoftware: jest.fn(props => mockGetTestimonialsForSoftware(props)),
   postTestimonial: jest.fn(props => mockPostTestimonial(props)),
   deleteTestimonialById: jest.fn(props => mockDeleteTestimonialById(props)),
   patchTestimonialPositions: jest.fn(props => mockPatchTestimonialPositions(props)),
 }))
-
 
 describe('frontend/components/software/edit/testimonials/index.tsx', () => {
   beforeEach(() => {
@@ -56,7 +60,7 @@ describe('frontend/components/software/edit/testimonials/index.tsx', () => {
     // wait for loader to
     await waitForElementToBeRemoved(screen.getByRole('progressbar'))
     // validate no items message
-    const noItemsMsg = screen.getByText('No testimonials')
+    screen.getByText('No testimonials')
   })
 
   it('renders mocked testimonials', async() => {
@@ -112,7 +116,7 @@ describe('frontend/components/software/edit/testimonials/index.tsx', () => {
     fireEvent.click(addBtn)
 
     // get modal
-    const modal = screen.getByRole('dialog')
+    screen.getByRole('dialog')
 
     // write message
     const message = screen.getByRole('textbox', {
@@ -137,8 +141,8 @@ describe('frontend/components/software/edit/testimonials/index.tsx', () => {
 
     // validate api call
     await waitFor(() => {
-      expect(mockPostTestimonial).toBeCalledTimes(1)
-      expect(mockPostTestimonial).toBeCalledWith({
+      expect(mockPostTestimonial).toHaveBeenCalledTimes(1)
+      expect(mockPostTestimonial).toHaveBeenCalledWith({
         'testimonial': {
           'id': null,
           'message': newItem.message,
@@ -248,13 +252,13 @@ describe('frontend/components/software/edit/testimonials/index.tsx', () => {
     // validate api calls
     await waitFor(() => {
       // validate delete testimonial api
-      expect(mockDeleteTestimonialById).toBeCalledTimes(1)
-      expect(mockDeleteTestimonialById).toBeCalledWith({
+      expect(mockDeleteTestimonialById).toHaveBeenCalledTimes(1)
+      expect(mockDeleteTestimonialById).toHaveBeenCalledWith({
         'id': mockTestimonials[0].id,
         'token': mockSession.token,
       })
       // validate patch testimonial positions called
-      expect(mockPatchTestimonialPositions).toBeCalledTimes(1)
+      expect(mockPatchTestimonialPositions).toHaveBeenCalledTimes(1)
     })
 
     await waitFor(async() => {

@@ -1,10 +1,12 @@
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 dv4all
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {JSX} from 'react'
 import InfoIcon from '@mui/icons-material/Info'
 import TerminalIcon from '@mui/icons-material/Terminal'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
@@ -37,25 +39,23 @@ export type OrganisationTabProps = {
  * TabContent.tsx file to load proper component.
  */
 export const organisationTabItems:OrganisationTabProps = {
-  // disable software option, 2024-07-02
   software: {
     id:'software',
     label:({software_cnt})=>`Software (${software_cnt ?? 0})`,
     icon: <TerminalIcon />,
-    isVisible: (props) => false,
+    isVisible: () => false,
   },
   projects:{
     id:'projects',
     label: ({project_cnt})=>`Projects (${project_cnt ?? 0})`,
     icon: <ListAltIcon />,
-    isVisible: (props) => true,
+    isVisible: () => true,
   },
-  // disable releases option, 2024-07-02
   releases: {
     id:'releases',
     label:({release_cnt})=>`Releases (${release_cnt ?? 0})`,
     icon: <StyleOutlinedIcon />,
-    isVisible: (props) => false,
+    isVisible: () => false,
   },
   units:{
     id:'units',
@@ -64,7 +64,7 @@ export const organisationTabItems:OrganisationTabProps = {
     isVisible: ({children_cnt, isMaintainer}) => {
       // we do not show this options if no children
       // and not a maintainer
-      if (isMaintainer===false && (children_cnt === 0 || children_cnt===null)) return false
+      if (!isMaintainer && (children_cnt === 0 || children_cnt===null)) return false
       return true
     },
   },

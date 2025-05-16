@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
@@ -14,14 +14,15 @@ import Button from '@mui/material/Button'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {useFormContext} from 'react-hook-form'
 
-import {softwareInformation as config} from '../editSoftwareConfig'
+import {useSession} from '~/auth'
+import {EditSoftwareItem} from '~/types/SoftwareTypes'
+import {handleFileUpload} from '~/utils/handleFileUpload'
+import {deleteImage, getImageUrl, upsertImage} from '~/utils/editImage'
 import EditSectionTitle from '~/components/layout/EditSectionTitle'
 import ImageWithPlaceholder from '~/components/layout/ImageWithPlaceholder'
-import {handleFileUpload} from '~/utils/handleFileUpload'
-import {useSession} from '~/auth'
 import useSnackbar from '~/components/snackbar/useSnackbar'
-import {EditSoftwareItem} from '~/types/SoftwareTypes'
-import {deleteImage, getImageUrl, upsertImage} from '~/utils/editImage'
+import ImageInput from '~/components/form/ImageInput'
+import {softwareInformation as config} from '../editSoftwareConfig'
 import {patchSoftwareTable} from './patchSoftwareTable'
 
 export default function AutosaveSoftwareLogo() {
@@ -46,7 +47,6 @@ export default function AutosaveSoftwareLogo() {
   }
 
   async function saveImage(image_b64: string, mime_type: string) {
-    let resp
     // split base64 to use only encoded content
     const data = image_b64.split(',')[1]
     if (form_image_id) {
@@ -60,14 +60,14 @@ export default function AutosaveSoftwareLogo() {
       if (patch.status === 200) {
         // try to remove old image
         // but don't wait for results
-        const del = await deleteImage({
+        deleteImage({
           id: form_image_id,
           token
         })
       }
     }
     // add new image to db
-    resp = await upsertImage({
+    const resp = await upsertImage({
       data,
       mime_type,
       token
@@ -108,7 +108,7 @@ export default function AutosaveSoftwareLogo() {
       if (form_image_id) {
         // try to remove old image
         // but don't wait for results
-        const del = await deleteImage({
+        deleteImage({
           id: form_image_id,
           token
         })
@@ -170,12 +170,9 @@ export default function AutosaveSoftwareLogo() {
         />
       </label>
 
-      <input
+      <ImageInput
         id="upload-software-logo"
-        type="file"
-        accept="image/*"
         onChange={onFileUpload}
-        style={{display:'none'}}
       />
 
       {renderImageAttributes()}

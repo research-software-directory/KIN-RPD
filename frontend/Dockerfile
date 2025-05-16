@@ -1,7 +1,8 @@
 # SPDX-FileCopyrightText: 2021 - 2022 Dusan Mijatovic (dv4all)
 # SPDX-FileCopyrightText: 2021 - 2022 dv4all
-# SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-# SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+# SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+# SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+# SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -12,14 +13,14 @@
 # ----------------------------------------
 # 1. Install dependencies only when needed
 # ----------------------------------------
-FROM node:20.15-slim AS deps
+FROM node:22.13.1-bookworm-slim AS deps
 
 WORKDIR /app
 
 # copy
 COPY package.json package-lock.json ./
 # install
-RUN npm install --frozen-lockfile --silent
+RUN npm ci --silent
 
 # ----------------------------------------
 # 2. Build image
@@ -39,7 +40,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # unit tests are already runned on PR and push to main
-# RUN npm test
+# RUN npm run test
 
 # build the solution
 RUN npm run build
@@ -47,7 +48,7 @@ RUN npm run build
 # ----------------------------------------
 # 3. Production image (standalone mode)
 # ----------------------------------------
-FROM node:20.15-slim AS runner
+FROM node:22.13.1-bookworm-slim AS runner
 
 # optional install updates
 # RUN apt-get upgrade -y

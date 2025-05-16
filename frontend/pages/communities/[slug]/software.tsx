@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -13,30 +13,28 @@ import CanonicalUrl from '~/components/seo/CanonicalUrl'
 import {KeywordFilterOption} from '~/components/filter/KeywordsFilter'
 import {LanguagesFilterOption} from '~/components/filter/ProgrammingLanguagesFilter'
 import {LicensesFilterOption} from '~/components/filter/LicensesFilter'
-import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
+import {CategoryOption} from '~/components/filter/CategoriesFilter'
 import {EditCommunityProps, getCommunityBySlug} from '~/components/communities/apiCommunities'
 import CommunityPage from '~/components/communities/CommunityPage'
 import CommunitySoftware from '~/components/communities/software'
 import {SoftwareOfCommunity, ssrCommunitySoftwareProps} from '~/components/communities/software/apiCommunitySoftware'
 
-type CommunitySoftwareProps={
+export type CommunitySoftwareProps={
   community: EditCommunityProps,
   software: SoftwareOfCommunity[],
   slug: string[],
   isMaintainer: boolean,
-  rsd_page_rows: number,
-  rsd_page_layout: LayoutType,
   count: number,
   keywordsList: KeywordFilterOption[],
   languagesList: LanguagesFilterOption[],
   licensesList: LicensesFilterOption[],
+  categoryList: CategoryOption[]
 }
 
 export default function CommunitySoftwarePage({
-  community,slug,isMaintainer,
-  rsd_page_rows, rsd_page_layout,
-  software, count, keywordsList,
-  languagesList, licensesList
+  community,slug,isMaintainer,software, count,
+  keywordsList,languagesList,licensesList,
+  categoryList
 }:CommunitySoftwareProps) {
 
   // console.group('CommunitySoftwarePage')
@@ -49,6 +47,7 @@ export default function CommunitySoftwarePage({
   // console.log('keywordsList....', keywordsList)
   // console.log('languagesList....', languagesList)
   // console.log('licensesList....', licensesList)
+  // console.log('categoryList....', categoryList)
   // console.groupEnd()
 
   function getMetaDescription() {
@@ -70,19 +69,16 @@ export default function CommunitySoftwarePage({
         community={community}
         slug={slug}
         isMaintainer={isMaintainer}
-        rsd_page_rows={rsd_page_rows}
-        rsd_page_layout={rsd_page_layout}
         selectTab='software'
       >
         <CommunitySoftware
           software={software}
           page={0}
           count={count}
-          rows={rsd_page_rows}
-          rsd_page_layout={rsd_page_layout}
           keywordsList={keywordsList}
           languagesList={languagesList}
           licensesList={licensesList}
+          categoryList={categoryList}
         />
       </CommunityPage>
     </>
@@ -96,7 +92,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
   try{
     const {params, req, query} = context
     // extract user settings from cookie
-    const {rsd_page_layout, rsd_page_rows} = getUserSettings(req)
+    const {rsd_page_rows} = getUserSettings(req)
 
     // extract user id from session
     const token = req?.cookies['rsd_token']
@@ -121,6 +117,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       keywordsList,
       languagesList,
       licensesList,
+      categoryList,
       // community with updated keywords
       community
     } = await ssrCommunitySoftwareProps({
@@ -128,7 +125,8 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       software_status: 'approved',
       query: query,
       isMaintainer,
-      token
+      rsd_page_rows,
+      token,
     })
 
     // update community count to actual count
@@ -139,16 +137,15 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
         community,
         slug: [params?.slug],
         isMaintainer,
-        rsd_page_layout,
-        rsd_page_rows,
         count: software.count,
         software: software.data,
         keywordsList,
         languagesList,
-        licensesList
+        licensesList,
+        categoryList
       },
     }
-  }catch(e){
+  }catch{
     return {
       notFound: true,
     }

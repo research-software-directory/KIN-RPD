@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {JSX} from 'react'
 import dynamic from 'next/dynamic'
 
 import FeedIcon from '@mui/icons-material/Feed'
@@ -16,6 +17,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import ContentLoader from '~/components/layout/ContentLoader'
 import JoinInnerIcon from '@mui/icons-material/JoinInner'
 import AddCommentIcon from '@mui/icons-material/AddComment'
+import ThreePIcon from '@mui/icons-material/ThreeP'
 
 // use dynamic imports
 const ProjectInformation = dynamic(() => import('./information'),{
@@ -33,10 +35,13 @@ const ProjectMentions = dynamic(() => import('./mentions'),{
 const RelatedProjects = dynamic(() => import('./related-projects'),{
   loading: ()=><ContentLoader />
 })
-// disable software option, 2024-07-02
 // const RelatedSoftware = dynamic(() => import('./related-software'),{
 //   loading: ()=><ContentLoader />
 // })
+const ProjectTestimonials = dynamic(() => import('./testimonials'),{
+  loading: ()=><ContentLoader />
+})
+
 const ProjectMaintainers = dynamic(() => import('./maintainers'),{
   loading: ()=><ContentLoader />
 })
@@ -79,13 +84,19 @@ export const editProjectPage: EditProjectPageProps[] = [
     status: ''
   },
   {
+    id: 'testimonials',
+    label: 'Testimonials',
+    icon: <ThreePIcon />,
+    render: () => <ProjectTestimonials />,
+    status: ''
+  },
+  {
     id: 'related-projects',
     label: 'Related projects',
     icon: <JoinInnerIcon />,
     render: () => <RelatedProjects />,
     status: ''
   },
-  // disable software option, 2024-07-02
   // {
   //   id: 'related-software',
   //   label: 'Related software',

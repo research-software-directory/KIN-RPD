@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -13,7 +13,7 @@ import {addRelatedProject, deleteRelatedProject} from '~/utils/editProject'
 import {sortOnStrProp} from '~/utils/sortFn'
 import {extractErrorMessages} from '~/utils/fetchHelpers'
 import {ProjectStatusKey, RelatedProjectForProject, SearchProject} from '~/types/Project'
-import {Status} from '~/types/Organisation'
+import {OrganisationStatus} from '~/types/Organisation'
 import useSnackbar from '~/components/snackbar/useSnackbar'
 import EditSectionTitle from '~/components/layout/EditSectionTitle'
 import EditSection from '~/components/layout/EditSection'
@@ -61,7 +61,7 @@ export default function RelatedProjectsForProject() {
     // debugger
     if (find.length === 0) {
       // default status is set to approved without validation
-      const status:Status = 'approved'
+      const status:OrganisationStatus = 'approved'
       // append(selected)
       const resp = await addRelatedProject({
         origin: project.id,
@@ -125,7 +125,7 @@ export default function RelatedProjectsForProject() {
   }
 
   return (
-    <EditSection className="flex-1 md:flex md:flex-col-reverse md:justify-end xl:grid xl:grid-cols-[3fr,2fr] xl:px-0 xl:gap-[3rem]">
+    <EditSection className="flex-1 md:flex md:flex-col-reverse md:justify-end xl:grid xl:grid-cols-[3fr_2fr] xl:px-0 xl:gap-[3rem]">
       <section className="py-4">
         <EditSectionTitle
           title={config.title}

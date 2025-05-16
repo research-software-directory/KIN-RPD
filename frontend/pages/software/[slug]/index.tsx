@@ -2,19 +2,21 @@
 // SPDX-FileCopyrightText: 2021 - 2024 dv4all
 // SPDX-FileCopyrightText: 2022 - 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 - 2024 Felix Mühlbauer (GFZ) <felix.muehlbauer@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useEffect, useMemo, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {GetServerSidePropsContext} from 'next'
 import {ScriptProps} from 'next/script'
 
 import {app} from '~/config/app'
-import {isMaintainerOfSoftware} from '~/auth/permissions/isMaintainerOfSoftware'
 import {getAccountFromToken} from '~/auth/jwtUtils'
+import {isMaintainerOfSoftware} from '~/auth/permissions/isMaintainerOfSoftware'
+import {getMaintainerOrganisations} from '~/auth/permissions/isMaintainerOfOrganisation'
+import {getCommunitiesOfMaintainer} from '~/auth/permissions/isMaintainerOfCommunity'
 import PageMeta from '~/components/seo/PageMeta'
 import OgMetaTags from '~/components/seo/OgMetaTags'
 import CitationMeta from '~/components/seo/CitationMeta'
@@ -46,17 +48,15 @@ import {
 } from '~/utils/getSoftware'
 import logger from '~/utils/logger'
 import {getDisplayName} from '~/utils/getDisplayName'
-import {getContributorsForSoftware} from '~/utils/editContributors'
-import {getTestimonialsForSoftware} from '~/utils/editTestimonial'
 import {getRelatedSoftwareForSoftware} from '~/utils/editRelatedSoftware'
 import {getMentionsBySoftware} from '~/utils/editMentions'
 import {getParticipatingOrganisations} from '~/utils/editOrganisation'
 import {
-  CategoriesForSoftware, LicenseForSoftware,
+  LicenseForSoftware,
   KeywordForSoftware, RepositoryInfo,
   SoftwareItem, SoftwareOverviewItemProps
 } from '~/types/SoftwareTypes'
-import {Profile} from '~/types/Contributor'
+import {Person} from '~/types/Contributor'
 import {Testimonial} from '~/types/Testimonial'
 import {MentionItemProps} from '~/types/Mention'
 import {ParticipatingOrganisationProps} from '~/types/Organisation'
@@ -67,54 +67,47 @@ import DarkThemeSection from '~/components/layout/DarkThemeSection'
 import MentionsSection from '~/components/mention/MentionsSection'
 import {getReferencePapersForSoftware} from '~/components/software/edit/mentions/reference-papers/apiReferencePapers'
 import {PackageManager, getPackageManagers} from '~/components/software/edit/package-managers/apiPackageManager'
+import {getContributorsForSoftware} from '~/components/software/edit/contributors/apiContributors'
 import {CommunitiesOfSoftware} from '~/components/software/edit/communities/apiSoftwareCommunities'
 import CategoriesSection from '~/components/software/CategoriesSection'
+import {getTestimonialsForSoftware} from '~/components/software/edit/testimonials/apiSoftwareTestimonial'
+import {useSoftwareCategoriesFilter} from '~/components/category/useCategoriesFilter'
 
 interface SoftwareIndexData extends ScriptProps{
   slug: string
   software: SoftwareItem
   releases: SoftwareVersion[]
   keywords: KeywordForSoftware[]
-  categories: CategoriesForSoftware
+  categories: CategoryPath[]
   licenseInfo: LicenseForSoftware[]
   repositoryInfo: RepositoryInfo
   mentions: MentionItemProps[]
   referencePapers: MentionItemProps[]
   testimonials: Testimonial[]
-  contributors: Profile[]
+  contributors: Person[]
   relatedSoftware: SoftwareOverviewItemProps[]
   relatedProjects: RelatedProject[]
-  isMaintainer: boolean,
   organisations: ParticipatingOrganisationProps[],
   packages: PackageManager[],
-  communities: CommunitiesOfSoftware[]
+  communities: CommunitiesOfSoftware[],
+  isMaintainer: boolean,
+  orgMaintainer: string[],
+  comMaintainer: string[]
 }
 
 export default function SoftwareIndexPage(props:SoftwareIndexData) {
   const [author, setAuthor] = useState('')
   // extract data from props
   const {
-    software, releases, keywords,
-    licenseInfo, repositoryInfo,
-    mentions, testimonials, contributors,
-    relatedSoftware, relatedProjects, isMaintainer,
-    slug, organisations, referencePapers, packages,
-    communities
+    software, releases, keywords, licenseInfo, repositoryInfo,
+    mentions, testimonials, contributors, relatedSoftware,
+    relatedProjects, isMaintainer, slug, organisations, referencePapers,
+    packages, communities, categories, orgMaintainer, comMaintainer
   } = props
-
-  const [highlightedCategories, otherCategories] = useMemo(() => {
-    const highlightedCategories: CategoryPath[] = []
-    const otherCategories: CategoryPath[] = []
-
-    for (const path of (props.categories || [])) {
-      if (path[0].properties.is_highlight) {
-        highlightedCategories.push(path)
-      } else {
-        otherCategories.push(path)
-      }
-    }
-    return [highlightedCategories, otherCategories]
-  }, [props.categories])
+  // split categories in two groups and filter by category status
+  const [highlightedCategories, filteredCategories] = useSoftwareCategoriesFilter({
+    categories, isMaintainer, orgMaintainer, comMaintainer
+  })
 
   useEffect(() => {
     const contact = contributors.filter(item => item.is_contact_person)
@@ -127,7 +120,15 @@ export default function SoftwareIndexPage(props:SoftwareIndexData) {
   if (!software?.brand_name){
     return <NoContent />
   }
-  // console.log('SoftwareIndexPage...communities...', communities)
+
+  // console.group('SoftwareIndexPage')
+  // console.log('highlightedCategories...', highlightedCategories)
+  // console.log('filteredCategories...', filteredCategories)
+  // console.log('categories...', categories)
+  // console.log('orgMaintainer...', orgMaintainer)
+  // console.log('comMaintainer...', comMaintainer)
+  // console.groupEnd()
+
   return (
     <>
       {/* Page Head meta tags */}
@@ -166,9 +167,7 @@ export default function SoftwareIndexPage(props:SoftwareIndexData) {
       />
       <GetStartedSection
         get_started_url={software.get_started_url}
-        repository_url={repositoryInfo?.url}
-        commit_history={repositoryInfo?.commit_history}
-        commit_history_scraped_at={repositoryInfo?.commit_history_scraped_at}
+        repositoryInfo={repositoryInfo}
       />
       <CitationSection
         releases={releases}
@@ -179,7 +178,7 @@ export default function SoftwareIndexPage(props:SoftwareIndexData) {
         description={software?.description ?? ''}
         description_type={software?.description_type}
         keywords={keywords}
-        categories={otherCategories}
+        categories={filteredCategories}
         licenses={licenseInfo}
         languages={repositoryInfo?.languages}
         repository={repositoryInfo?.url}
@@ -274,7 +273,9 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       organisations,
       referencePapers,
       packages,
-      communities
+      communities,
+      orgMaintainer,
+      comMaintainer
     ] = await Promise.all([
       // software versions info
       getReleasesForSoftware(software.id,token),
@@ -289,7 +290,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       // mentions
       getMentionsBySoftware({software:software.id,token}),
       // testimonials
-      getTestimonialsForSoftware({software:software.id,frontend: false,token}),
+      getTestimonialsForSoftware({software:software.id,token}),
       // contributors
       getContributorsForSoftware({software:software.id,token}),
       // relatedTools
@@ -305,8 +306,13 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
       // package managers
       getPackageManagers({software:software.id,token}),
       // communities of software
-      getCommunitiesOfSoftware({software:software.id,token})
+      getCommunitiesOfSoftware({software:software.id,token}),
+      // get list of organisations user maintains
+      getMaintainerOrganisations({token}),
+      // get list of communities user maintains
+      getCommunitiesOfMaintainer({token})
     ])
+
     // pass data to page component as props
     return {
       props: {
@@ -326,7 +332,9 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
         organisations,
         slug,
         packages,
-        communities
+        communities,
+        orgMaintainer,
+        comMaintainer
       }
     }
   }catch(e:any){

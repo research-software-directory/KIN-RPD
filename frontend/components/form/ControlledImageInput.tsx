@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {ChangeEvent, useRef} from 'react'
+import {ChangeEvent} from 'react'
 
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -15,6 +16,7 @@ import {useSession} from '~/auth'
 import {deleteImage, getImageUrl} from '~/utils/editImage'
 import useSnackbar from '~/components/snackbar/useSnackbar'
 import {handleFileUpload} from '~/utils/handleFileUpload'
+import ImageInput from './ImageInput'
 
 export type FormInputsForImage={
   logo_id: string|null
@@ -32,7 +34,6 @@ type ImageInputProps={
 export default function ControlledImageInput({name,logo_b64,logo_id,setValue}:ImageInputProps) {
   const {token} = useSession()
   const {showWarningMessage,showErrorMessage} = useSnackbar()
-  const imgInputRef = useRef<HTMLInputElement>(null)
 
   async function onFileUpload(e:ChangeEvent<HTMLInputElement>|undefined) {
     if (typeof e !== 'undefined') {
@@ -51,7 +52,7 @@ export default function ControlledImageInput({name,logo_b64,logo_id,setValue}:Im
   async function replaceLogo(logo_b64:string, logo_mime_type:string) {
     if (logo_id) {
       // remove old logo from db
-      const del = await deleteImage({
+      deleteImage({
         id: logo_id,
         token
       })
@@ -66,7 +67,7 @@ export default function ControlledImageInput({name,logo_b64,logo_id,setValue}:Im
   async function deleteLogo() {
     if (logo_id) {
       // remove old logo from db
-      await deleteImage({
+      deleteImage({
         id: logo_id,
         token
       })
@@ -75,10 +76,6 @@ export default function ControlledImageInput({name,logo_b64,logo_id,setValue}:Im
     setValue('logo_id', null)
     setValue('logo_b64', null)
     setValue('logo_mime_type', null, {shouldDirty: true})
-    // remove image value from input
-    if (imgInputRef.current){
-      imgInputRef.current.value = ''
-    }
   }
 
   return (
@@ -104,13 +101,9 @@ export default function ControlledImageInput({name,logo_b64,logo_id,setValue}:Im
           {name ? name.slice(0,3) : ''}
         </Avatar>
       </label>
-      <input
-        ref={imgInputRef}
+      <ImageInput
         id="upload-avatar-image"
-        type="file"
-        accept="image/*"
         onChange={onFileUpload}
-        style={{display:'none'}}
       />
       <div className="flex pt-4">
         <Button

@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,8 +11,8 @@ import {defaultSession} from '~/auth'
 import CommunityMaintainers from './index'
 import mockCommunity from '../../__mocks__/mockCommunity'
 
-// MOCK user agreement call
-// jest.mock('~/components/user/settings/useUserAgreements')
+// mock user agreement call
+jest.mock('~/components/user/settings/agreements/useUserAgreements')
 
 // MOCK useCommunityMaintainers hook
 const mockDeleteMaintainer = jest.fn()
@@ -21,6 +21,7 @@ const dummyMaintainersData={
   maintainers:[],
   deleteMaintainer: mockDeleteMaintainer
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUseCommunityMaintainers = jest.fn((props)=>dummyMaintainersData)
 jest.mock('./useCommunityMaintainers', () => ({
   useCommunityMaintainers:jest.fn((props)=>mockUseCommunityMaintainers(props))
@@ -35,6 +36,7 @@ const dummyInvitationData={
   createInvitation: mockCreateInvitation,
   deleteInvitation: mockDeleteInvitation
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUseCommunityInvitations = jest.fn((props)=>dummyInvitationData)
 jest.mock('./useCommunityInvitations', () => ({
   useCommunityInvitations:jest.fn((props)=>mockUseCommunityInvitations(props))
@@ -216,7 +218,7 @@ describe('frontend/components/organisation/maintainers/index.tsx', () => {
     const btnInvite = screen.getByRole('button',{name:'Generate invite link'})
     fireEvent.click(btnInvite)
 
-    expect(mockCreateInvitation).toBeCalledTimes(1)
+    expect(mockCreateInvitation).toHaveBeenCalledTimes(1)
   })
 
   it('shows unused links list',()=>{

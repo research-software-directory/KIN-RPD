@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import Dialog from '@mui/material/Dialog'
-import useTheme from '@mui/material/styles/useTheme'
+import {useTheme} from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
 import {useForm} from 'react-hook-form'
@@ -28,7 +28,7 @@ type SignUpOrganisation = {
   description: string
 }
 
-const inputClasses='mb-4 placeholder:text-base-500 outline-0 p-2 w-full text-sm bg-transparent text-base-100 border border-base-600 rounded-sm'
+const inputClasses='mb-4 placeholder:text-base-500 outline-0 p-2 w-full text-sm bg-transparent text-base-100 border border-base-600 rounded-xs'
 
 export default function OrganisationSignUpDialog({
   title, open, onClose, initOrg,
@@ -133,7 +133,7 @@ export default function OrganisationSignUpDialog({
           {/* NAVIGATION */}
           <div className="flex justify-end items-center gap-4 my-2">
             <button
-              className="text-sm text-base-100 border border-base-500 text-opacity-60 rounded px-4 py-1 hover:opacity-90 active:opacity-95"
+              className="text-sm text-base-100 border border-base-500 text-opacity-60 rounded-sm px-4 py-1 hover:opacity-90 active:opacity-95"
               onClick={(e) => {
                 // stop click propagation
                 e.preventDefault()
@@ -145,11 +145,10 @@ export default function OrganisationSignUpDialog({
             <a
               role="button"
               type="submit"
-              onClick={(e) => {
-                // e.preventDefault()
+              onClick={() => {
                 closeAndReset()
               }}
-              className="text-sm text-base-100 hover:text-base-100 bg-primary px-4 py-1 rounded hover:opacity-90 active:opacity-95"
+              className="text-sm text-base-100 hover:text-base-100 bg-primary px-4 py-1 rounded-sm hover:opacity-90 active:opacity-95"
               target="_blank"
               rel="noreferrer"
               href={`mailto:${host.email}?subject=${encodeURIComponent(config.button.register.label)}&body=${mailBody()}`}

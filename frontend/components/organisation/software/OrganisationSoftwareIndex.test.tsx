@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -14,13 +14,15 @@ import OrganisationSoftware from './index'
 import mockOrganisation from '../__mocks__/mockOrganisation'
 import mockSoftware from './__mocks__/mockSoftware.json'
 
+// mock software categories api
+jest.mock('~/components/organisation/software/filters/useOrgSoftwareCategoriesList')
 
 const mockProps = {
   organisation: mockOrganisation,
   isMaintainer: false
 }
-
 // MOCK getSoftwareForOrganisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUseOrganisationSoftware = jest.fn((props) => ({
   loading: false,
   count: 0,
@@ -32,6 +34,7 @@ jest.mock('./useOrganisationSoftware', () => ({
 }))
 
 // MOCK patchSoftwareForOrganisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchSoftwareForOrganisation = jest.fn((props) => Promise.resolve({
   status: 200,
   statusText: 'OK'
@@ -129,8 +132,8 @@ describe('frontend/components/organisation/software/index.tsx', () => {
     fireEvent.click(pinBtn)
 
     // validate patchSoftware fn is called with expected params
-    expect(mockPatchSoftwareForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchSoftwareForOrganisation).toBeCalledWith({
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledWith({
       'data': {
         'is_featured': true,
       },
@@ -171,8 +174,8 @@ describe('frontend/components/organisation/software/index.tsx', () => {
     fireEvent.click(pinBtn)
 
     // validate patchSoftware fn is called with expected params
-    expect(mockPatchSoftwareForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchSoftwareForOrganisation).toBeCalledWith({
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledWith({
       'data': {
         'is_featured': false,
       },
@@ -214,8 +217,8 @@ describe('frontend/components/organisation/software/index.tsx', () => {
     fireEvent.click(actionBtn)
 
     // validate patchSoftware fn is called with expected params
-    expect(mockPatchSoftwareForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchSoftwareForOrganisation).toBeCalledWith({
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledWith({
       'data': {
         'status': 'rejected_by_relation'
       },
@@ -256,8 +259,8 @@ describe('frontend/components/organisation/software/index.tsx', () => {
     fireEvent.click(actionBtn)
 
     // validate patchSoftware fn is called with expected params
-    expect(mockPatchSoftwareForOrganisation).toBeCalledTimes(1)
-    expect(mockPatchSoftwareForOrganisation).toBeCalledWith({
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledTimes(1)
+    expect(mockPatchSoftwareForOrganisation).toHaveBeenCalledWith({
       'data': {
         'status': 'approved'
       },

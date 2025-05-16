@@ -3,9 +3,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import HowToUseVeda from '~/assets/HowToUseVeda.svg'
 import GradientBorderButton from './GradientBorderButton'
 import {config} from './config'
-import HowToUseVeda from '~/assets/HowToUseVeda.svg'
 
 const {button} = config
 

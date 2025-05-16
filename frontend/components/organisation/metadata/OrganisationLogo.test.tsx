@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -14,20 +14,22 @@ import OrganisationLogo from './OrganisationLogo'
 
 //  MOCKS
 import mockOrganisation from '../__mocks__/mockOrganisation'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteImage = jest.fn((props) => Promise.resolve({status: 200, statusText: 'OK'}))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUpsertImage = jest.fn((props) => Promise.resolve({status: 201, statusText: 'OK', message:''}))
 jest.mock('~/utils/editImage', () => ({
   ...jest.requireActual('~/utils/editImage'),
   upsertImage: jest.fn((props)=>mockUpsertImage(props)),
   deleteImage: jest.fn((props)=>mockDeleteImage(props))
 }))
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchOrganisation = jest.fn((props) => Promise.resolve({status: 200, statusText: 'OK'}))
 jest.mock('~/utils/editOrganisation', () => ({
   ...jest.requireActual('~/utils/editOrganisation'),
   patchOrganisation: jest.fn((props)=>mockPatchOrganisation(props))
 }))
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockFileUpload = jest.fn((props) => Promise.resolve({
   status: 200,
   message: 'OK',
@@ -140,8 +142,8 @@ it('removes logo', async () => {
   fireEvent.click(btnDelete)
 
   // validate patch call
-  expect(mockPatchOrganisation).toBeCalledTimes(1)
-  expect(mockPatchOrganisation).toBeCalledWith({
+  expect(mockPatchOrganisation).toHaveBeenCalledTimes(1)
+  expect(mockPatchOrganisation).toHaveBeenCalledWith({
     'data': {
       'id': mockProps.organisation.id,
       'logo_id': null,
@@ -153,8 +155,8 @@ it('removes logo', async () => {
   await waitForElementToBeRemoved(screen.getByRole('img'))
 
   // validate delete image api call
-  expect(mockDeleteImage).toBeCalledTimes(1)
-  expect(mockDeleteImage).toBeCalledWith({
+  expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+  expect(mockDeleteImage).toHaveBeenCalledWith({
     'id': mockProps.organisation.logo_id,
     'token': mockSession.token,
   })
@@ -194,19 +196,19 @@ it('can change the logo', async () => {
   })
 
   // validate handleFileUpload call
-  expect(mockFileUpload).toBeCalledTimes(1)
+  expect(mockFileUpload).toHaveBeenCalledTimes(1)
 
-  // validate upserImage call
-  expect(mockUpsertImage).toBeCalledTimes(1)
-  expect(mockUpsertImage).toBeCalledWith({
+  // validate upsertImage call
+  expect(mockUpsertImage).toHaveBeenCalledTimes(1)
+  expect(mockUpsertImage).toHaveBeenCalledWith({
     'data': 'test-b64-encoded-as-string',
     'mime_type': 'image/png',
     'token': mockSession.token,
   })
 
   // validate patchOrganisation call
-  expect(mockPatchOrganisation).toBeCalledTimes(1)
-  expect(mockPatchOrganisation).toBeCalledWith({
+  expect(mockPatchOrganisation).toHaveBeenCalledTimes(1)
+  expect(mockPatchOrganisation).toHaveBeenCalledWith({
     'data': {
       'id': mockProps.organisation.id,
       'logo_id': mockProps.organisation.logo_id,

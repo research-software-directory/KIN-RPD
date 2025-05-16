@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -37,7 +37,13 @@ export default function CommunityCategories() {
           title="Categories"
           roots={roots}
           community={community.id}
+          organisation={null}
           onMutation={onMutation}
+          // different labels for communities
+          labels={{
+            short_name:'Label shown on page',
+            name:'Full name or description shown on mouse over short name/label'
+          }}
         />
       }
     </BaseSurfaceRounded>
