@@ -32,11 +32,11 @@ jobs:
       - name: calculate new version and create changelog content
         id: changelog
         # https://github.com/TriPSs/conventional-changelog-action
-        uses: TriPSs/conventional-changelog-action@v5
+        uses: TriPSs/conventional-changelog-action@v6
         with:
           # you can also create separate token to trace action
           github-token: "${{secrets.GITHUB_TOKEN}}"
-          # do not create changelog file, the content is used at next step for relase body
+          # do not create changelog file, the content is used at next step for release body
           output-file: false
           # do not create additional commit, just tag current commit with the version
           skip-commit: true
@@ -47,7 +47,7 @@ jobs:
           # set to true to flag rc, eg 0.1.0-rc.0
           pre-release: ${{inputs.pre_release}}
           # initial version if no tag present
-          fallback-version: 0.0.1
+          fallback-version: 1.0.0
 
   log_release_tag:
     needs: release_tag
