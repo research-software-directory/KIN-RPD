@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2021 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2021 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
@@ -15,7 +15,9 @@ import Link from 'next/link'
 import PaginationItem from '@mui/material/PaginationItem'
 
 import {app} from '~/config/app'
+import {useUserSettings} from '~/config/UserSettingsContext'
 import {ProjectListItem} from '~/types/Project'
+import {getUserSettings} from '~/utils/userSettings'
 import {getProjectList} from '~/utils/getProjects'
 import {ssrProjectsParams} from '~/utils/extractQueryParam'
 import {projectListUrl} from '~/utils/postgrestUrl'
@@ -25,15 +27,12 @@ import AppFooter from '~/components/AppFooter'
 import MainContent from '~/components/layout/MainContent'
 import PageMeta from '~/components/seo/PageMeta'
 import CanonicalUrl from '~/components/seo/CanonicalUrl'
-import {getUserSettings, setDocumentCookie} from '~/utils/userSettings'
 import useProjectOverviewParams from '~/components/projects/overview/useProjectOverviewParams'
 import PageBackground from '~/components/layout/PageBackground'
 import FiltersPanel from '~/components/filter/FiltersPanel'
 import {KeywordFilterOption} from '~/components/filter/KeywordsFilter'
 import {OrganisationOption} from '~/components/filter/OrganisationsFilter'
 import {ResearchDomainOption} from '~/components/filter/ResearchDomainFilter'
-import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
-import {ProjectLayoutType} from '~/components/projects/overview/search/ViewToggleGroup'
 import {
   projectDomainsFilter,
   projectKeywordsFilter,
@@ -62,12 +61,11 @@ export type ProjectOverviewPageProps = {
   page: number,
   rows: number,
   count: number,
-  layout: LayoutType,
   projects: ProjectListItem[]
 }
 
 const pageTitle = `Projects | ${app.title}`
-const pageDesc = 'The list of research projects in the KIN RPD.'
+const pageDesc = 'The list of research projects in the Research Software Directory.'
 
 export default function ProjectsOverviewPage({
   search, order,
@@ -75,15 +73,14 @@ export default function ProjectsOverviewPage({
   domains, domainsList,
   organisations, organisationsList,
   project_status, projectStatusList,
-  page, rows, count, layout,
-  projects
+  page, rows, count, projects
 }: ProjectOverviewPageProps) {
   const {createUrl} = useProjectOverviewParams()
   const smallScreen = useMediaQuery('(max-width:640px)')
   const [modal,setModal] = useState(false)
+  const {rsd_page_layout,setPageLayout} = useUserSettings()
   // if masonry we change to grid
-  const initView = layout === 'masonry' ? 'grid' : layout
-  const [view, setView] = useState<ProjectLayoutType>(initView)
+  const view = rsd_page_layout === 'masonry' ? 'grid' : rsd_page_layout
   const numPages = Math.ceil(count / rows)
   const filterCnt = getFilterCount()
 
@@ -96,7 +93,7 @@ export default function ProjectsOverviewPage({
   // console.log('page...', page)
   // console.log('rows...', rows)
   // console.log('count...', count)
-  // console.log('layout...', layout)
+  // console.log('view...', view)
   // console.log('keywordsList...', keywordsList)
   // console.log('domainsList...', domainsList)
   // console.log('organisationsList...', organisationsList)
@@ -104,13 +101,6 @@ export default function ProjectsOverviewPage({
   // console.log('projectStatusList...', projectStatusList)
   // console.log('projects...', projects)
   // console.groupEnd()
-
-  function setLayout(view: ProjectLayoutType) {
-    // update local view
-    setView(view)
-    // save to cookie
-    setDocumentCookie(view,'rsd_page_layout')
-  }
 
   function getFilterCount() {
     let count = 0
@@ -143,7 +133,7 @@ export default function ProjectsOverviewPage({
             All projects
           </h1>
           {/* Page grid with 2 sections: left filter panel and main content */}
-          <div className="flex-1 grid md:grid-cols-[2fr,3fr] lg:grid-cols-[1fr,3fr] xl:grid-cols-[1fr,4fr] my-4 gap-8">
+          <div className="flex-1 grid md:grid-cols-[2fr_3fr] lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_4fr] my-4 gap-8">
             {/* Filters panel large screen */}
             {smallScreen===false &&
               <FiltersPanel>
@@ -170,7 +160,7 @@ export default function ProjectsOverviewPage({
                 search={search}
                 placeholder={keywords?.length ? 'Find within selection' : 'Find project'}
                 layout={view}
-                setView={setLayout}
+                setView={setPageLayout}
                 setModal={setModal}
               />
               {/* Project content: masonry, cards or list */}
@@ -230,27 +220,34 @@ export default function ProjectsOverviewPage({
 // fetching data server side
 // see documentation https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  let orderBy='slug.asc', offset=0
+  let offset=0
   // extract from page-query
   const {
     search, rows, page, keywords, domains,
     organisations, project_status, order
   } = ssrProjectsParams(context.query)
   // extract user settings from cookie
-  const {rsd_page_layout, rsd_page_rows} = getUserSettings(context.req)
+  const {rsd_page_rows} = getUserSettings(context.req)
   // use url param if present else user settings
-  let page_rows = rows ?? rsd_page_rows
+  const page_rows = rows ?? rsd_page_rows
   // calculate offset when page & rows present
   if (page_rows && page) {
     offset = page_rows * (page - 1)
   }
-  if (order) {
-    // extract order direction from definitions
-    const orderInfo = projectOrderOptions.find(item=>item.key===order)
-    // ordering options require "stable" secondary order
-    // to ensure proper pagination. We use slug for this purpose
-    if (orderInfo) orderBy=`${order}.${orderInfo.direction},slug.asc`
+
+  const allowedOrderings = projectOrderOptions.map(o => o.key)
+  // default order
+  let projectOrder = order ?? 'impact_cnt'
+  // remove order key if NOT in list of allowed
+  if (order && allowedOrderings.includes(order)===false) {
+    projectOrder = 'impact_cnt'
   }
+
+  // extract order direction from definitions
+  const orderInfo = projectOrderOptions.find(item=>item.key===projectOrder)!
+  // ordering options require "stable" secondary order
+  // to ensure proper pagination. We use slug for this purpose
+  const orderBy = `${projectOrder}.${orderInfo.direction},slug.asc`
 
   const url = projectListUrl({
     baseUrl: getBaseUrl(),
@@ -293,7 +290,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     // pass this to page component as props
     props: {
       search,
-      order,
+      order:projectOrder,
       keywords,
       keywordsList,
       domains,
@@ -305,7 +302,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       count: projects.count,
       page,
       rows: page_rows,
-      layout: rsd_page_layout,
       projects: projects.data,
     },
   }

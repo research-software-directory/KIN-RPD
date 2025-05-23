@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -63,13 +63,13 @@ export async function isMaintainerOfCommunity({community, account, token}: isCom
 }
 
 export async function getCommunitiesOfMaintainer({token}:
-  {token: string}) {
+  {token?: string}) {
   try {
     // without token api request is not needed
     if (!token) return []
     // build url
     const query = 'rpc/communities_of_current_maintainer'
-    let url = `${getBaseUrl()}/${query}`
+    const url = `${getBaseUrl()}/${query}`
     const resp = await fetch(url, {
       method: 'GET',
       headers: createJsonHeaders(token)

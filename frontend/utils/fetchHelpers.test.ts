@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,7 +11,8 @@ import {
   extractErrorMessages,
   extractRespFromGraphQL,
   getBaseUrl,
-  promiseWithTimeout
+  promiseWithTimeout,
+  composeUrl
 } from './fetchHelpers'
 
 
@@ -160,7 +163,7 @@ it('getBaseUrl', () => {
 
 it('promiseWithTimeout resolves promise', async () => {
   function mockPromise(timeoutInSec:number){
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
       setTimeout(() => {
         res({message:'OK'})
       },timeoutInSec*1000)
@@ -174,9 +177,9 @@ it('promiseWithTimeout resolves promise', async () => {
   expect(resp).toEqual({message:'OK'})
 })
 
-it('promiseWithTimeout resoves request timeout', async() => {
+it('promiseWithTimeout resolves request timeout', async() => {
   function mockPromise(timeoutInSec: number) {
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
       setTimeout(() => {
         res({message: 'OK'})
       }, timeoutInSec * 1000)
@@ -195,4 +198,64 @@ it('promiseWithTimeout resoves request timeout', async() => {
       statusText: 'Request timeout'
     })
   }
+})
+
+it('composeUrl with domain, route and slug with slashes',()=>{
+  const domain = 'https://domain.com/'
+  const route = '/test/'
+  const slug = '/slug/'
+
+  const url = composeUrl({
+    domain,
+    route,
+    slug
+  })
+
+  expect(url).toEqual('https://domain.com/test/slug')
+
+})
+
+it('composeUrl with domain, route and slug without slashes',()=>{
+  const domain = 'https://domain.com'
+  const route = 'test'
+  const slug = 'slug'
+
+  const url = composeUrl({
+    domain,
+    route,
+    slug
+  })
+
+  expect(url).toEqual('https://domain.com/test/slug')
+
+})
+
+it('composeUrl only route and slug with slashes',()=>{
+  const domain = null
+  const route = '/test/'
+  const slug = '/slug/'
+
+  const url = composeUrl({
+    domain,
+    route,
+    slug
+  })
+
+  expect(url).toEqual('/test/slug')
+
+})
+
+it('composeUrl only slug with slashes',()=>{
+  const domain = null
+  const route = null
+  const slug = '/slug/'
+
+  const url = composeUrl({
+    domain,
+    route,
+    slug
+  })
+
+  expect(url).toEqual('/slug')
+
 })

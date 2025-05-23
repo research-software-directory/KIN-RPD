@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:20.15-slim
+FROM node:22.13.1-bookworm-slim
 
 #  Change the user and group id of the node user to the specified ids
 ARG DUID=1000
@@ -27,4 +27,4 @@ VOLUME [ "/app" ]
 
 EXPOSE 3000
 
-CMD [ "sh", "-c", "yarn install ; yarn dev:docker" ]
+CMD [ "sh", "-c", "npm install ; npm run dev:docker" ]

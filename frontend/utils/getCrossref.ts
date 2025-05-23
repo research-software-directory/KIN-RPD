@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
 //
@@ -10,13 +10,16 @@ import {MentionItemProps, MentionTypeKeys} from '~/types/Mention'
 import {extractReturnMessage} from './fetchHelpers'
 import {makeDoiRedirectUrl} from './getDOI'
 import logger from './logger'
+import {PromisePool} from '~/utils/promisePool'
 
+// size 5 got from email communication with Crossref and testing
+const promisePool = new PromisePool(5)
 
-export function addPoliteEmail(url:string) {
+export function addPoliteEmail(url: string) {
   const mailto = process.env.CROSSREF_CONTACT_EMAIL
   // console.log('addPoliteEmail...',mailto)
   if (mailto) {
-    return url += `&mailto=${mailto}`
+    return url + `mailto=${mailto}`
   }
   return url
 }
@@ -56,12 +59,16 @@ function extractYearPublished(item: CrossrefSelectItem) {
   return null
 }
 
-export function crossrefItemToMentionItem(item: CrossrefSelectItem) {
+export function crossrefItemToMentionItem(item: CrossrefSelectItem): MentionItemProps {
+  if (!Array.isArray(item.title) || item.title.length == 0 || !item.title[0]) {
+    throw new Error(`Title is missing for mention with DOI ${item.DOI}`)
+  }
+
   const mention: MentionItemProps = {
     id: null,
     doi: item.DOI,
     url: makeDoiRedirectUrl(item.DOI),
-    // take first title from array returned
+    // take first title from the returned array
     title: item.title[0],
     authors: extractAuthors(item),
     publisher: item.publisher,
@@ -72,7 +79,8 @@ export function crossrefItemToMentionItem(item: CrossrefSelectItem) {
     image_url: null,
     mention_type: crossrefToRsdType(item.type),
     source: 'Crossref',
-    note: null
+    note: null,
+    openalex_id: null
   }
   // debugger
   return mention
@@ -80,9 +88,9 @@ export function crossrefItemToMentionItem(item: CrossrefSelectItem) {
 
 export async function getCrossrefItemByDoi(doi: string) {
   try {
-    const url = `https://api.crossref.org/works/${doi}`
+    const url = addPoliteEmail(`https://api.crossref.org/works/${doi}?`)
 
-    const resp = await fetch(url)
+    const resp = await promisePool.submit(() => fetch(url))
 
     if (resp.status === 200) {
       const json: CrossrefResponse = await resp.json()
@@ -99,9 +107,8 @@ export async function getCrossrefItemByDoi(doi: string) {
         }
       }
     }
-    const error = await extractReturnMessage(resp)
-    return error
-  }catch(e:any){
+    return await extractReturnMessage(resp)
+  } catch (e: any) {
     logger(`getCrossrefItemByDoi: ${e?.message}`, 'error')
     return {
       status: 500,
@@ -117,8 +124,8 @@ export async function getCrossrefItemsByTitle(title: string) {
     const order = 'sort=score&order=desc'
     const rows = 'rows=10'
     // get top 10 items
-    let url = addPoliteEmail(`https://api.crossref.org/works?${filter}&${order}&${rows}`)
-    const resp = await fetch(url)
+    const url = addPoliteEmail(`https://api.crossref.org/works?${filter}&${order}&${rows}&`)
+    const resp = await promisePool.submit(() => fetch(url))
 
     if (resp.status === 200) {
       const json: CrossrefResponse = await resp.json()
@@ -130,26 +137,6 @@ export async function getCrossrefItemsByTitle(title: string) {
   } catch (e: any) {
     logger(`getCrossrefItemsByTitle: ${e?.message}`, 'error')
     return []
-  }
-}
-
-export async function getCrossrefItemsByQuery(query: string) {
-  try {
-    const filter = `query=${query}`
-    const order = 'sort=score&order=desc'
-    const rows = 'rows=10'
-    // get top 10 items
-    const url = addPoliteEmail(`https://api.crossref.org/works?${filter}&${order}&${rows}`)
-
-    const resp = await fetch(url)
-
-    if (resp.status === 200) {
-      const json: CrossrefResponse = await resp.json()
-      // find doi item
-      return json.message.items
-    }
-  } catch (e: any) {
-    logger(`getCrossrefItemsByQuery: ${e?.message}`, 'error')
   }
 }
 

@@ -1,15 +1,18 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2022 - 2023 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
-// SPDX-FileCopyrightText: 2022 - 2024 dv4all
+// SPDX-FileCopyrightText: 2022 - 2025 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 dv4all
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 Felix Mühlbauer (GFZ) <felix.muehlbauer@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (dv4all) (dv4all)
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (dv4all) (dv4all)
+// SPDX-FileCopyrightText: 2025 Paula Stock (GFZ) <paula.stock@gfz.de>
 //
 // SPDX-License-Identifier: Apache-2.0
+
+import {isProperUrl} from '~/utils/fetchHelpers'
 
 export const softwareInformation = {
   slug: {
@@ -46,7 +49,7 @@ export const softwareInformation = {
   },
   // field for markdown
   description: {
-    label: (brand_name: string) => `What ${brand_name} can do for you`,
+    label: 'Description',
     help: '/documentation/users/adding-software/#description',
     validation: {
       // we do not show error message for this one, we use only maxLength value
@@ -62,14 +65,19 @@ export const softwareInformation = {
   description_url: {
     label: 'URL of (raw) Markdown file',
     help: <>
-      Read <u><a href="/documentation/users/adding-software/#document-url" target="_blank">here</a></u> how to properly link to a raw Markdown URL
+      Read <u><a href="/documentation/users/adding-software/#markdown-url" target="_blank">here</a></u> how to properly link to a raw Markdown URL
     </>,
     validation: {
-      required: 'Valid markdown URL must be provided',
+      required: 'Valid markdown URL is required',
       maxLength: {value: 200, message: 'Maximum length is 200'},
-      pattern: {
-        value: /^https?:\/\/.+\..+\.md$/,
-        message: 'URL should start with http(s):// have at least one dot (.) and end with (.md)'
+      // custom validation function for correct url syntax
+      validate: (url:string)=>{
+        // return error message if not correct url syntax
+        if (isProperUrl(url)===false){
+          return 'Invalid url. Please improve your input'
+        }
+        // has correct url syntax
+        return true
       }
     }
   },
@@ -82,12 +90,16 @@ export const softwareInformation = {
   }
 }
 
-export type SoftwareInformationConfig = typeof softwareInformation
 
 export const contributorInformation = {
   findContributor: {
     title: 'Add contributor',
-    subtitle: 'We search by name and ORCID in the RSD and the ORCID databases',
+    subtitle: (include_orcid:boolean=true) => {
+      if (include_orcid) {
+        return 'We search by name or ORCID in RSD and ORCID databases'
+      }
+      return 'We search by name or ORCID in RSD database'
+    },
     label: 'Find or add contributor',
     help: 'At least 2 letters, use pattern {First name} {Last name} or 0000-0000-0000-0000',
     validation: {
@@ -101,70 +113,8 @@ export const contributorInformation = {
     infoLink: '/documentation/users/adding-software/#contributors',
     label: 'Import contributors',
     message: (doi: string) => `Import contributors from datacite.org using DOI ${doi}`
-  },
-  is_contact_person: {
-    label: 'Contact person',
-    help: 'Is this contributor the main contact person?'
-  },
-  given_names: {
-    label: 'First name / Given name(s)',
-    help: '',
-    validation: {
-      required: 'Name is required',
-      minLength: {value: 1, message: 'Minimum length is 1'},
-      maxLength: {value: 200, message: 'Maximum length is 200'},
-    }
-  },
-  family_names: {
-    label: 'Last name / Family name(s)',
-    help: 'Family names including "de/van/van den"',
-    validation: {
-      required: 'Family name is required',
-      minLength: {value: 2, message: 'Minimum length is 2'},
-      maxLength: {value: 200, message: 'Maximum length is 200'},
-    }
-  },
-  email_address: {
-    label: 'Email',
-    help: 'Contact person should have an email',
-    validation: {
-      minLength: {value: 5, message: 'Minimum length is 5'},
-      maxLength: {value: 200, message: 'Maximum length is 200'},
-      pattern: {
-        value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        message: 'Invalid email address'
-      }
-    }
-  },
-  affiliation: {
-    label: 'Affiliation',
-    help: 'Select or type in the current affiliation?',
-    validation: {
-      minLength: {value: 2, message: 'Minimum length is 2'},
-      maxLength: {value: 200, message: 'Maximum length is 200'},
-    }
-  },
-  role: {
-    label: 'Role',
-    help: 'For this software',
-    validation: {
-      minLength: {value: 2, message: 'Minimum length is 2'},
-      maxLength: {value: 200, message: 'Maximum length is 200'},
-    }
-  },
-  orcid: {
-    label: 'ORCID',
-    help: '16 digits, pattern 0000-0000-0000-0000',
-    validation: {
-      pattern: {
-        value: /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/,
-        message: 'Invalid pattern, not a 0000-0000-0000-0000'
-      }
-    }
   }
 }
-
-export type ContributorInformationConfig = typeof contributorInformation
 
 
 export const organisationInformation = {
@@ -197,8 +147,8 @@ export const organisationInformation = {
       minLength: {value: 6, message: 'Minimum length is 6'},
       maxLength: {value: 200, message: 'Maximum length is 200'},
       pattern: {
-        value: /^https?:\/\/.+\..+/,
-        message: 'URL should start with http(s):// and have at least one dot (.)'
+        value: /^https?:\/\/\S+$/,
+        message: 'URL should start with http(s):// and cannot include white spaces'
       }
     }
   },
@@ -238,8 +188,6 @@ export const testimonialInformation = {
   }
 }
 
-export type TestimonialInformationConfig = typeof testimonialInformation
-
 export const mentionInformation = {
   sectionTitle: 'Mentions',
   mentionType: {
@@ -275,8 +223,8 @@ export const mentionInformation = {
     help: 'Provide URL to publication',
     validation: {
       pattern: {
-        value: /^https?:\/\/.+\..+/,
-        message: 'URL should start with http(s):// have at least one dot (.)'
+        value: /^https?:\/\/\S+$/,
+        message: 'URL should start with http(s):// and cannot include white spaces'
       }
     }
   },
@@ -291,8 +239,8 @@ export const mentionInformation = {
     help: 'Provide URL to image',
     validation: {
       pattern: {
-        value: /^https?:\/\/.+\..+/,
-        message: 'URL should start with http(s):// have at least one dot (.)'
+        value: /^https?:\/\/\S+$/,
+        message: 'URL must start with http(s):// and cannot include white spaces'
       }
     }
   },

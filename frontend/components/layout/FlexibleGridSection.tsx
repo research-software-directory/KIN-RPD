@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import styled from '@mui/system/styled'
+import {styled,useTheme} from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import {useTheme} from '@mui/material/styles'
 
 export type FlexGridProps = {
   minWidth?: string,
@@ -44,9 +43,10 @@ export function useAdvicedDimensions(source:'software'|'project'|'organisation' 
 
 export const FlexibleGridSection = styled('section', {
   // do not forward this props to html element
-  // there are for interal use
+  // there are for internal use
   shouldForwardProp: (prop) => prop !== 'minWidth' && prop !== 'minHeight' && prop !== 'maxWidth' && prop !== 'maxHeight' && prop !== 'height'
 })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   <FlexGridProps>(({theme, minWidth, maxWidth, minHeight, maxHeight, height}) => {
   // basic definitions
     const props: any = {

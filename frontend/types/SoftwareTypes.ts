@@ -3,8 +3,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
 // SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 Felix Mühlbauer (GFZ) <felix.muehlbauer@gfz-potsdam.de>
 //
@@ -16,7 +16,7 @@
 
 import {AutocompleteOption} from './AutocompleteOptions'
 import {CategoryPath} from './Category'
-import {Status} from './Organisation'
+import {OrganisationStatus} from './Organisation'
 
 export type CodePlatform = 'github' | 'gitlab' | 'bitbucket' | 'other'
 
@@ -77,17 +77,19 @@ export type SoftwareItemFromDB = SoftwareTableItem & {
 
 export type SoftwareOverviewItemProps = {
   id:string
+  rsd_host: string | null
+  domain: string | null
   slug:string
   brand_name: string
   short_statement: string
+  image_id: string | null
   updated_at: string | null
   contributor_cnt: number | null
   mention_cnt: number | null
   is_published: boolean
-  image_id: string | null
-  keywords: string[],
-  prog_lang: string[],
-  licenses: string,
+  keywords: string[]
+  prog_lang: string[]
+  licenses: string
   downloads?: number
 }
 
@@ -119,6 +121,7 @@ export type EditSoftwareImage = {
 export type EditSoftwareItem = SoftwareItem & EditSoftwareImage & {
   keywords: KeywordForSoftware[]
   categories: CategoriesForSoftware
+  categoryForSoftwareIds: CategoryForSoftwareIds
   licenses: AutocompleteOption<License>[]
 }
 
@@ -136,10 +139,13 @@ export type KeywordForSoftware = {
   pos?: number
 }
 
+// NOTE: why not use CategoryPath[]?
 export type CategoriesForSoftware = CategoryPath[]
 
+export type CategoryForSoftwareIds = Set<string>
+
 /**
- * LiCENSES
+ * LICENSES
  */
 
 export type LicenseForSoftware = {
@@ -175,6 +181,11 @@ export type RepositoryInfo = {
   commit_history: CommitHistory,
   commit_history_scraped_at: string,
   code_platform: CodePlatform
+  archived: boolean | null
+  fork_count: number | null
+  star_count: number | null
+  open_issue_count: number | null
+  contributor_count: number | null
 }
 
 /**
@@ -191,20 +202,12 @@ export type SearchSoftware = {
 export type RelatedSoftwareOfSoftware = SearchSoftware & {
   is_featured?: boolean
   updated_at?: string
-  status: Status
+  status: OrganisationStatus
 }
 
 export type RelatedSoftwareOfProject = SearchSoftware & {
   project: string
-  status: Status
+  status: OrganisationStatus
 }
 
-export type RelatedTools = {
-  origin: string,
-  software: RelatedSoftwareOfSoftware
-}
 
-export type SoftwareForSoftware = {
-  origin: string,
-  relation: string
-}

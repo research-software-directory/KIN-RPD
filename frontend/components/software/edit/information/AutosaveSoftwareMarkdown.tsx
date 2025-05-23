@@ -1,25 +1,25 @@
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {FocusEventHandler} from 'react'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
-
-import MarkdownInputWithPreview from '../../../form/MarkdownInputWithPreview'
-import EditSectionTitle from '../../../layout/EditSectionTitle'
-import {softwareInformation as config} from '../editSoftwareConfig'
-import {useSession} from '~/auth'
-import useSnackbar from '~/components/snackbar/useSnackbar'
 import {useController, useFormContext} from 'react-hook-form'
+
+import {useSession} from '~/auth'
+import MarkdownInputWithPreview from '~/components/form/MarkdownInputWithPreview'
+import EditSectionTitle from '~/components/layout/EditSectionTitle'
+import useSnackbar from '~/components/snackbar/useSnackbar'
+import {softwareInformation as config} from '../editSoftwareConfig'
 import {patchSoftwareTable} from './patchSoftwareTable'
 import AutosaveRemoteMarkdown from './AutosaveRemoteMarkdown'
-import {FocusEventHandler} from 'react'
 
 type SaveInfo = {
   name: string,
@@ -40,9 +40,9 @@ export default function AutosaveSoftwareMarkdown() {
   })
 
   const [
-    id, brand_name, description_type, description, description_url
+    id, description_type, description, description_url
   ] = watch([
-    'id','brand_name','description_type','description','description_url'
+    'id','description_type','description','description_url'
   ])
 
   // console.group('AutosaveSoftwareMarkdown')
@@ -98,12 +98,6 @@ export default function AutosaveSoftwareMarkdown() {
       token
     })
 
-    // console.group('AutosaveSoftwareMarkdown.saveSoftwareInfo')
-    // console.log('saved...', name)
-    // console.log('data...', data)
-    // console.log('status...', resp?.status)
-    // console.groupEnd()
-
     if (resp?.status !== 200) {
       showErrorMessage(`Failed to save ${name}. ${resp?.message}`)
     } else {
@@ -132,6 +126,7 @@ export default function AutosaveSoftwareMarkdown() {
         <AutosaveRemoteMarkdown
           options={{
             autofocus: true,
+            type: 'url',
             name: 'description_url',
             label: config.description_url.label,
             useNull: true,
@@ -139,7 +134,6 @@ export default function AutosaveSoftwareMarkdown() {
             helperTextMessage: config.description_url.help,
             helperTextCnt: `${description_url?.length || 0}/${config.description_url.validation.maxLength.value}`,
           }}
-          control={control}
           rules={config.description_url.validation}
           onSaveField={saveSoftwareInfo}
         />
@@ -165,7 +159,7 @@ export default function AutosaveSoftwareMarkdown() {
   return (
     <>
       <EditSectionTitle
-        title={config.description.label(brand_name ?? '')}
+        title={config.description.label}
         infoLink={config.description.help}
       />
       <RadioGroup
@@ -194,7 +188,7 @@ export default function AutosaveSoftwareMarkdown() {
         />
         <div className="py-2"></div>
         <FormControlLabel
-          label="Document URL"
+          label="Markdown URL"
           value="link"
           defaultValue={'link'}
           control={<Radio />}

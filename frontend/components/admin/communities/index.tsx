@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -29,18 +29,20 @@ export default function AdminCommunities() {
 
   return (
     <>
-      <section className="flex-1 md:flex md:flex-col-reverse md:justify-end xl:grid xl:grid-cols-[3fr,1fr] xl:px-0 xl:gap-8">
+      <section className="flex-1 md:flex md:flex-col-reverse md:justify-end xl:grid xl:grid-cols-[3fr_1fr] xl:px-0 xl:gap-8">
         <div>
           <div className="flex flex-wrap items-center justify-end">
             <Searchbox />
             <Pagination />
           </div>
-          <CommunityList
-            communities={communities}
-            loading={loading}
-            page={page}
-            onDeleteItem={deleteCommunity}
-          />
+          <div className="pt-2">
+            <CommunityList
+              communities={communities}
+              loading={loading}
+              page={page}
+              onDeleteItem={deleteCommunity}
+            />
+          </div>
         </div>
         <div className="flex items-start justify-end">
           <Button

@@ -3,6 +3,8 @@
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
+// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -14,18 +16,18 @@ import CircularProgress from '@mui/material/CircularProgress'
 
 import {useForm} from 'react-hook-form'
 
-import {useSession} from '../../../auth'
-import TextFieldWithCounter from '../../form/TextFieldWithCounter'
-import SlugTextField from '../../form/SlugTextField'
-import ContentInTheMiddle from '../../layout/ContentInTheMiddle'
-import {NewProject} from '../../../types/Project'
-import {getSlugFromString} from '../../../utils/getSlugFromString'
+import {useSession} from '~/auth'
+import {NewProject} from '~/types/Project'
+import {getSlugFromString} from '~/utils/getSlugFromString'
 import {useDebounce} from '~/utils/useDebounce'
-import {addProject, validProjectItem} from '../../../utils/editProject'
-import {addConfig as config} from './addProjectConfig'
+import {addProject, validProjectItem} from '~/utils/editProject'
 import SubmitButtonWithListener from '~/components/form/SubmitButtonWithListener'
+import TextFieldWithCounter from '~/components/form/TextFieldWithCounter'
+import SlugTextField from '~/components/form/SlugTextField'
+import ContentInTheMiddle from '~/components/layout/ContentInTheMiddle'
+import {addConfig as config} from './addProjectConfig'
 
-const initalState = {
+const initialState = {
   loading: false,
   error:''
 }
@@ -36,24 +38,31 @@ type AddProjectForm = {
   project_subtitle: string|null,
 }
 
-let lastValidatedSlug = ''
 const formId='add-project-card-form'
 
 export default function AddProjectCard() {
   const {token} = useSession()
   const router = useRouter()
   const [baseUrl, setBaseUrl] = useState('')
-  const [slugValue, setSlugValue] = useState('')
   const [validating, setValidating]=useState(false)
-  const [state, setState] = useState(initalState)
+  const [state, setState] = useState(initialState)
   const {register, handleSubmit, watch, formState, setError, setValue} = useForm<AddProjectForm>({
     mode: 'onChange'
   })
-  const {errors, isValid, isDirty} = formState
+  const {errors, isValid} = formState
   // watch for data change in the form
   const [slug,project_title,project_subtitle] = watch(['slug', 'project_title', 'project_subtitle'])
   // construct slug from title
-  const bouncedSlug = useDebounce(slugValue,700)
+  const bouncedSlug = useDebounce(slug,700)
+
+  // console.group('AddProjectCard')
+  // console.log('slug...', slug)
+  // console.log('lastValidatedSlug...', lastValidatedSlug)
+  // console.log('bouncedSlug...', bouncedSlug)
+  // console.log('errors...', errors)
+  // console.log('isValid...', isValid)
+  // console.log('validating...', validating)
+  // console.groupEnd()
 
   useEffect(() => {
     if (typeof location != 'undefined') {
@@ -71,47 +80,47 @@ export default function AddProjectCard() {
     if (project_title) {
       const slugValue = getSlugFromString(project_title)
       // update slugValue
-      setSlugValue(slugValue)
+      setValue('slug',slugValue,{shouldValidate:true,shouldDirty:true})
     }
-  }, [project_title])
+  }, [project_title, setValue])
+
   /**
-   * When bouncedSlug value is changed,
-   * we need to update slug value (value in the input) shown to user.
-   * This change occures when brand_name value is changed
+   * When bouncedSlug value is changed by debounce we check if slug is already
+   * used by existing project entries.
    */
   useEffect(() => {
-    if (bouncedSlug) {
-      setValue('slug', bouncedSlug, {
-        shouldValidate: true
-      })
-    }
-  }, [bouncedSlug, setValue])
-  /**
-   * When slug value is changed by debounce or manually by user
-   * In addition to basic validations we also check if slug is already
-   * used by existing software entries. I moved this validation here
-   * because react-hook-form async validate function calls api 2 times.
-   * Further investigation about this is needed. For now we move it here.
-   */
-  useEffect(() => {
+    let abort = false
     async function validateSlug() {
-      setValidating(true)
-      const isUsed = await validProjectItem(slug, token)
+      const isUsed = await validProjectItem(bouncedSlug, token)
+      if (abort) return
       if (isUsed === true) {
-        const message = `${slug} is already taken. Use letters, numbers and dash "-" to modify slug value.`
+        const message = `${bouncedSlug} is already taken. Use letters, numbers and dash "-" to modify slug value.`
         setError('slug',{type:'validate',message})
       }
-      lastValidatedSlug = slug
       setValidating(false)
     }
-    if (slug && token && slug !== lastValidatedSlug) {
+    if (bouncedSlug && token && bouncedSlug === slug) {
       validateSlug()
+    }else if (!slug){
+      // fix: remove validating/spinner when no slug
+      setValidating(false)
     }
-  },[slug,token,setError])
+    return ()=>{abort=true}
+  },[bouncedSlug,slug,token,setError])
 
+  useEffect(()=>{
+    // As soon as the slug value start changing we signal to user that we need to validate new slug.
+    // New slug value is "debounced" into variable bouncedSlug after the user stops typing.
+    // Another useEffect monitors bouncedSlug value and performs the validation.
+    // Validating flag disables Save button from the moment the slug value is changed until the validation is completed.
+    if (slug && !errors?.project_title && !errors?.slug){
+      // debugger
+      setValidating(true)
+    }
+  },[slug,errors?.project_title,errors?.slug])
 
   function handleCancel() {
-    // on cancel we send user back to prevous page
+    // on cancel we send user back to previous page
     router.back()
   }
 
@@ -147,7 +156,7 @@ export default function AddProjectCard() {
     }).then(resp => {
       if (resp.status === 201) {
         // redirect to edit page
-        // and remove projects/add route from the history
+        // and remove /add/project route from the history
         router.replace(`/projects/${project.slug}/edit`)
       } else {
         // show error
@@ -184,6 +193,8 @@ export default function AddProjectCard() {
     if (state.loading === true) return true
     // during async validation we disable button
     if (validating === true) return true
+    // check for errors
+    if (Object.keys(errors).length > 0) return true
     // if isValid is not true
     return isValid===false
   }

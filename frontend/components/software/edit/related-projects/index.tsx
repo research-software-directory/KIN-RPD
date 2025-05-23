@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,7 +11,7 @@ import {useSession} from '~/auth'
 import {getRelatedProjectsForSoftware} from '~/utils/getSoftware'
 import {addRelatedSoftware, deleteRelatedSoftware} from '~/utils/editProject'
 import {sortOnStrProp} from '~/utils/sortFn'
-import {Status} from '~/types/Organisation'
+import {OrganisationStatus} from '~/types/Organisation'
 import {SearchProject} from '~/types/Project'
 import useSnackbar from '~/components/snackbar/useSnackbar'
 import FindRelatedProject from '~/components/projects/edit/related-projects/FindRelatedProject'
@@ -58,7 +58,7 @@ export default function RelatedProjectsForSoftware() {
     // debugger
     if (find.length === 0) {
       // default status of relation between software and project is approved
-      const status:Status = 'approved'
+      const status:OrganisationStatus = 'approved'
       // append(selected)
       const resp = await addRelatedSoftware({
         software: software.id ?? '',
@@ -104,7 +104,7 @@ export default function RelatedProjectsForSoftware() {
   }
 
   return (
-    <EditSection className="flex-1 md:flex md:flex-col-reverse md:justify-end xl:grid xl:grid-cols-[3fr,2fr] xl:px-0 xl:gap-[3rem]">
+    <EditSection className="flex-1 md:flex md:flex-col-reverse md:justify-end xl:grid xl:grid-cols-[3fr_2fr] xl:px-0 xl:gap-[3rem]">
       <section className="py-4">
         <EditSectionTitle
           title={config.title}

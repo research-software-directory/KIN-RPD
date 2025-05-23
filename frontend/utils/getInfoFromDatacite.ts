@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 //
 // SPDX-License-Identifier: Apache-2.0
@@ -18,8 +18,6 @@ import {splitName} from './getDisplayName'
 import dataciteItem from './__mocks__/dataciteItem.json'
 export type DataciteRecord = typeof dataciteItem
 export type DatacitePerson = typeof dataciteItem.creators[0]
-export type DataciteSubject = typeof dataciteItem.subjects[0]
-export type DataciteRightsList = typeof dataciteItem.rightsList[0]
 
 const baseUrl = 'https://api.datacite.org/application/vnd.datacite.datacite+json/'
 
@@ -145,7 +143,8 @@ export async function getContributorsFromDoi(
         position: null,
         id: null,
         role: null,
-        avatar_id: null
+        avatar_id: null,
+        account: null
       })
     }
   })

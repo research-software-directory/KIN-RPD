@@ -39,6 +39,8 @@ export default function AccordionForLightTheme({
           <ExpandMoreIcon />
         }
         sx={{
+          position: 'sticky',
+          top: 0,
           // FF fix for list items mixing with section title
           // when scrolling through long list
           backgroundColor: 'background.paper',

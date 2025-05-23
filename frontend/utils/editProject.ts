@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2022 - 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -13,14 +13,14 @@ import {createJsonHeaders, extractReturnMessage} from './fetchHelpers'
 import {
   NewProject, ProjectLink, ResearchDomainForProject
 } from '~/types/Project'
-import {columsForCreate, EditOrganisation, OrganisationRole, Status} from '~/types/Organisation'
+import {colForCreate, EditOrganisation, OrganisationRole, OrganisationStatus} from '~/types/Organisation'
 import {createOrganisation} from './editOrganisation'
 import {getPropsFromObject} from './getPropsFromObject'
 
 // query for software item page based on slug
 export async function validProjectItem(slug: string | undefined, token?: string) {
   try {
-    // this request is always perfomed from frontend
+    // this request is always performed from frontend
     const url = `/api/v1/project?select=id,slug&slug=eq.${slug}`
     let resp
     if (token) {
@@ -84,7 +84,7 @@ export async function addProject({project, token}:
 export async function createOrganisationAndAddToProject({project, item, token, role='participating'}:
   { item: EditOrganisation, project: string, token: string, role?: OrganisationRole}) {
   // extract props we need for createOrganisation
-  const organisation = getPropsFromObject(item, columsForCreate)
+  const organisation = getPropsFromObject(item, colForCreate)
   // create new organisation
   let resp = await createOrganisation({
     organisation,
@@ -448,7 +448,7 @@ export async function createMaintainerLink({project,account,token}:{project:stri
 }
 
 export async function addRelatedSoftware({project,software,status,token}: {
-  project: string, software: string, status: Status, token: string
+  project: string, software: string, status: OrganisationStatus, token: string
 }) {
   const url = '/api/v1/software_for_project'
 
@@ -485,7 +485,7 @@ export async function deleteRelatedSoftware({project, software, token}: {
 }
 
 export async function addRelatedProject({origin, relation, status, token}: {
-  origin: string, relation: string, status: Status, token: string
+  origin: string, relation: string, status: OrganisationStatus, token: string
 }) {
   const url = '/api/v1/project_for_project'
 

@@ -1,6 +1,6 @@
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 dv4all
 //
 // SPDX-License-Identifier: Apache-2.0
@@ -16,9 +16,10 @@ export type LayoutType = 'list'|'grid'|'masonry'
 type ViewToggleGroupProps = {
   layout: LayoutType
   onSetView: (view:LayoutType)=>void
+  sx?: any
 }
 
-export default function ViewToggleGroup({layout,onSetView}:ViewToggleGroupProps) {
+export default function ViewToggleGroup({layout,onSetView,sx}:ViewToggleGroupProps) {
   return (
     <ToggleButtonGroup
       data-testid="card-layout-options"
@@ -29,16 +30,17 @@ export default function ViewToggleGroup({layout,onSetView}:ViewToggleGroupProps)
       onChange={(e, view) => onSetView(view)}
       sx={{
         backgroundColor: 'background.paper',
+        ...sx
       }}
     >
-      <ToggleButton value="masonry" aria-label="masonry">
-        <ViewQuiltIcon />
-      </ToggleButton>
       <ToggleButton value="grid" aria-label="grid">
         <ViewModuleIcon />
       </ToggleButton>
       <ToggleButton value="list" aria-label="list">
         <ViewListIcon />
+      </ToggleButton>
+      <ToggleButton value="masonry" aria-label="masonry">
+        <ViewQuiltIcon />
       </ToggleButton>
     </ToggleButtonGroup>
   )

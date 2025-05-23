@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -16,6 +17,7 @@ import {
 import impactForProject from './__mocks__/impactForProject.json'
 
 // MOCK
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetMentionByDoiFromRsd = jest.fn((props) => Promise.resolve([] as any))
 jest.mock('~/utils/editMentions', () => ({
   ...jest.requireActual('~/utils/editMentions'),
@@ -34,7 +36,7 @@ it('findPublicationByTitle', async () => {
     token: 'TEST-TOKEN'
   }
 
-  const expectedUrl = `/api/fe/mention/impact?id=${props.id}&search=${encodeURIComponent(props.searchFor)}`
+  const expectedUrl = `/api/fe/mention/find_by_title?id=${props.id}&search=${encodeURIComponent(props.searchFor)}&relation_type=impact`
   const expectBody = {
     'headers': {
       'Authorization': `Bearer ${props.token}`,
@@ -48,8 +50,8 @@ it('findPublicationByTitle', async () => {
   // make call
   const resp = await findPublicationByTitle(props)
 
-  expect(global.fetch).toBeCalledTimes(1)
-  expect(global.fetch).toBeCalledWith(expectedUrl,expectBody)
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(global.fetch).toHaveBeenCalledWith(expectedUrl,expectBody)
   expect(resp).toEqual(impactForProject)
 })
 

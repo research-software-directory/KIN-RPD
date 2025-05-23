@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -73,11 +73,11 @@ export default function NewsOverview({count,page,rows,layout,search,news}:NewsOv
 
         <MainContent className="py-4">
           {/* Page title with search and pagination */}
-          <div className="flex flex-wrap py-8 px-4 rounded-lg bg-base-100 lg:sticky top-0 border border-base-200 z-[11]">
+          <div className="flex flex-wrap py-8 px-4 rounded-lg bg-base-100 lg:sticky top-0 border border-base-200 z-11">
             <h1 role="heading" className="mr-4 lg:flex-1">
               News
             </h1>
-            <div className="flex-[2] flex min-w-[20rem]">
+            <div className="flex-2 flex min-w-[20rem]">
               <SearchInput
                 placeholder="Search news items by title, summary or author"
                 onSearch={(search: string) => handleQueryChange('search', search)}
@@ -86,6 +86,9 @@ export default function NewsOverview({count,page,rows,layout,search,news}:NewsOv
               <ViewToggleGroup
                 layout={view}
                 onSetView={setLayout}
+                sx={{
+                  marginLeft:'0.5rem'
+                }}
               />
               <SelectRows
                 rows={rows}
@@ -143,7 +146,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
     // extract user settings from cookie
     const {rsd_page_layout,rsd_page_rows} = getUserSettings(context.req)
     // use url param if present else user settings
-    let page_rows = rows ?? rsd_page_rows
+    const page_rows = rows ?? rsd_page_rows
 
     // get news items list to all pages server side
     const {count,news} = await getNewsList({
@@ -166,7 +169,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
         news,
       },
     }
-  }catch(e){
+  }catch{
     return {
       notFound: true,
     }

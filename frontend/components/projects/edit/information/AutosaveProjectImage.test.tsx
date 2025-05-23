@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -16,6 +16,7 @@ import {projectInformation as config} from './config'
 import projectState from '../__mocks__/editProjectState'
 
 // MOCKS
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchProjectTable = jest.fn(props => Promise.resolve({
   status: 200, message: 'OK'
 }))
@@ -24,7 +25,9 @@ jest.mock('./patchProjectInfo', () => ({
 }))
 
 // MOCK editImage methods
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteImage = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUpsertImage = jest.fn(props => Promise.resolve({
   status: 201,
   message: 'uploaded-image-id'
@@ -34,6 +37,7 @@ jest.mock('~/utils/editImage', () => ({
   deleteImage: jest.fn(props => mockDeleteImage(props)),
   upsertImage: jest.fn(props => mockUpsertImage(props))
 }))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockHandleFileUpload = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK',
@@ -58,9 +62,9 @@ it('renders upload image inputs', () => {
   )
 
   // has image caption
-  const imageCaption = screen.getByRole('textbox',{name:'Image caption'})
+  screen.getByRole('textbox',{name:'Image caption'})
   // has contain switch
-  const containSwitch = screen.getByRole('checkbox', {
+  screen.getByRole('checkbox', {
     name: config.image_contain.label
   })
   // has input for file
@@ -93,8 +97,8 @@ it('saves image caption', () => {
   // fire onBlur event to save
   fireEvent.blur(imageCaption)
 
-  expect(mockPatchProjectTable).toBeCalledTimes(1)
-  expect(mockPatchProjectTable).toBeCalledWith({
+  expect(mockPatchProjectTable).toHaveBeenCalledTimes(1)
+  expect(mockPatchProjectTable).toHaveBeenCalledWith({
     'data': {
       'image_caption': expectedValue,
     },
@@ -104,7 +108,6 @@ it('saves image caption', () => {
 })
 
 it('set contain image to true', () => {
-  const expectedValue = 'Test caption value'
   const defaultValues = {
     id: projectState.project.id,
     slug: projectState.project.slug
@@ -126,8 +129,8 @@ it('set contain image to true', () => {
   // click on switch (set to true)
   fireEvent.click(containSwitch)
 
-  expect(mockPatchProjectTable).toBeCalledTimes(1)
-  expect(mockPatchProjectTable).toBeCalledWith({
+  expect(mockPatchProjectTable).toHaveBeenCalledTimes(1)
+  expect(mockPatchProjectTable).toHaveBeenCalledWith({
     'data': {
       'image_contain': true,
     },
@@ -185,8 +188,8 @@ it('can delete existing image', async() => {
   fireEvent.click(deleteBtn)
 
   // remove image reference in project table
-  expect(mockPatchProjectTable).toBeCalledTimes(1)
-  expect(mockPatchProjectTable).toBeCalledWith({
+  expect(mockPatchProjectTable).toHaveBeenCalledTimes(1)
+  expect(mockPatchProjectTable).toHaveBeenCalledWith({
     'data': {
       'image_caption': null,
       'image_contain': false,
@@ -199,8 +202,8 @@ it('can delete existing image', async() => {
   // we need to await prevoius calls to complete
   await waitFor(() => {
     // try to remove image
-    expect(mockDeleteImage).toBeCalledTimes(1)
-    expect(mockDeleteImage).toBeCalledWith({
+    expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+    expect(mockDeleteImage).toHaveBeenCalledWith({
       'id': defaultValues.image_id,
       'token': mockSession.token,
     })
@@ -246,20 +249,20 @@ it('can upload new image', async () => {
   // set file to upload
   fireEvent.change(imageInput, {target: {file:fileToUpload}})
   // expect file upload to be called
-  expect(mockHandleFileUpload).toBeCalledTimes(1)
+  expect(mockHandleFileUpload).toHaveBeenCalledTimes(1)
 
   await waitFor(() => {
     // upload image
-    expect(mockUpsertImage).toBeCalledTimes(1)
-    expect(mockUpsertImage).toBeCalledWith({
+    expect(mockUpsertImage).toHaveBeenCalledTimes(1)
+    expect(mockUpsertImage).toHaveBeenCalledWith({
       'data': base64data,
       'mime_type': fileType,
       'token': mockSession.token,
     })
 
     // save as project image
-    expect(mockPatchProjectTable).toBeCalledTimes(1)
-    expect(mockPatchProjectTable).toBeCalledWith({
+    expect(mockPatchProjectTable).toHaveBeenCalledTimes(1)
+    expect(mockPatchProjectTable).toHaveBeenCalledWith({
       'data': {
         'image_id': newImageId,
       },
@@ -314,13 +317,13 @@ it('can replace existing image', async () => {
   // set file to upload
   fireEvent.change(imageInput, {target: {file:fileToUpload}})
   // expect file upload to be called
-  expect(mockHandleFileUpload).toBeCalledTimes(1)
+  expect(mockHandleFileUpload).toHaveBeenCalledTimes(1)
 
   await waitFor(() => {
     // patchProject table 2 calls
-    expect(mockPatchProjectTable).toBeCalledTimes(2)
+    expect(mockPatchProjectTable).toHaveBeenCalledTimes(2)
     // first call to remove old image
-    expect(mockPatchProjectTable).toBeCalledWith({
+    expect(mockPatchProjectTable).toHaveBeenCalledWith({
       'data': {
         'image_id': null,
       },
@@ -328,7 +331,7 @@ it('can replace existing image', async () => {
       'token': mockSession.token,
     })
     // second call to save new image
-    expect(mockPatchProjectTable).toBeCalledWith({
+    expect(mockPatchProjectTable).toHaveBeenCalledWith({
       'data': {
         'image_id': newImageId,
       },
@@ -336,14 +339,14 @@ it('can replace existing image', async () => {
       'token': mockSession.token,
     })
     // delete old image
-    expect(mockDeleteImage).toBeCalledTimes(1)
-    expect(mockDeleteImage).toBeCalledWith({
+    expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+    expect(mockDeleteImage).toHaveBeenCalledWith({
       'id': oldImageId,
       'token': mockSession.token,
     })
     // upload image call
-    expect(mockUpsertImage).toBeCalledTimes(1)
-    expect(mockUpsertImage).toBeCalledWith({
+    expect(mockUpsertImage).toHaveBeenCalledTimes(1)
+    expect(mockUpsertImage).toHaveBeenCalledWith({
       'data': base64data,
       'mime_type': fileType,
       'token': mockSession.token,

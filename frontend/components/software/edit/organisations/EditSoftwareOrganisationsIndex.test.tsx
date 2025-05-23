@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -17,8 +19,11 @@ import {initialState as softwareState} from '~/components/software/edit/editSoft
 import organisationsOfSoftware from './__mocks__/organisationsOfSoftware.json'
 
 // MOCK getOrganisationsForSoftware, searchForOrganisation, mockCreateOrganisation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetOrganisationsForSoftware = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSearchForOrganisation = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockCreateOrganisation = jest.fn(props => Promise.resolve({
   status: 201,
   message: 'new-organisation-id'
@@ -31,18 +36,24 @@ jest.mock('~/utils/editOrganisation', () => ({
 }))
 
 // MOCK isMaintainerOfOrganisation
-const mockIsMainatainerOfOrganisation = jest.fn(props => Promise.resolve(false))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockIsMaintainerOfOrganisation = jest.fn(props => Promise.resolve(false))
 jest.mock('~/auth/permissions/isMaintainerOfOrganisation', () => ({
   __esModule: true,
-  default: jest.fn(props=>mockIsMainatainerOfOrganisation(props)),
-  isMaintainerOfOrganisation: jest.fn(props=>mockIsMainatainerOfOrganisation(props))
+  default: jest.fn(props=>mockIsMaintainerOfOrganisation(props)),
+  isMaintainerOfOrganisation: jest.fn(props=>mockIsMaintainerOfOrganisation(props)),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  canEditOrganisations: jest.fn(({organisations,...other})=>organisations)
 }))
 
-
 // MOCK organisationForSoftware methods
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockCreateOrganisationAndAddToSoftware = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockAddOrganisationToSoftware = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteOrganisationFromSoftware = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchOrganisationPositions = jest.fn(props=>Promise.resolve([]as any))
 jest.mock('./organisationForSoftware', () => ({
   createOrganisationAndAddToSoftware: jest.fn(props=>mockCreateOrganisationAndAddToSoftware(props)),
@@ -50,6 +61,13 @@ jest.mock('./organisationForSoftware', () => ({
   deleteOrganisationFromSoftware: jest.fn(props => mockDeleteOrganisationFromSoftware(props)),
   patchOrganisationPositions: jest.fn(props=>mockPatchOrganisationPositions(props))
 }))
+
+// MOCK software category calls
+// by default we return no categories
+jest.mock('~/components/category/apiCategories')
+jest.mock('~/utils/getSoftware')
+// MOCK removeOrganisationCategoriesFromSoftware
+jest.mock('./apiSoftwareOrganisations')
 
 describe('frontend/components/software/edit/organisations/index.tsx', () => {
   beforeEach(() => {
@@ -73,7 +91,7 @@ describe('frontend/components/software/edit/organisations/index.tsx', () => {
     // wait for loader to be removed
     await waitForElementToBeRemoved(screen.getByRole('progressbar'))
     // shows no maintainers message
-    const noOrganisations = screen.getByText('No participating organisations')
+    screen.getByText('No participating organisations')
   })
 
   it('renders software organisations', async() => {
@@ -123,7 +141,7 @@ describe('frontend/components/software/edit/organisations/index.tsx', () => {
     mockGetOrganisationsForSoftware.mockResolvedValueOnce([])
     // mock no organisation found by search
     mockSearchForOrganisation.mockResolvedValueOnce([])
-    // mock createOrganisation reponse
+    // mock createOrganisation response
     mockCreateOrganisation.mockResolvedValueOnce({
       status: 201,
       message: newOrganisation.id
@@ -153,8 +171,8 @@ describe('frontend/components/software/edit/organisations/index.tsx', () => {
 
     await waitFor(() => {
       // validate search organisation called
-      expect(mockSearchForOrganisation).toBeCalledTimes(1)
-      expect(mockSearchForOrganisation).toBeCalledWith({
+      expect(mockSearchForOrganisation).toHaveBeenCalledTimes(1)
+      expect(mockSearchForOrganisation).toHaveBeenCalledWith({
         'searchFor': newOrganisation.name,
       })
     })
@@ -191,8 +209,8 @@ describe('frontend/components/software/edit/organisations/index.tsx', () => {
 
     await waitFor(() => {
       // call createOrganisation api
-      expect(mockCreateOrganisationAndAddToSoftware).toBeCalledTimes(1)
-      expect(mockCreateOrganisationAndAddToSoftware).toBeCalledWith({
+      expect(mockCreateOrganisationAndAddToSoftware).toHaveBeenCalledTimes(1)
+      expect(mockCreateOrganisationAndAddToSoftware).toHaveBeenCalledWith({
         item:{
           id: null,
           parent: null,
@@ -274,59 +292,14 @@ describe('frontend/components/software/edit/organisations/index.tsx', () => {
     expect(organisations).toHaveLength(1)
 
     // validate api called to save
-    expect(mockAddOrganisationToSoftware).toBeCalledTimes(1)
-    expect(mockAddOrganisationToSoftware).toBeCalledWith({
+    expect(mockAddOrganisationToSoftware).toHaveBeenCalledTimes(1)
+    expect(mockAddOrganisationToSoftware).toHaveBeenCalledWith({
       'position': 1,
       'organisation': firstOrg.id,
       'software': softwareState.software.id,
       'token': mockSession.token,
     })
 
-  })
-
-  it('maintainer of organisation can edit organisation', async () => {
-    // required software id
-    softwareState.software.id = 'test-software-id'
-    // return list of organisations
-    mockGetOrganisationsForSoftware.mockResolvedValueOnce(organisationsOfSoftware)
-    // mock is Maintainer of first organisation
-    mockIsMainatainerOfOrganisation.mockResolvedValueOnce(true)
-    mockIsMainatainerOfOrganisation.mockResolvedValueOnce(false)
-
-    render(
-      <WithAppContext options={{session:mockSession}}>
-        <WithSoftwareContext state={softwareState}>
-          <SoftwareOrganisations />
-        </WithSoftwareContext>
-      </WithAppContext>
-    )
-
-    // wait for loader to be removed
-    await waitForElementToBeRemoved(screen.getByRole('progressbar'))
-
-    // render first project organisation with edit button
-    const editBtns = screen.getAllByTestId('EditIcon')
-    expect(editBtns.length).toEqual(1)
-
-    // click on edit button
-    fireEvent.click(editBtns[0])
-
-    const modal = await screen.findByRole('dialog')
-
-    // validate organisation name
-    const name = within(modal).getByRole('textbox', {
-      name: config.name.label
-    })
-    expect(name).toHaveValue(organisationsOfSoftware[0].name)
-
-    // cancel
-    const cancelBtn = within(modal).getByRole('button', {
-      name: 'Cancel'
-    })
-    fireEvent.click(cancelBtn)
-
-    // modal should not be visible
-    expect(modal).not.toBeVisible()
   })
 
   it('can remove organisation from software', async () => {
@@ -376,17 +349,57 @@ describe('frontend/components/software/edit/organisations/index.tsx', () => {
     // validate api calls
     await waitFor(() => {
       // deleteOrganisation
-      expect(mockDeleteOrganisationFromSoftware).toBeCalledTimes(1)
-      expect(mockDeleteOrganisationFromSoftware).toBeCalledWith({
+      expect(mockDeleteOrganisationFromSoftware).toHaveBeenCalledTimes(1)
+      expect(mockDeleteOrganisationFromSoftware).toHaveBeenCalledWith({
         'organisation': organisationsOfSoftware[0].id,
         'software': softwareState.software.id,
         'token': mockSession.token,
       })
       // patch organisation positions
-      expect(mockPatchOrganisationPositions).toBeCalledTimes(1)
+      expect(mockPatchOrganisationPositions).toHaveBeenCalledTimes(1)
       // confirm number of organisations remaining
       const remained = screen.getAllByTestId('organisation-list-item')
       expect(remained.length).toEqual(organisationsOfSoftware.length-1)
     })
+  })
+
+  it('shows organisation categories modal',async()=>{
+    // required software id
+    softwareState.software.id = 'test-software-id'
+    // return list of organisations
+    mockGetOrganisationsForSoftware.mockResolvedValueOnce(organisationsOfSoftware)
+
+    render(
+      <WithAppContext options={{session:mockSession}}>
+        <WithSoftwareContext state={softwareState}>
+          <SoftwareOrganisations />
+        </WithSoftwareContext>
+      </WithAppContext>
+    )
+
+    // wait for loader to be removed
+    await waitForElementToBeRemoved(screen.getByRole('progressbar'))
+
+    // renders project organisations
+    const organisations = screen.getAllByTestId('organisation-list-item')
+    expect(organisations.length).toEqual(organisationsOfSoftware.length)
+
+    // get edit categories button from first organisation
+    const categoriesBtn = within(organisations[0]).getByRole('button', {
+      name: 'edit categories'
+    })
+    // click edit categories
+    fireEvent.click(categoriesBtn)
+
+    // get organisation categories modal
+    const modal = await screen.findByRole('dialog')
+
+    // close modal
+    const cancelBtn = within(modal).getByRole('button', {
+      name: 'Cancel'
+    })
+    fireEvent.click(cancelBtn)
+    // confirm modal closed
+    expect(modal).not.toBeInTheDocument()
   })
 })

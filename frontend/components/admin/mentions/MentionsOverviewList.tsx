@@ -26,7 +26,7 @@ function leaveOutSomeFieldsReplacer(key: string, value: any) {
   }
 }
 
-export default function MentionsOverviewList({list, onUpdate}: { list: MentionItemProps[], onUpdate: Function }) {
+export default function MentionsOverviewList({list, onUpdate}: { list: MentionItemProps[], onUpdate: ()=>void }) {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [mentionToEdit, setMentionToEdit] = useState<MentionItemProps | undefined>(undefined)
   const {token} = useSession()
@@ -74,14 +74,17 @@ export default function MentionsOverviewList({list, onUpdate}: { list: MentionIt
           )
         })}
       </List>
-      <EditMentionModal
-        title={mentionToEdit?.id as string ?? 'undefined'}
-        open={modalOpen}
-        pos={undefined} //why does this exist?
-        item={mentionToEdit}
-        onCancel={() => setModalOpen(false)}
-        onSubmit={({data}) => {updateMention(data)}}
-      />
+      {modalOpen ?
+        <EditMentionModal
+          title={mentionToEdit?.id as string ?? 'undefined'}
+          open={modalOpen}
+          pos={undefined} //why does this exist?
+          item={mentionToEdit}
+          onCancel={() => setModalOpen(false)}
+          onSubmit={({data}) => {updateMention(data)}}
+        />
+        : null
+      }
     </>
   )
 };

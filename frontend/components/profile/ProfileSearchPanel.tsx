@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -21,7 +21,7 @@ export default function ProfileSearchPanel({
   onSetView,handleQueryChange
 }:ProfileSearchPanelProps) {
   return (
-    <div className="flex border rounded-md shadow-sm bg-base-100 p-2">
+    <div className="flex border rounded-md shadow-xs bg-base-100 p-2">
       <SearchInput
         placeholder={placeholder}
         onSearch={(search: string) => handleQueryChange('search', search)}
@@ -30,6 +30,9 @@ export default function ProfileSearchPanel({
       <ViewToggleGroup
         layout={layout}
         onSetView={onSetView}
+        sx={{
+          marginLeft:'0.5rem'
+        }}
       />
       <SelectRows
         rows={rows}

@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2024 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {PropsWithChildren, createContext, useCallback, useContext, useState} from 'react'
+import {PropsWithChildren, createContext, useCallback, useContext, useEffect, useState} from 'react'
 import {EditCommunityProps} from '~/components/communities/apiCommunities'
 
 type UpdateCommunityProps = {
@@ -34,12 +35,16 @@ const emptyCommunity:EditCommunityProps = {
 const CommunityContext = createContext<CommunityContextProps>({
   community: emptyCommunity,
   isMaintainer: false,
-  updateCommunity: ({key,value}:UpdateCommunityProps)=> {}
+  updateCommunity: () => {}
 })
 
 export function CommunityProvider({community:initCommunity,isMaintainer:initMaintainer,...props}:any){
   const [community, setCommunity] = useState(initCommunity)
   const [isMaintainer] = useState<boolean>(initMaintainer ?? false)
+
+  useEffect(() => {
+    setCommunity(initCommunity)
+  }, [initCommunity])
 
   const updateCommunity = useCallback(({key,value}:UpdateCommunityProps)=>{
     if (community){

@@ -1,13 +1,14 @@
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {useRouter} from 'next/router'
 import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
 
-import {useProfileContext} from '../context/ProfileContext'
+import TabAsLink from '~/components/layout/TabAsLink'
+import {useProfileContext} from '~/components/profile/context/ProfileContext'
 import {ProfileTabKey, profileTabItems} from './ProfileTabItems'
 
 type ProfileTabsProps={
@@ -23,32 +24,27 @@ export default function ProfileTabs({tab_id, isMaintainer}:ProfileTabsProps) {
   const {software_cnt,project_cnt} = useProfileContext()
   return (
     <Tabs
+      component="nav"
       variant="scrollable"
       allowScrollButtonsMobile
       value={tab_id}
-      onChange={(_, value) => {
-        // change tab
-        const query:any={
-          orcid: router.query['orcid'],
-          tab: value,
-        }
-        // push tab change
-        router.push({query},undefined,{scroll:false})
-      }}
       aria-label="profile tabs"
     >
       {tabItems.map(key => {
         const item = profileTabItems[key]
         if (item.isVisible({isMaintainer})===true){
-          return <Tab
-            icon={item.icon}
-            key={key}
-            label={item.label({
-              software_cnt,
-              project_cnt
-            })}
-            value={key}
-          />
+          return (
+            <TabAsLink
+              key={key}
+              href={`../${router.query['id']}/${key}`}
+              value={key}
+              icon={item.icon}
+              label={item.label({
+                software_cnt,
+                project_cnt
+              })}
+            />
+          )
         }
       })}
     </Tabs>

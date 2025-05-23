@@ -20,29 +20,45 @@ type PackageManagerItemProps = {
   onEdit?: (pos:number) => void
 }
 
-type ServiceStatusProps={
+type ServiceStatusProps=Readonly<{
   services: string[]
   download_count: number|null,
   download_count_scraped_at: string|null
   reverse_dependency_count: number|null
   reverse_dependency_count_scraped_at: string|null
-}
+  download_count_scraping_disabled_reason: string | null,
+  reverse_dependency_count_scraping_disabled_reason: string | null,
+}>
 
-function RsdScraperStatus({services,download_count,download_count_scraped_at,reverse_dependency_count,reverse_dependency_count_scraped_at}:ServiceStatusProps){
+function RsdScraperStatus({
+  services,download_count,
+  download_count_scraped_at,
+  reverse_dependency_count,
+  reverse_dependency_count_scraped_at,
+  download_count_scraping_disabled_reason,
+  reverse_dependency_count_scraping_disabled_reason
+}:ServiceStatusProps){
   const html=[]
   if (services?.length===0) {
     return <span>RSD scraper services not available</span>
   }
-  if (services.includes('downloads')===true){
-    if (download_count_scraped_at && Number.isInteger(download_count)){
+  if (services.includes('downloads')){
+    if (download_count_scraping_disabled_reason !== null){
+      html.push(<span key="downloads" style={{color:'var(--rsd-error)'}}>Downloads: {download_count_scraping_disabled_reason}</span>)
+    }else if (download_count_scraped_at && Number.isInteger(download_count)){
       html.push(<span key="downloads">Downloads: {download_count}</span>)
-
     }else{
       html.push(<span key="downloads">Downloads: no info</span>)
     }
   }
-  if (services.includes('dependents')===true){
-    if (reverse_dependency_count_scraped_at && Number.isInteger(reverse_dependency_count)){
+  if (services.includes('dependents')){
+    if (reverse_dependency_count_scraping_disabled_reason!==null){
+      html.push(
+        <span key="dependents" style={{color:'var(--rsd-error)'}}>
+          Dependents: DISABLED ({reverse_dependency_count_scraping_disabled_reason})
+        </span>
+      )
+    }else if (reverse_dependency_count_scraped_at && Number.isInteger(reverse_dependency_count)){
       html.push(<span key="dependents">Dependents: {reverse_dependency_count}</span>)
     }else{
       html.push(<span key="dependents">Dependents: no info</span>)
@@ -51,11 +67,11 @@ function RsdScraperStatus({services,download_count,download_count_scraped_at,rev
   return html
 }
 
-
 export default function PackageManagerItem({pos, item, onDelete, onEdit}: PackageManagerItemProps) {
   // get package manager info
   const info = packageManagerSettings[item.package_manager ?? 'other']
   const url = new URL(item.url)
+
   return (
     <SortableListItem
       key={item.id}
@@ -91,10 +107,8 @@ export default function PackageManagerItem({pos, item, onDelete, onEdit}: Packag
             <span>{item.url}</span><br />
             <RsdScraperStatus
               services={info?.services ?? []}
-              download_count={item.download_count}
-              download_count_scraped_at={item.download_count_scraped_at}
-              reverse_dependency_count={item.reverse_dependency_count}
-              reverse_dependency_count_scraped_at={item.reverse_dependency_count_scraped_at}
+              // download_count={item.download_count}
+              {...item}
             />
           </>
         }

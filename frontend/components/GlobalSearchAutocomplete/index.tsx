@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
@@ -9,17 +9,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {ClickAwayListener} from '@mui/base'
 import {useRouter} from 'next/router'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 
 import {useAuth} from '~/auth'
-import {getGlobalSearch,GlobalSearchResults} from '~/components/GlobalSearchAutocomplete/globalSearchAutocomplete.api'
-
-import EnterkeyIcon from '~/components/icons/enterkey.svg'
 import {useDebounce} from '~/utils/useDebounce'
-import TerminalIcon from '@mui/icons-material/Terminal'
-import ListAltIcon from '@mui/icons-material/ListAlt'
-import BusinessIcon from '@mui/icons-material/Business'
+import logger from '~/utils/logger'
+import {composeUrl} from '~/utils/fetchHelpers'
+import useRsdSettings from '~/config/useRsdSettings'
+import EnterkeyIcon from '~/components/icons/enterkey.svg'
+import useSnackbar from '~/components/snackbar/useSnackbar'
+import {getGlobalSearch,GlobalSearchResults} from './apiGlobalSearch'
+import RsdHostLabel from './RsdHostLabel'
+import UnpublishedLabel from './UnpublishedLabel'
+import SearchItemIcon from './SearchItemIcon'
+import {useHasRemotes} from './useHasRemotes'
+import NoResultsLabel from './NoResultsLabel'
 
 type Props = {
   className?: string
@@ -28,20 +33,24 @@ type Props = {
 export default function GlobalSearchAutocomplete(props: Props) {
   const {session} = useAuth()
   const router = useRouter()
+  const {host} = useRsdSettings()
   const [isOpen, setOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [selected, setSelected] = useState(0)
-  const [hasResults, setHasResults] = useState(true)
+  const [hasResults, setHasResults] = useState(false)
   const [searchResults, setSearchResults] = useState<GlobalSearchResults[]>([])
   const [searchCombo, setSearchCombo] = useState('Ctrl K')
-
+  const {hasRemotes} = useHasRemotes()
   const lastValue = useDebounce(inputValue, 150)
   const inputRef = useRef<HTMLInputElement>(null)
+  const {showErrorMessage} = useSnackbar()
 
   // console.group('GlobalSearchAutocomplete')
   // console.log('inputValue...', inputValue)
+  // console.log('hasResults...',hasResults)
   // console.log('lastValue...', lastValue)
   // console.log('searchResults...',searchResults)
+  // console.log('hasRemotes...',hasRemotes)
   // console.groupEnd()
 
   useEffect(() => {
@@ -60,14 +69,31 @@ export default function GlobalSearchAutocomplete(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastValue])
 
-  const defaultValues = [
-    {name: 'Go to Projects page', slug: '', source: 'projects'},
-    {name: 'Go to Organisations page', slug: '', source: 'organisations'},
-  ]
+  const defaultValues: GlobalSearchResults[] = []
+
+  if (host.modules?.includes('software')) {
+    defaultValues.push({name: 'Go to Software page', slug: '', source: 'software', domain: null, rsd_host: null})
+  }
+  if (host.modules?.includes('projects')) {
+    defaultValues.push({name: 'Go to Projects page', slug: '', source: 'projects', domain: null, rsd_host: null})
+  }
+  if (host.modules?.includes('organisations')) {
+    defaultValues.push({name: 'Go to Organisations page', slug: '', source: 'organisations', domain: null, rsd_host: null})
+  }
+  if (host.modules?.includes('communities')) {
+    defaultValues.push({name: 'Go to Communities page', slug: '', source: 'communities', domain: null, rsd_host: null})
+  }
 
   async function fetchData(search: string) {
     // Fetch api
-    const data = await getGlobalSearch(search, session.token) || []
+    let data: GlobalSearchResults[]
+    try {
+      data = await getGlobalSearch(search, session.token, host.modules) || []
+    } catch (e: any) {
+      logger(e?.message, 'error')
+      showErrorMessage('Something went wrong getting the search results')
+      data = []
+    }
 
     if (data?.length === 0) {
       setHasResults(false)
@@ -79,41 +105,57 @@ export default function GlobalSearchAutocomplete(props: Props) {
   }
 
   function handleClick() {
-    const slug = searchResults[selected]?.slug !== '' ? ('/' + searchResults[selected]?.slug) : ''
-    router.push(`/${searchResults[selected]?.source}${slug}`)
-    setSelected(0)
-    setOpen(false)
-    setInputValue('')
+    const selectedItem = searchResults[selected] ?? null
+    if (selectedItem){
+      // build url
+      const url = composeUrl({
+        domain: selectedItem.domain,
+        route: selectedItem.source,
+        slug: selectedItem.slug
+      })
+      // remote RSD
+      if (selectedItem.domain){
+        // open page in new tab
+        window.open(url,'_blank')?.focus()
+      }else{
+        // local page use next router
+        router.push(url)
+      }
+      setSelected(0)
+      setOpen(false)
+      setInputValue('')
+    }
   }
 
   // Handle keyup
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    // Handle arrow up and down
-    switch (e.keyCode) {
+    // Handle keyboard events
+    // for key values see https://www.w3.org/TR/uievents-key/#named-key-attribute-values
+    switch (e.key) {
       // Close menu on lost focus with tab key
-      case 9:
+      case 'Tab':
         setOpen(false)
         break
       // Backspace - Remove selection
-      case 8:
+      case 'Backspace':
         setSelected(0)
         break
       // Up arrow
-      case 38:
+      case 'ArrowUp':
         e.preventDefault() // Disallows the cursor to move to the end of the input
-        selected > 0 && setSelected(selected - 1)
+        if (selected > 0) setSelected(selected - 1)
         break
       // Down arrow
-      case 40:
+      case 'ArrowDown':
         e.preventDefault() // Disallows the cursor to move to the end of the input
-        searchResults.length - 1 > selected && setSelected(selected + 1)
+        if (searchResults.length - 1 > selected) setSelected(selected + 1)
         break
       // Enter
-      case 13:
+      case 'Enter':
         handleClick()
         break
       // Escape key
-      case 27:
+      case 'Escape':
         setOpen(false)
         break
     }
@@ -170,7 +212,7 @@ export default function GlobalSearchAutocomplete(props: Props) {
               fill="#707070"/>
           </svg>
         </div>
-        <input className="px-2 pl-8 py-2 bg-transparent rounded-sm border border-base-600 focus:outline-0 w-full focus:bg-base-100 focus:text-base-900 duration-200"
+        <input className="px-2 pl-8 py-2 bg-transparent rounded-xs border border-base-600 focus:outline-0 w-full focus:bg-base-100 focus:text-base-900 duration-200"
           ref={inputRef}
           data-testid="global-search"
           name="global-search"
@@ -191,53 +233,66 @@ export default function GlobalSearchAutocomplete(props: Props) {
         {isOpen &&
           <div
             data-testid="global-search-list"
-            className="shadow-xl absolute top-[50px] w-full left-0 bg-base-100 text-base-900 py-2 rounded-sm"
+            className="shadow-xl absolute top-[50px] w-full left-0 bg-base-100 text-base-900 py-2 rounded-xs"
             style={{
               maxHeight: '50vh',
               overflow: 'auto',
               zIndex: 7
             }}
           >
-            {!hasResults &&
-              <div className="px-4 py-3 font-normal bg-base-200 mb-2 ">
-                <span className="animate-pulse">No results...</span>
-              </div>}
-            {searchResults.map((item, index) =>
-              <div key={index}
-                data-testid="global-search-list-item"
-                className={`${selected === index ? 'bg-base-200' : ''} flex gap-2 p-2 cursor-pointer transition justify-between items-center`}
-                onClick={handleClick}
-                onMouseEnter={() => setSelected(index)}
-                onTouchStart={() => setSelected(index)}
-              >
-                <div className="flex gap-3 w-full">
-                  {/*icon*/}
-                  <div className={selected === index ? 'text-content' : 'opacity-40'}>
-                    {item?.source === 'software' && <TerminalIcon/>}
-                    {item?.source === 'projects' && <ListAltIcon/>}
-                    {item?.source === 'organisations' && <BusinessIcon/>}
-                  </div>
+            {/* Show no results message */}
+            <NoResultsLabel show={hasResults===false && inputValue!==''} />
 
-                  <div className="flex-grow ">
-                    <div className="font-normal line-clamp-1">{item?.name}</div>
+            {searchResults.map((item, index) => {
 
-                    <div className="text-xs text-current text-opacity-40">
-                      {item?.source}{item?.is_published === false && <span
-                        className="flex-nowrap border px-1 py-[2px] rounded bg-warning ml-3 text-xs text-warning-content">unpublished</span>}
+              const url = composeUrl({
+                domain: item?.domain,
+                route: item?.source,
+                slug: item?.slug ?? '/'
+              })
+
+              // debugger
+              return (
+                <div key={index}
+                  data-testid="global-search-list-item"
+                  className={`${selected === index ? 'bg-base-200' : ''} flex gap-2 p-2 cursor-pointer transition justify-between items-center`}
+                  onClick={handleClick}
+                  onMouseEnter={() => setSelected(index)}
+                  onTouchStart={() => setSelected(index)}
+                >
+                  <div className="flex gap-3 w-full">
+                    {/*icon*/}
+                    <div className={selected === index ? 'text-content' : 'opacity-40'}>
+                      <SearchItemIcon source={item.source} />
                     </div>
 
+                    <div className="grow"
+                      title={url}
+                    >
+                      <div className="font-normal line-clamp-1">
+                        {item?.name}
+                      </div>
+                      <div className="text-xs text-current line-clamp-1">
+                        {item?.source}
+                      </div>
+                      <RsdHostLabel
+                        hasResults={hasResults}
+                        hasRemotes={hasRemotes}
+                        domain={item.domain}
+                        rsd_host={item.rsd_host}
+                      />
+                      <UnpublishedLabel is_published={item?.is_published} />
+                    </div>
+                    {selected === index && <div>
+                      <EnterkeyIcon/>
+                    </div>}
                   </div>
-
-                  {selected === index && <div>
-                    <EnterkeyIcon/>
-                  </div>}
                 </div>
-              </div>
-            )}
+              )
+            })}
           </div>
         }
       </div>
-
     </ClickAwayListener>
   )
 }

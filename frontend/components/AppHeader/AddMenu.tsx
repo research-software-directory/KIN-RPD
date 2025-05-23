@@ -10,7 +10,7 @@ import {useRouter} from 'next/router'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import AddIcon from '@mui/icons-material/Add'
-import TerminalIcon from '@mui/icons-material/Terminal'
+// import TerminalIcon from '@mui/icons-material/Terminal'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import IconButton from '@mui/material/IconButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -76,14 +76,14 @@ export default function AddMenu() {
         disableScrollLock={disable}
       >
         {/* disable software option, 2024-07-02 */}
-        {/* <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/software/add')}>
+        {/* <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/add/software')}>
           <ListItemIcon>
             <TerminalIcon/>
           </ListItemIcon>
           New Software
         </MenuItem> */}
 
-        <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/projects/add')}>
+        <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/add/project')}>
           <ListItemIcon>
             <ListAltIcon/>
           </ListItemIcon>
@@ -92,7 +92,7 @@ export default function AddMenu() {
         {
           // ADMIN ONLY options
           user?.role==='rsd_admin' ?
-            <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/news/add')}>
+            <MenuItem data-testid="add-menu-option" onClick={() => handleClose('/add/news')}>
               <ListItemIcon>
                 <NewspaperIcon/>
               </ListItemIcon>

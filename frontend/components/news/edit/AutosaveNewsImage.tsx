@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
@@ -23,6 +23,7 @@ import useSnackbar from '~/components/snackbar/useSnackbar'
 import CopyToClipboard from '~/components/layout/CopyToClipboard'
 import {NewsImageProps,NewsItem,addNewsImage,deleteNewsImage} from '../apiNews'
 import {newsConfig as config} from './config'
+import ImageInput from '~/components/form/ImageInput'
 
 type UploadedImageProps={
   imgUrl: string|null,
@@ -83,12 +84,11 @@ export default function AutosaveNewsImage() {
 
 
   async function saveImage(image_b64: string, mime_type: string) {
-    let resp
     // split base64 to use only encoded content
     const data = image_b64.split(',')[1]
     // debugger
     // add new image to db
-    resp = await upsertImage({
+    const resp = await upsertImage({
       data,
       mime_type,
       token
@@ -138,7 +138,7 @@ export default function AutosaveNewsImage() {
     if (resp.status === 200 && image.image_id) {
       // try to remove old image
       // but don't wait for results
-      const del = await deleteImage({
+      deleteImage({
         id: image.image_id,
         token
       })
@@ -196,12 +196,9 @@ export default function AutosaveNewsImage() {
         />
       </label>
 
-      <input
+      <ImageInput
         id="upload-article-image"
-        type="file"
-        accept="image/*"
         onChange={onFileUpload}
-        style={{display:'none'}}
       />
     </>
   )

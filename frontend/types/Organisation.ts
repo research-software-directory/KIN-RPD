@@ -1,23 +1,36 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {ProjectStatusKey} from './Project'
 
 // based on ENUMS defined in 012-inter-relation-tables.sql
-export type Status = 'rejected_by_origin' | 'rejected_by_relation' | 'approved'
+export type OrganisationStatus = 'rejected_by_origin' | 'rejected_by_relation' | 'approved'
 export type OrganisationRole = 'participating' | 'funding' | 'hosting'
 export type OrganisationSource = 'RSD' | 'ROR' | 'MANUAL'
 
-// organisation colums used in editOrganisation.createOrganisation
+// organisation columns used in editOrganisation.createOrganisation
 // NOTE! update when type CoreOrganisationProps changes
-export const columsForCreate = [
-  'parent', 'slug', 'primary_maintainer', 'name', 'ror_id', 'is_tenant', 'website', 'logo_id',
+export const colForCreate = [
+  'parent', 'primary_maintainer', 'slug',
+  'name', 'ror_id', 'website', 'is_tenant',
+  'country', 'city', 'wikipedia_url', 'ror_types',
+  'logo_id'
 ]
+
+// organisation columns used in editOrganisation.updateOrganisation
+// NOTE! update when type Organisation changes
+export const colForUpdate = [
+  'id',
+  'short_description',
+  'description',
+  ...colForCreate
+]
+
 export type CoreOrganisationProps = {
   parent: string | null
   slug: string | null
@@ -29,21 +42,17 @@ export type CoreOrganisationProps = {
   logo_id: string | null
 }
 
-// organisation colums used in editOrganisation.updateOrganisation
-// NOTE! update when type Organisation changes
-export const columsForUpdate = [
-  'id',
-  'description',
-  ...columsForCreate
-]
 export type Organisation = CoreOrganisationProps & {
   id: string | null
   // about page content created by maintainer
   description: string | null
   short_description: string | null
   country: string | null
+  city: string | null
   parent_names?: string
   rsd_path?: string
+  wikipedia_url?: string | null
+  rsd_types?: string[] | null
 }
 
 // adding source
@@ -70,7 +79,7 @@ export type EditOrganisation = SearchOrganisation & {
   logo_b64: string | null
   logo_mime_type: string | null
   // source?: OrganisationSource
-  status?: Status
+  status?: OrganisationStatus
   // only maintainers can edit values
   canEdit?: boolean
   // used for children to have complete rsd_path
@@ -94,13 +103,13 @@ export type PatchOrganisation = {
 export type SoftwareForOrganisation = {
   software: string,
   organisation: string,
-  status: Status,
-  position: number|null
+  status: OrganisationStatus,
+  position: number | null
 }
 
 // object returned from api
 // based on view organisations_for_software
-export type OrganisationsForSoftware={
+export type OrganisationsForSoftware = {
   id: string
   parent: string | null
   slug: string | null
@@ -111,7 +120,7 @@ export type OrganisationsForSoftware={
   website: string | null
   rsd_path: string
   logo_id: string | null
-  status: Status
+  status: OrganisationStatus
   software: string
 }
 
@@ -127,7 +136,7 @@ export type ProjectOrganisationProps = ParticipatingOrganisationProps & {
   role: OrganisationRole
 }
 
-export type OrganisationForOverview = Organisation & {
+export type OrganisationForOverview = Omit<Organisation, 'city'> & {
   id: string
   slug: string
   logo_id: string | null
@@ -138,16 +147,18 @@ export type OrganisationForOverview = Organisation & {
   rsd_path: string
 }
 
+export type OrganisationUnitsForOverview = Omit<OrganisationForOverview, 'short_description' | 'description' | 'country' | 'release_cnt'>
+
 export type SoftwareOfOrganisation = {
   id: string
   slug: string
   brand_name: string
   short_statement: string
-  image_id: string|null
+  image_id: string | null
   is_published: boolean
   updated_at: string
   is_featured: boolean
-  status: Status
+  status: OrganisationStatus
   keywords: string[],
   prog_lang: string[],
   licenses: string,
@@ -169,7 +180,7 @@ export type ProjectOfOrganisation = {
   image_contain: boolean
   image_id: string | null
   // organisation: string
-  status: Status
+  status: OrganisationStatus
   keywords: string[] | null
   research_domain: string[] | null
   impact_cnt: number | null
@@ -178,7 +189,7 @@ export type ProjectOfOrganisation = {
 }
 
 export type OrganisationList = {
-  id:string
+  id: string
   parent: string | null
   name: string
   short_description: string | null

@@ -1,22 +1,25 @@
 // SPDX-FileCopyrightText: 2021 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2021 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {ScriptProps} from 'next/script'
 
 import {app} from '~/config/app'
+import logger from '~/utils/logger'
 import {getAccountFromToken} from '~/auth/jwtUtils'
 import isMaintainerOfProject from '~/auth/permissions/isMaintainerOfProject'
-import logger from '~/utils/logger'
+import {getMaintainerOrganisations} from '~/auth/permissions/isMaintainerOfOrganisation'
+import {getCommunitiesOfMaintainer} from '~/auth/permissions/isMaintainerOfCommunity'
 import {
   getLinksForProject, getOrganisations,
-  getProjectItem, getRelatedSoftwareForProject,
+  getProjectItem,
   getTeamForProject, getResearchDomainsForProject,
   getKeywordsForProject, getRelatedProjectsForProject,
-  getMentionsForProject, getImpactByProject
+  getMentionsForProject, getImpactByProject,
+  getCategoriesForProject
 } from '~/utils/getProjects'
 import {
   KeywordForProject, Project, ProjectLink,
@@ -26,6 +29,8 @@ import {MentionItemProps} from '~/types/Mention'
 import {Person} from '~/types/Contributor'
 import {ProjectOrganisationProps} from '~/types/Organisation'
 import {SoftwareOverviewItemProps} from '~/types/SoftwareTypes'
+import {Testimonial} from '~/types/Testimonial'
+import {CategoryPath} from '~/types/Category'
 import AppHeader from '~/components/AppHeader'
 import AppFooter from '~/components/AppFooter'
 import EditPageButton from '~/components/layout/EditPageButton'
@@ -42,6 +47,9 @@ import RelatedSoftwareSection from '~/components/software/RelatedSoftwareSection
 import ProjectInfo from '~/components/projects/ProjectInfo'
 import RelatedProjectsSection from '~/components/projects/RelatedProjectsSection'
 import MentionsSection from '~/components/mention/MentionsSection'
+import {getTestimonialsForProject} from '~/components/projects/edit/testimonials/apiProjectTestimonial'
+import TestimonialSection from '~/components/software/TestimonialsSection'
+import {useProjectCategoriesFilter} from '~/components/category/useCategoriesFilter'
 
 export interface ProjectPageProps extends ScriptProps{
   slug: string
@@ -50,25 +58,39 @@ export interface ProjectPageProps extends ScriptProps{
   organisations: ProjectOrganisationProps[],
   researchDomains: ResearchDomain[],
   keywords: KeywordForProject[],
+  categories: CategoryPath[],
   links: ProjectLink[],
   output: MentionItemProps[],
   impact: MentionItemProps[],
+  testimonials: Testimonial[]
   team: Person[],
-  // disable software option, 2024-07-02
   relatedSoftware: SoftwareOverviewItemProps[],
-  relatedProjects: RelatedProject[]
+  relatedProjects: RelatedProject[],
+  orgMaintainer: string[],
+  comMaintainer: string[]
 }
 
 export default function ProjectPage(props: ProjectPageProps) {
   const {slug, project, isMaintainer, organisations,
-    researchDomains, keywords, links, output, impact, team,
-    relatedSoftware, relatedProjects
+    researchDomains, keywords, categories, links, output, impact, team,
+    relatedSoftware, relatedProjects, testimonials,orgMaintainer,comMaintainer
   } = props
+  // filter categories by status (maintainer can see all entries)
+  const filteredCategories = useProjectCategoriesFilter({
+    categories,isMaintainer,orgMaintainer,comMaintainer
+  })
 
   if (!project?.title){
     return <NoContent />
   }
-  // console.log('ProjectPage...output...', output)
+
+  // console.group('ProjectPage')
+  // console.log('categories...', categories)
+  // console.log('filteredCategories...', filteredCategories)
+  // console.log('orgMaintainer...', orgMaintainer)
+  // console.log('comMaintainer...', comMaintainer)
+  // console.groupEnd()
+
   return (
     <>
       {/* Page Head meta tags */}
@@ -106,6 +128,7 @@ export default function ProjectPage(props: ProjectPageProps) {
           researchDomains={researchDomains}
           keywords={keywords}
           links={links}
+          categories={filteredCategories}
         />
         {/* <div className="py-8"></div> */}
       </PageContainer>
@@ -125,6 +148,10 @@ export default function ProjectPage(props: ProjectPageProps) {
           mentions={output}
         />
       </DarkThemeSection>
+      {/* Testimonials (uses software components) */}
+      <TestimonialSection
+        testimonials={testimonials}
+      />
       {/* Team (uses software components) */}
       <ContributorsSection
         title="Team"
@@ -167,28 +194,41 @@ export async function getServerSideProps(context:any) {
       organisations,
       researchDomains,
       keywords,
+      categories,
       output,
       impact,
+      testimonials,
       team,
       // disable software option, 2024-07-02
       // relatedSoftware,
       relatedProjects,
       links,
-      isMaintainer
+      isMaintainer,
+      orgMaintainer,
+      comMaintainer
     ] = await Promise.all([
       getOrganisations({project: project.id, token, frontend: false}),
       getResearchDomainsForProject({project: project.id, token, frontend: false}),
       getKeywordsForProject({project: project.id, token, frontend: false}),
+      // Project specific categories
+      getCategoriesForProject({project_id:project.id,token}),
       // Output
       getMentionsForProject({project: project.id, token, table:'output_for_project'}),
       // Impact
       getImpactByProject({project: project.id, token}),
+      // testimonials
+      getTestimonialsForProject({project:project.id,token}),
+      // Team
       getTeamForProject({project: project.id, token}),
       // disable software option, 2024-07-02
       // getRelatedSoftwareForProject({project: project.id, token, frontend: false}),
       getRelatedProjectsForProject({project: project.id, token, frontend: false}),
       getLinksForProject({project: project.id, token, frontend: false}),
       isMaintainerOfProject({slug, account:userInfo?.account, token, frontend: false}),
+      // get list of organisations user maintains
+      getMaintainerOrganisations({token}),
+      // get list of communities user maintains
+      getCommunitiesOfMaintainer({token})
     ])
 
     // console.log("getServerSideProps...project...", project)
@@ -202,13 +242,17 @@ export async function getServerSideProps(context:any) {
         organisations,
         researchDomains,
         keywords,
+        categories,
         output,
         impact,
+        testimonials,
         team,
         // disable software option, 2024-07-02
         relatedSoftware:[],
         relatedProjects,
-        links
+        links,
+        orgMaintainer,
+        comMaintainer
       },
     }
   } catch (e:any) {
@@ -216,4 +260,5 @@ export async function getServerSideProps(context:any) {
     return {
       notFound: true,
     }
-  }}
+  }
+}

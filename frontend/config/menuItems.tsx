@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: 2021 - 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2021 - 2023 dv4all
-// SPDX-FileCopyrightText: 2022 - 2023 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2022 - 2023 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
+// SPDX-FileCopyrightText: 2022 - 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {JSX} from 'react'
 import TerminalIcon from '@mui/icons-material/Terminal'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import BusinessIcon from '@mui/icons-material/Business'
@@ -20,7 +22,7 @@ import Diversity3Icon from '@mui/icons-material/Diversity3'
 import {RsdModule} from './rsdSettingsReducer'
 
 export type MenuItemType = {
-  type?: 'link' | 'function' |'divider'
+  type?: 'link' | 'function' |'divider' | 'pluginSlot'
   label: string,
   // used as url link
   path?: string,
@@ -31,15 +33,15 @@ export type MenuItemType = {
   icon?: JSX.Element,
   // optional, but fn is provided it will have higher priority
   // than path
-  fn?: Function,
+  fn?: (props:any)=>void,
   // enables filtering of menuItems for the instance (defined in settings.json)
   module?: RsdModule
 }
 // routes defined for nav/menu
 // used in components/AppHeader
 export const menuItems:MenuItemType[] = [
-  {path: '/software?order=mention_cnt', match:'/software', label:'Software', module:'software'},
-  {path: '/projects?order=impact_cnt', match: '/projects', label: 'Projects', module:'projects'},
+  {path: '/software', match:'/software', label:'Software', module:'software'},
+  {path: '/projects', match: '/projects', label: 'Projects', module:'projects'},
   {path: '/organisations', match: '/organisations', label: 'Organisations', module:'organisations'},
   {path: '/communities', match: '/communities', label: 'Communities', module:'communities'}
 ]
@@ -119,6 +121,10 @@ export const userMenuItems: MenuItemType[] = [
     },
     path: '/user/communities',
     icon: <Diversity3Icon />,
+  }, {
+    module: 'user',
+    type: 'pluginSlot',
+    label: 'Unused label for plugin slot',
   }, {
     module: 'user',
     type: 'divider',

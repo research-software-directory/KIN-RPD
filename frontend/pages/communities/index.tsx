@@ -1,5 +1,6 @@
-// SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -26,6 +27,7 @@ import ViewToggleGroup,{ProjectLayoutType} from '~/components/projects/overview/
 import CommunitiesList from '~/components/communities/overview/CommunitiesList'
 import CommunitiesGrid from '~/components/communities/overview/CommunitiesGrid'
 import {CommunityListProps, getCommunityList} from '~/components/communities/apiCommunities'
+import {useSession} from '~/auth'
 
 const pageTitle = `Communities | ${app.title}`
 const pageDesc = 'List of RSD communities.'
@@ -41,6 +43,13 @@ type CommunitiesOverviewProps={
 
 
 export default function CommunitiesOverview({count,page,rows,layout,search,communities}:CommunitiesOverviewProps) {
+  const {user} = useSession()
+  const isAdmin = user?.role === 'rsd_admin'
+  if (!isAdmin) {
+    for (const community of communities) {
+      community.pending_cnt = null
+    }
+  }
   const {handleQueryChange,createUrl} = useSearchParams('communities')
   const initView = layout === 'masonry' ? 'grid' : layout
   const [view, setView] = useState<ProjectLayoutType>(initView)
@@ -76,11 +85,11 @@ export default function CommunitiesOverview({count,page,rows,layout,search,commu
 
         <MainContent className="py-4">
           {/* Page title with search and pagination */}
-          <div className="flex flex-wrap py-8 px-4 rounded-lg bg-base-100 lg:sticky top-0 border border-base-200 z-[11]">
+          <div className="flex flex-wrap py-8 px-4 rounded-lg bg-base-100 lg:sticky top-0 border border-base-200 z-11">
             <h1 role="heading" className="mr-4 lg:flex-1">
               Communities
             </h1>
-            <div className="flex-[2] flex min-w-[20rem]">
+            <div className="flex-2 flex min-w-[20rem]">
               <SearchInput
                 placeholder="Search community by name or short description"
                 onSearch={(search: string) => handleQueryChange('search', search)}
@@ -89,6 +98,9 @@ export default function CommunitiesOverview({count,page,rows,layout,search,commu
               <ViewToggleGroup
                 layout={view}
                 onSetView={setLayout}
+                sx={{
+                  marginLeft:'0.5rem'
+                }}
               />
               <SelectRows
                 rows={rows}
@@ -145,7 +157,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
     // extract user settings from cookie
     const {rsd_page_layout,rsd_page_rows} = getUserSettings(context.req)
     // use url param if present else user settings
-    let page_rows = rows ?? rsd_page_rows
+    const page_rows = rows ?? rsd_page_rows
 
     // get news items list to all pages server side
     const {count,communities} = await getCommunityList({
@@ -168,7 +180,7 @@ export async function getServerSideProps(context:GetServerSidePropsContext) {
         communities,
       },
     }
-  }catch(e){
+  }catch{
     return {
       notFound: true,
     }

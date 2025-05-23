@@ -1,6 +1,6 @@
+// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 dv4all
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
 //
@@ -23,6 +23,7 @@ import {patchProjectTable} from './patchProjectInfo'
 import {upsertImage,deleteImage} from '~/utils/editImage'
 import {ChangeEvent} from 'react'
 import {handleFileUpload} from '~/utils/handleFileUpload'
+import ImageInput from '~/components/form/ImageInput'
 
 export default function AutosaveProjectImage() {
   const {token} = useSession()
@@ -36,7 +37,6 @@ export default function AutosaveProjectImage() {
   ])
 
   async function saveImage(image_b64: string, mime_type: string) {
-    let resp
     // split base64 to use only encoded content
     const data = image_b64.split(',')[1]
     if (form_image_id) {
@@ -50,14 +50,14 @@ export default function AutosaveProjectImage() {
       if (patch.status === 200) {
         // try to remove old image
         // but don't wait for results
-        const del = await deleteImage({
+        deleteImage({
           id: form_image_id,
           token
         })
       }
     }
     // add new image to db
-    resp = await upsertImage({
+    const resp = await upsertImage({
       data,
       mime_type,
       token
@@ -127,7 +127,7 @@ export default function AutosaveProjectImage() {
       if (form_image_id) {
         // try to remove old image
         // but don't wait for results
-        const del = await deleteImage({
+        deleteImage({
           id: form_image_id,
           token
         })
@@ -211,12 +211,9 @@ export default function AutosaveProjectImage() {
         />
       </label>
 
-      <input
+      <ImageInput
         id="upload-avatar-image"
-        type="file"
-        accept="image/*"
         onChange={onFileUpload}
-        style={{display:'none'}}
       />
 
       {renderImageAttributes()}

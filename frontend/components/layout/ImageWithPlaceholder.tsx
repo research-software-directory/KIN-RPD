@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -27,17 +27,17 @@ export default function ImageWithPlaceholder({
 ) {
   const validImg = useValidateImageSrc(src)
 
-  if (!src || validImg===false) {
+  if (!src || validImg===false || src==='') {
     if (type === 'gradient') {
       return (
         <div
-          className="w-full bg-gradient-to-br from-base-300 from-0% via-base-100 via-50% to-base-100"
+          className="w-full bg-linear-to-br from-base-300 from-0% via-base-100 via-50% to-base-100"
         />
       )
     }
     return (
       <div
-        className={`flex flex-col justify-center items-center text-base-500 rounded-sm ${className ?? ''}`}
+        className={`flex flex-col justify-center items-center text-base-500 rounded-xs ${className ?? ''}`}
       >
         <PhotoSizeSelectActualOutlinedIcon
           sx={{
@@ -64,7 +64,7 @@ export default function ImageWithPlaceholder({
       }}
       aria-label={alt}
       alt={alt}
-      className={`rounded-sm ${className ?? ''}`}
+      className={`rounded-xs ${className ?? ''}`}
     ></img>
   )
 }

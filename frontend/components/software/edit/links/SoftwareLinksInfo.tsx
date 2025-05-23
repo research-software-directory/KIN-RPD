@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2024 Felix Mühlbauer (GFZ) <felix.muehlbauer@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2024 Netherlands eScience Center
@@ -9,8 +11,9 @@
 
 import {Fragment} from 'react'
 import Alert from '@mui/material/Alert'
-import {ReorderedCategories} from '~/utils/categories'
+import {ReorderedCategories} from '~/components/category/useReorderedCategories'
 import {config} from '~/components/software/edit/links/config'
+import {CategoryEntry} from '~/types/Category'
 
 type SoftwareLinksInfoProps = {
   readonly reorderedCategories: ReorderedCategories
@@ -27,7 +30,7 @@ export default function SoftwareLinksInfo({reorderedCategories}: SoftwareLinksIn
       On this page you can provide links and metadata to better describe your software. Some of this metadata can be imported automatically.
 
       <p className="py-2"><strong>Software URLs</strong></p>
-      <p>Providing the URL of the source code repository of the software allows the RSD show a link to the source code on the software page, and automatically harvest information about the development activity.</p>
+      <p>Providing the URL of the source code repository of the software allows the RSD show a link to the source code on the software page, and automatically harvest information about the development activity. The RSD supports https URLs pointing to the git repository, or to the website of the repository.</p>
       <p className="py-2">The getting started URL can be used to link to a webpage describing how to install and use the software. This link will be prominently shown on the top of the software page.</p>
 
       <p className="py-2"><strong>Software DOI</strong></p>
@@ -41,7 +44,7 @@ export default function SoftwareLinksInfo({reorderedCategories}: SoftwareLinksIn
       <p className="py-2"><strong>Keywords</strong></p>
       <p>Here you can provide keyword that describe your software, by selecting from existing keyword, adding your own, or importing the keywords from the Software DOI.</p>
 
-      {helpForCategories.map(([headline, text], index) => (
+      {helpForCategories.map(([headline, text]) => (
         <Fragment key={headline}>
           <p className="py-2"><strong>{headline}</strong></p>
           <p>{text}</p>
@@ -57,7 +60,7 @@ function generateHelpOnCategories(reorderedCategories: ReorderedCategories) {
   const items = []
 
   for (const treeLevel of reorderedCategories.highlighted) {
-    const {category} = treeLevel
+    const category: CategoryEntry = treeLevel.getValue()
     if (category.properties.is_highlight && category.properties.description) {
       items.push([category.name, category.properties.description])
     }

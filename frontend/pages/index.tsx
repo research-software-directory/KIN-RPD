@@ -12,7 +12,7 @@ import KinRpdHome from '~/components/home/kin'
 import {RsdHomeProps} from '~/components/home/rsd'
 import PageMeta from '~/components/seo/PageMeta'
 import CanonicalUrl from '~/components/seo/CanonicalUrl'
-import useRsdSettings from '~/config/useRsdSettings'
+// import useRsdSettings from '~/config/useRsdSettings'
 import {TopNewsProps, getTopNews} from '~/components/news/apiNews'
 
 export type HomeProps = {
@@ -23,8 +23,7 @@ export type HomeProps = {
 const pageTitle = `Home | ${app.title}`
 const pageDesc = 'KIN connects, broadens, deepens, and unlocks knowledge for transitions towards a climate-neutral and climate-resilient society.'
 
-export default function Home({counts,news}: HomeProps) {
-  const {host} = useRsdSettings()
+export default function Home({news}: HomeProps) {
 
   // console.group('Home')
   // console.log('counts...', counts)

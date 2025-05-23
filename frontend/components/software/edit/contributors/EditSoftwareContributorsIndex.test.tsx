@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (dv4all) (dv4all)
+// SPDX-FileCopyrightText: 2023 - 2025 dv4all
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,76 +12,92 @@ import {WithAppContext, mockSession} from '~/utils/jest/WithAppContext'
 import {WithSoftwareContext} from '~/utils/jest/WithSoftwareContext'
 
 import {initialState as editSoftwareState} from '../editSoftwareContext'
+import {modalConfig} from '~/components/person/config'
+import {contributorInformation} from '../editSoftwareConfig'
 
 import SoftwareContributors from '.'
-import {contributorInformation as config} from '../editSoftwareConfig'
-
 
 // MOCKS
 import mockContributors from './__mocks__/softwareContributors.json'
 import mockSearchOptions from '~/components/person/__mocks__/searchForPersonOptions.json'
 
 // MOCK getContributorsForSoftware
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetContributorsForSoftware = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPostContributor = jest.fn(props => Promise.resolve([] as any))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPatchContributor = jest.fn(props => Promise.resolve([] as any))
-const mockdeleteContributorsById = jest.fn(props => Promise.resolve([] as any))
-jest.mock('~/utils/editContributors', () => ({
-  ...jest.requireActual('~/utils/editContributors'),
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockDeleteContributorsById = jest.fn(props => Promise.resolve({
+  status: 200,
+  message: 'OK'
+}))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockPatchContributorPositions = jest.fn(props => Promise.resolve({
+  status: 200,
+  message: 'OK'
+}))
+jest.mock('./apiContributors', () => ({
+  ...jest.requireActual('./apiContributors'),
   getContributorsForSoftware: jest.fn(props => mockGetContributorsForSoftware(props)),
   postContributor: jest.fn(props => mockPostContributor(props)),
   patchContributor: jest.fn(props => mockPatchContributor(props)),
-  deleteContributorsById: jest.fn(props => mockdeleteContributorsById(props)),
+  deleteContributorsById: jest.fn(props => mockDeleteContributorsById(props)),
+  patchContributorPositions: jest.fn(props => mockPatchContributorPositions(props)),
 }))
 
-// MOCK findRSDPerson
-// const mockFindRSDPerson = jest.fn(props => Promise.resolve([] as any))
-// jest.mock('~/utils/findRSDPerson', () => ({
-//   findRSDPerson: jest.fn(props=>mockFindRSDPerson(props))
-// }))
-
-// MOCK getORCID
-// const mockGetORCID = jest.fn(props => Promise.resolve([] as any))
-// jest.mock('~/utils/getORCID', () => ({
-//   ...jest.requireActual('~/utils/getORCID'),
-//   getORCID: jest.fn(props=>mockGetORCID(props))
-// }))
-
 // MOCK searchForPerson
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSearchForPerson = jest.fn(props => Promise.resolve([] as any))
 jest.mock('~/components/person/searchForPerson', () => ({
   searchForPerson: jest.fn(props=>mockSearchForPerson(props))
 }))
+// MOCK useAggregatedPerson (use default)
+jest.mock('~/components/person/useAggregatedPerson')
 
 // MOCK getContributorsFromDoi
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockGetContributorsFromDoi = jest.fn(props => Promise.resolve([] as any))
 jest.mock('~/utils/getInfoFromDatacite', () => ({
   getContributorsFromDoi: jest.fn((...props)=>mockGetContributorsFromDoi(props))
 }))
 
 // MOCK editImage methods
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteImage = jest.fn(props => Promise.resolve('OK'))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockUpsertImage = jest.fn(props => Promise.resolve({
+  status: 201,
+  message: 'uploaded-image-id'
+}))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockSaveBase64Image = jest.fn(props => Promise.resolve({
   status: 201,
   message: 'uploaded-image-id'
 }))
 jest.mock('~/utils/editImage', () => ({
   ...jest.requireActual('~/utils/editImage'),
   deleteImage: jest.fn(props => mockDeleteImage(props)),
-  upsertImage: jest.fn(props => mockUpsertImage(props))
+  upsertImage: jest.fn(props => mockUpsertImage(props)),
+  saveBase64Image: jest.fn(props => mockSaveBase64Image(props)),
 }))
 
+const mockImageData={
+  image_b64: 'data:image/png;base64,base64-encoded-image-content',
+  image_mime_type: 'image/png'
+}
+
 // MOCK handleFileUpload
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockHandleFileUpload = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK',
-  image_b64: 'png,base64-encoded-image-content',
-  image_mime_type: 'image/png'
+  ...mockImageData
 }))
 jest.mock('~/utils/handleFileUpload', () => ({
   handleFileUpload: jest.fn(props=>mockHandleFileUpload(props))
 }))
-
 
 describe('frontend/components/software/edit/contributors/index.tsx', () => {
   beforeEach(() => {
@@ -176,7 +194,7 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     // find member
     const findMember = screen.getByRole('combobox', {
-      name: config.findContributor.label
+      name: contributorInformation.findContributor.label
     })
     fireEvent.change(findMember, {target: {value: searchFor}})
 
@@ -186,10 +204,11 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
     expect(options.length).toEqual(mockSearchOptions.length + 1)
 
     // validate search called with proper param
-    expect(mockSearchForPerson).toBeCalledTimes(1)
-    expect(mockSearchForPerson).toBeCalledWith({
+    expect(mockSearchForPerson).toHaveBeenCalledTimes(1)
+    expect(mockSearchForPerson).toHaveBeenCalledWith({
       searchFor,
-      'token': mockSession.token,
+      token: mockSession.token,
+      include_orcid: true
     })
 
     // select first option: "Add"
@@ -202,36 +221,36 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     // given names
     const givenNames = within(modal).getByRole('textbox', {
-      name: config.given_names.label
+      name: modalConfig.given_names.label
     })
     expect(givenNames).toHaveValue(newPerson.given_names)
     // family name
     const familyNames = within(modal).getByRole('textbox', {
-      name: config.family_names.label
+      name: modalConfig.family_names.label
     })
     expect(familyNames).toHaveValue(newPerson.family_names)
 
     // add email
     const email = within(modal).getByRole('textbox', {
-      name: config.email_address.label
+      name: modalConfig.email_address.label
     })
     fireEvent.change(email, {target: {value: newPerson.email}})
 
     // add role
-    const role = within(modal).getByRole('textbox', {
-      name: config.role.label
+    const role = within(modal).getByRole('combobox', {
+      name: modalConfig.role.label
     })
     fireEvent.change(role, {target: {value: newPerson.role}})
 
     // add affiliation
-    const affiliation = within(modal).getByRole('textbox', {
-      name: config.affiliation.label
+    const affiliation = within(modal).getByRole('combobox', {
+      name: modalConfig.affiliation.label
     })
     fireEvent.change(affiliation, {target: {value: newPerson.affiliation}})
 
     // switch is_contact_person
     const isContact = within(modal).getByRole('checkbox', {
-      name: config.is_contact_person.label
+      name: modalConfig.is_contact_person.label
     })
     fireEvent.click(isContact)
 
@@ -246,9 +265,10 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     // validate api call
     await waitFor(() => {
-      expect(mockPostContributor).toBeCalledTimes(1)
-      expect(mockPostContributor).toBeCalledWith({
+      expect(mockPostContributor).toHaveBeenCalledTimes(1)
+      expect(mockPostContributor).toHaveBeenCalledWith({
         'contributor': {
+          'account': null,
           'affiliation': newPerson.affiliation,
           'avatar_id': null,
           'email_address': newPerson.email,
@@ -303,7 +323,7 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     await waitForElementToBeRemoved(screen.getByTestId('circular-loader'))
 
-    expect(mockGetContributorsFromDoi).toBeCalledTimes(1)
+    expect(mockGetContributorsFromDoi).toHaveBeenCalledTimes(1)
     expect(mockGetContributorsFromDoi).toHaveBeenCalledWith([
       editSoftwareState.software.id,
       editSoftwareState.software.concept_doi
@@ -349,13 +369,30 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
     fireEvent.click(removeBtn)
 
     await waitFor(() => {
-      expect(mockdeleteContributorsById).toBeCalledTimes(1)
-      expect(mockdeleteContributorsById).toBeCalledWith({
+      expect(mockDeleteContributorsById).toHaveBeenCalledTimes(1)
+      expect(mockDeleteContributorsById).toHaveBeenCalledWith({
         ids: [
           mockContributors[0].id
         ],
         token: mockSession.token
       })
+
+      // confirm contributor removed from list
+      const remainedContributors = screen.getAllByTestId('contributor-item')
+      expect(remainedContributors.length).toEqual(contributors.length - 1)
+
+      // confirm list position patched
+      expect(mockPatchContributorPositions).toHaveBeenCalledTimes(1)
+
+      // confirm avatar image tried to be removed
+      if (mockContributors[0].avatar_id !== null) {
+        expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+        expect(mockDeleteImage).toHaveBeenCalledWith({
+          'id': mockContributors[0].avatar_id,
+          'token': mockSession.token,
+        })
+      }
+
     })
   })
 
@@ -374,7 +411,7 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
       // software id received from software context
       software: editSoftwareState.software.id
     }
-    // mock no members
+    // mock return list of contributors
     mockGetContributorsForSoftware.mockResolvedValueOnce(mockContributors)
     // mock patch contributor response
     mockPatchContributor.mockResolvedValueOnce({
@@ -400,15 +437,9 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     const modal = screen.getByRole('dialog')
 
-    // click on remove image
-    const removeImage = within(modal).getByRole('button', {
-      name: 'Remove'
-    })
-
-    await waitFor(() => {
-      expect(removeImage).toBeEnabled()
-      fireEvent.click(removeImage)
-    })
+    // click on no image button
+    const noImage = within(modal).getByTestId('no-image-btn')
+    fireEvent.click(noImage)
 
     // save
     const saveBtn = within(modal).getByRole('button', {
@@ -422,21 +453,21 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     await waitFor(() => {
       // confirm patch contributor called
-      expect(mockPatchContributor).toBeCalledTimes(1)
-      expect(mockPatchContributor).toBeCalledWith({
+      expect(mockPatchContributor).toHaveBeenCalledTimes(1)
+      expect(mockPatchContributor).toHaveBeenCalledWith({
         contributor: editedMember,
         token: mockSession.token
       })
       // validate delete image called
-      expect(mockDeleteImage).toBeCalledTimes(1)
-      expect(mockDeleteImage).toBeCalledWith({
+      expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+      expect(mockDeleteImage).toHaveBeenCalledWith({
         'id': mockContributors[0].avatar_id,
         'token': mockSession.token,
       })
     })
   })
 
-  it('can CANCEL remove avatar (change)', async () => {
+  it('can CANCEL modal changes', async () => {
     // mock software context state
     editSoftwareState.software = {
       id: 'test-software-id',
@@ -470,19 +501,15 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     const modal = screen.getByRole('dialog')
 
-    // click on remove image
-    const removeImage = within(modal).getByRole('button', {
-      name: 'Remove'
-    })
-    await waitFor(() => {
-      expect(removeImage).toBeEnabled()
-      fireEvent.click(removeImage)
-    })
+    // click on no image button
+    const removeImage = within(modal).getByTestId('no-image-btn')
+    fireEvent.click(removeImage)
 
     // save
     const saveBtn = within(modal).getByRole('button', {
       name:'Save'
     })
+
     // validate save is enabled
     await waitFor(() => {
       expect(saveBtn).toBeEnabled()
@@ -498,18 +525,16 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
       // validate modal hidden
       expect(modal).not.toBeVisible()
       // confirm patch contributor is NOT called
-      expect(mockPatchContributor).toBeCalledTimes(0)
+      expect(mockPatchContributor).toHaveBeenCalledTimes(0)
       // delete image NOT called
-      expect(mockDeleteImage).toBeCalledTimes(0)
+      // expect(mockDeleteImage).toHaveBeenCalledTimes(0)
     })
   })
 
-  it('can replace avatar image', async () => {
+  it('can upload avatar image', async () => {
     const oldAvatarId = mockContributors[0].avatar_id
     const newAvatarId = 'new-avatar-test-id-with-length-10-or-more'
     const fileToUpload = 'test-file-name.png'
-    const base64data = 'base64-encoded-image-content'
-    const fileType = 'image/png'
     // mock software context state
     editSoftwareState.software = {
       id: 'test-software-id',
@@ -522,7 +547,7 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
       // we have new avatar id
       avatar_id: newAvatarId,
       // software id received from software context
-      software: editSoftwareState.software.id
+      software: editSoftwareState.software.id,
     }
     // mock no members
     mockGetContributorsForSoftware.mockResolvedValueOnce(mockContributors)
@@ -532,7 +557,7 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
       message: 'OK'
     })
     // mock image upload
-    mockUpsertImage.mockResolvedValueOnce({
+    mockSaveBase64Image.mockResolvedValueOnce({
       status: 201,
       message: newAvatarId
     })
@@ -561,12 +586,13 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
     fireEvent.change(imageInput, {target: {file: fileToUpload}})
 
     // expect file upload to be called
-    expect(mockHandleFileUpload).toBeCalledTimes(1)
+    expect(mockHandleFileUpload).toHaveBeenCalledTimes(1)
 
     // save
     const saveBtn = within(modal).getByRole('button', {
       name: 'Save'
     })
+
     await waitFor(() => {
       expect(saveBtn).toBeEnabled()
       fireEvent.click(saveBtn)
@@ -574,25 +600,23 @@ describe('frontend/components/software/edit/contributors/index.tsx', () => {
 
     await waitFor(() => {
       // validate new avatar upload
-      expect(mockUpsertImage).toBeCalledTimes(1)
-      expect(mockUpsertImage).toBeCalledWith({
-        'data': base64data,
-        'mime_type': fileType,
+      expect(mockSaveBase64Image).toHaveBeenCalledTimes(1)
+      expect(mockSaveBase64Image).toHaveBeenCalledWith({
+        'base64': mockImageData.image_b64,
         'token': mockSession.token,
       })
-      // confirm member patched called
-      expect(mockPatchContributor).toBeCalledTimes(1)
-      expect(mockPatchContributor).toBeCalledWith({
-        contributor: editedMember,
-        token: mockSession.token
-      })
       // validate delete image called
-      expect(mockDeleteImage).toBeCalledTimes(1)
-      expect(mockDeleteImage).toBeCalledWith({
+      expect(mockDeleteImage).toHaveBeenCalledTimes(1)
+      expect(mockDeleteImage).toHaveBeenCalledWith({
         'id': oldAvatarId,
         'token': mockSession.token,
       })
+      // confirm member patched called
+      expect(mockPatchContributor).toHaveBeenCalledTimes(1)
+      expect(mockPatchContributor).toHaveBeenCalledWith({
+        contributor: editedMember,
+        token: mockSession.token
+      })
     })
   })
-
 })

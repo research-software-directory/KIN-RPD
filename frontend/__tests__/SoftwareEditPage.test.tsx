@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
@@ -23,7 +23,10 @@ import {RsdSettingsState} from '~/config/rsdSettingsReducer'
 // we mock default providers used in page header
 jest.mock('~/auth/api/useLoginProviders')
 // mock user agreement call
-jest.mock('~/components/user/settings/useUserAgreements')
+jest.mock('~/components/user/settings/agreements/useUserAgreements')
+// MOCK global search
+jest.mock('~/components/GlobalSearchAutocomplete/apiGlobalSearch')
+jest.mock('~/components/GlobalSearchAutocomplete/useHasRemotes')
 
 // MOCK isMaintainerOf
 const mockIsMaintainer = jest.fn(props => Promise.resolve(false))

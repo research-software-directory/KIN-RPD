@@ -11,8 +11,15 @@ type UpdateOrganisationProps = {
   value: any
 }
 
+export type OrganisationForContext = OrganisationForOverview & {
+  description: string | null,
+  wikipedia_url: string | null,
+  city: string | null
+  ror_types: string[] | null
+}
+
 type OrganisationContextProps = {
-  organisation: OrganisationForOverview | null
+  organisation: OrganisationForContext | null
   isMaintainer: boolean
   updateOrganisation:({key,value}:UpdateOrganisationProps)=>void
 }
@@ -20,14 +27,14 @@ type OrganisationContextProps = {
 const OrganisationContext = createContext<OrganisationContextProps>({
   organisation: null,
   isMaintainer: false,
-  updateOrganisation: ({key, value}: UpdateOrganisationProps) => { }
+  updateOrganisation: () => {}
 })
 
 export function OrganisationProvider(props: any) {
-  // destucture organisation
+  // destructure organisation
   const {organisation:initOrganisation, isMaintainer:initMaintainer} = props
   // set state - use initOrganisation at start
-  const [organisation, setOrganisation] = useState<OrganisationForOverview | null>(initOrganisation)
+  const [organisation, setOrganisation] = useState<OrganisationForContext | null>(initOrganisation)
   const [isMaintainer, setIsMaintainer] = useState<boolean>(initMaintainer ?? false)
 
   const updateOrganisation = useCallback(({key, value}:UpdateOrganisationProps) => {
@@ -40,7 +47,7 @@ export function OrganisationProvider(props: any) {
     }
   },[organisation])
 
-  // we need to update organisation state every time initOrganistation changes
+  // we need to update organisation state every time initOrganisation changes
   // because useState is running in different context
   useEffect(() => {
     if (initOrganisation.id && !organisation) {

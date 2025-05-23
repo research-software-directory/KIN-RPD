@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -18,22 +19,33 @@ import mockSoftware from '~/components/organisation/software/__mocks__/mockSoftw
 import mockProjects from '~/components/organisation/projects/__mocks__/mockProjects.json'
 import mockUnits from '~/components/organisation/units/__mocks__/mockUnits.json'
 import {TabKey} from '~/components/organisation/tabs/OrganisationTabItems'
+import {OrganisationForContext} from '~/components/organisation/context/OrganisationContext'
 
-// MOCK user agreement call
-jest.mock('~/components/user/settings/useUserAgreements')
+// mock user agreement call
+jest.mock('~/components/user/settings/agreements/useUserAgreements')
+// global search
+jest.mock('~/components/GlobalSearchAutocomplete/apiGlobalSearch')
+jest.mock('~/components/GlobalSearchAutocomplete/useHasRemotes')
 
 // use DEFAULT MOCK for login providers list
 // required when AppHeader component is used
 jest.mock('~/auth/api/useLoginProviders')
+// mock project categories api
+jest.mock('~/components/organisation/projects/filters/useOrgProjectCategoriesList')
+// mock software categories api
+jest.mock('~/components/organisation/software/filters/useOrgSoftwareCategoriesList')
 
 const mockProps = {
-  organisation: mockOrganisation,
+  organisation: mockOrganisation as OrganisationForContext,
   slug:['dutch-research-council'],
-  tab: 'software' as TabKey,
+  tab: 'projects' as TabKey,
   ror: mockRORIinfo as any,
   isMaintainer: false,
   rsd_page_rows: 12,
-  rsd_page_layout: 'grid'
+  rsd_page_layout: 'grid',
+  units: mockUnits,
+  releaseCountsByYear: [],
+  releases: []
 } as OrganisationPageProps
 
 // MOCK isMaintainerOfOrganisation
@@ -105,8 +117,7 @@ describe('pages/organisations/[...slug].tsx', () => {
     // screen.debug(aboutPage)
   })
 
-  // disable software option, 2024-07-02
-  // it('renders organisation software page as default when organisation.description=null', async () => {
+  // it('renders organisation project page as default when organisation.description=null', async () => {
   //   // not a maintainer - public page
   //   mockIsMaintainerOfOrganisation.mockResolvedValueOnce(false)
   //   // when no about page content, software is default landing page
@@ -127,10 +138,10 @@ describe('pages/organisations/[...slug].tsx', () => {
   //   // wait loader to be removed
   //   // await waitForElementToBeRemoved(screen.getByRole('progressbar'))
   //   // we need to await for all events to run
-  //   const software = await screen.findAllByTestId('software-grid-card')
+  //   const software = await screen.findAllByTestId('project-grid-card')
   //   expect(software.length).toEqual(mockSoftware.length)
   //   // validate api call - TODO! FIGURE WHY IS CALLED TWICE!!!
-  //   expect(mockSoftwareForOrganisation).toBeCalledTimes(1)
+  //   expect(mockSoftwareForOrganisation).toHaveBeenCalledTimes(1)
   // })
 
   it('renders organisation projects page when page=projects', async () => {
@@ -158,7 +169,7 @@ describe('pages/organisations/[...slug].tsx', () => {
     const cards = await screen.findAllByTestId('project-grid-card')
     expect(cards.length).toEqual(mockProjects.length)
     // validate api call - TODO! FIGURE WHY IS CALLED TWICE!!!
-    expect(mockProjectsForOrganisation).toBeCalledTimes(1)
+    expect(mockProjectsForOrganisation).toHaveBeenCalledTimes(1)
   })
 
   it('shows organisation units', async() => {
@@ -182,7 +193,7 @@ describe('pages/organisations/[...slug].tsx', () => {
     await waitForElementToBeRemoved(screen.getByRole('progressbar'))
 
     // validate api call
-    expect(mockGetOrganisationChildren).toBeCalledTimes(1)
+    expect(mockGetOrganisationChildren).toHaveBeenCalledTimes(0)
     // validate units
     const units = screen.getAllByTestId('research-unit-item')
     expect(units.length).toEqual(mockUnits.length)

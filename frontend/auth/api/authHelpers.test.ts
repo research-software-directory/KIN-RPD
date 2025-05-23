@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
+// SPDX-FileCopyrightText: 2025 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -45,6 +47,7 @@ const mockProps: RedirectToProps = {
   client_id: '1234567',
   scope: 'openid',
   response_mode: 'form',
+  prompt: 'login'
 }
 
 // mock console log
@@ -63,9 +66,16 @@ beforeEach(() => {
 
 
 it('crates RedirectUrl', () => {
-  const {authorization_endpoint, redirect_uri, client_id, scope, response_mode} = mockProps
-  const expectedRedirect = `${authorization_endpoint}?redirect_uri=${redirect_uri}&client_id=${client_id}&scope=${scope}&response_type=code&response_mode=${response_mode}&prompt=login+consent`
+  const {authorization_endpoint, redirect_uri, client_id, scope, response_mode, prompt} = mockProps
+  const expectedRedirect = `${authorization_endpoint}?redirect_uri=${redirect_uri}&client_id=${client_id}&scope=${scope}&response_type=code&response_mode=${response_mode}&prompt=${prompt}`
   const redirectUrl = getRedirectUrl(mockProps)
+  expect(redirectUrl).toEqual(expectedRedirect)
+})
+
+it('does not enforce prompt parameter', () => {
+  const {authorization_endpoint, redirect_uri, client_id, scope, response_mode} = mockProps
+  const expectedRedirect = `${authorization_endpoint}?redirect_uri=${redirect_uri}&client_id=${client_id}&scope=${scope}&response_type=code&response_mode=${response_mode}`
+  const redirectUrl = getRedirectUrl({...mockProps, prompt: undefined})
   expect(redirectUrl).toEqual(expectedRedirect)
 })
 
@@ -133,15 +143,15 @@ it('claimProjectMaintainerInvite calls expected endpoint', async () => {
   })
 
   // claim maintainer invite
-  const response = await claimProjectMaintainerInvite({
+  await claimProjectMaintainerInvite({
     id: expectedId,
     token: 'TEST_TOKEN',
     frontend: true
   })
 
   // validate api call
-  expect(global.fetch).toBeCalledTimes(1)
-  expect(global.fetch).toBeCalledWith(expectedUrl,{
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(global.fetch).toHaveBeenCalledWith(expectedUrl,{
     body: `{"invitation":"${expectedId}"}`,
     headers: {
       'Accept': 'application/vnd.pgrst.object + json',
@@ -211,15 +221,15 @@ it('claimSoftwareMaintainerInvite calls expected endpoint', async () => {
   })
 
   // claim maintainer invite
-  const response = await claimSoftwareMaintainerInvite({
+  await claimSoftwareMaintainerInvite({
     id: expectedId,
     token: 'TEST_TOKEN',
     frontend: true
   })
 
   // validate api call
-  expect(global.fetch).toBeCalledTimes(1)
-  expect(global.fetch).toBeCalledWith(expectedUrl, {
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(global.fetch).toHaveBeenCalledWith(expectedUrl, {
     body: `{"invitation":"${expectedId}"}`,
     headers: {
       'Accept': 'application/vnd.pgrst.object + json',
@@ -289,15 +299,15 @@ it('claimOrganisationMaintainerInvite calls expected endpoint', async () => {
   })
 
   // claim maintainer invite
-  const response = await claimOrganisationMaintainerInvite({
+  await claimOrganisationMaintainerInvite({
     id: expectedId,
     token: 'TEST_TOKEN',
     frontend: true
   })
 
   // validate api call
-  expect(global.fetch).toBeCalledTimes(1)
-  expect(global.fetch).toBeCalledWith(expectedUrl, {
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(global.fetch).toHaveBeenCalledWith(expectedUrl, {
     body: `{"invitation":"${expectedId}"}`,
     headers: {
       'Accept': 'application/vnd.pgrst.object + json',

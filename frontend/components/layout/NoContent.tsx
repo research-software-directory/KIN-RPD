@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -7,29 +9,27 @@ import {useEffect, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import DoDisturbIcon from '@mui/icons-material/DoDisturb'
 import Box from '@mui/material/Box'
-import {Theme} from '@mui/material/styles/createTheme'
 import Slide from '@mui/material/Slide'
 
-
-const NoContentText = styled('h2')(({theme}:{theme?:Theme}) => ({
+const NoContentText = styled('h2')({
   fontWeight: 500,
   letterSpacing: '0.25rem',
   textTransform: 'uppercase',
   padding: '1rem 0rem'
-}))
+})
 
-const NoContentBody = styled('div')(({theme}:{theme?:Theme}) => ({
+const NoContentBody = styled('div')({
   margin:'2rem 0rem 0rem 0rem',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
   opacity: 0.25
-}))
+})
 
 export default function NoContent({message='nothing to show'}:{message?:string}) {
   const [show, setShow]=useState(false)
-  const containerRef = useRef()
+  const containerRef = useRef(undefined)
 
   useEffect(() => {
     let abort=false

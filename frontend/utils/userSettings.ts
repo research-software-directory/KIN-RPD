@@ -1,15 +1,16 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
 //
 // SPDX-License-Identifier: Apache-2.0
 
 import {IncomingMessage} from 'http'
-import cookie from 'cookie'
+import {parse} from 'cookie'
 import logger from '~/utils/logger'
 import {rowsPerPageOptions} from '~/config/pagination'
 import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
+import {createJsonHeaders, getBaseUrl} from './fetchHelpers'
 
 /**
  * Extract user settings cookies
@@ -21,16 +22,18 @@ export function getUserSettings(req: IncomingMessage) {
   // check for cookies
   if (req?.headers?.cookie) {
     // parse cookies from node request
-    const cookies = cookie.parse(req.headers.cookie)
+    const cookies = parse(req.headers.cookie)
     // validate and decode
     return {
-      rsd_page_layout: (cookies?.rsd_page_layout ?? 'masonry') as LayoutType,
-      rsd_page_rows: parseInt(cookies?.rsd_page_rows ?? rowsPerPageOptions[0])
+      rsd_page_layout: cookies?.rsd_page_layout as LayoutType ?? 'grid' as LayoutType,
+      rsd_page_rows: cookies?.rsd_page_rows ? parseInt(cookies?.rsd_page_rows) : rowsPerPageOptions[0],
+      avatar_id: null
     }
   } else {
     return {
-      rsd_page_layout: 'masonry' as LayoutType,
-      rsd_page_rows: rowsPerPageOptions[0]
+      rsd_page_layout: 'grid' as LayoutType,
+      rsd_page_rows: rowsPerPageOptions[0],
+      avatar_id: null
     }
   }
 }
@@ -66,11 +69,42 @@ export function getDocumentCookie(name: string, defaultValue: any) {
     return defaultValue
   }
   if (document.cookie) {
-    const cookies = cookie.parse(document.cookie)
+    const cookies = parse(document.cookie)
     if (cookies.hasOwnProperty(name)) {
       return cookies[name]
     }
     return defaultValue
   }
   return defaultValue
+}
+
+export async function getUserAvatar(id?:string,token?:string){
+  try{
+    if (id && token){
+      const query=`select=avatar_id&account=eq.${id}`
+      const url=`${getBaseUrl()}/user_profile?${query}`
+      // console.log(url)
+      const resp = await fetch(url,{
+        method: 'GET',
+        headers: {
+          ...createJsonHeaders(token),
+        },
+      })
+      if (resp.ok){
+        const data = await resp.json()
+        // console.log('data...', data)
+        if (data?.length===1){
+          return data[0].avatar_id
+        }
+        return null
+      }
+      // otherwise request failed
+      logger(`getUserAvatar failed: ${resp.status} ${resp.statusText}`, 'warn')
+      return null
+    }
+    return null
+  }catch(e:any){
+    logger(`getUserAvatar: ${e.message}`)
+    return null
+  }
 }

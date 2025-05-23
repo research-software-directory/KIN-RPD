@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,6 +10,7 @@ import {MentionItemProps, MentionTypeKeys} from '~/types/Mention'
 import FindMention, {FindMentionProps} from './FindMention'
 
 // default is non-resolved promise - for first test
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSearchFn = jest.fn((props) => new Promise<MentionItemProps[]>((res, rej) => {}))
 const mockAdd = jest.fn()
 const mockCreate = jest.fn()
@@ -26,10 +29,11 @@ const mockMentionItem = {
   // is_featured?: boolean
   mention_type: 'book' as MentionTypeKeys,
   source: 'crossref',
-  note: null
+  note: null,
+  journal: null
 }
 
-let props:FindMentionProps = {
+const props:FindMentionProps = {
   config: {
     freeSolo: true,
     minLength: 3,
@@ -147,8 +151,8 @@ it('does not show Add option when onCreate=undefined', async () => {
   expect(options.length).toEqual(2)
   // click first options
   fireEvent.click(options[0])
-  expect(mockAdd).toBeCalledTimes(1)
-  expect(mockAdd).toBeCalledWith(mockMentionItem)
+  expect(mockAdd).toHaveBeenCalledTimes(1)
+  expect(mockAdd).toHaveBeenCalledWith(mockMentionItem)
 })
 
 // NOT ALLOWED WITH MENTIONS but we test
@@ -186,11 +190,11 @@ it('shows Add option when onCreate defined', async () => {
   // select first option
   const firstOption = options[0]
   fireEvent.click(firstOption)
-  expect(mockCreate).toBeCalledTimes(1)
-  expect(mockCreate).toBeCalledWith(searchFor)
+  expect(mockCreate).toHaveBeenCalledTimes(1)
+  expect(mockCreate).toHaveBeenCalledWith(searchFor)
 })
 
-it('leaves input after selection when reset=false', async () => {
+it('leaves input value after selection when reset=false', async () => {
   // resolve with no options
   mockSearchFn.mockResolvedValueOnce([mockMentionItem,mockMentionItem])
   // SET RESET TO FALSE
@@ -211,7 +215,7 @@ it('leaves input after selection when reset=false', async () => {
   })
 
   // then wait for loader to be removed
-  // requied for rest of the test to pass
+  // required for rest of the test to pass
   await waitForElementToBeRemoved(() => screen.getByTestId('circular-loader'))
 
   // select only option in dropdown
@@ -222,7 +226,7 @@ it('leaves input after selection when reset=false', async () => {
   fireEvent.click(options[0])
 
   // expect input to be preset
-  expect(searchInput).toHaveValue(searchFor)
+  expect(searchInput).toHaveValue(mockMentionItem.title)
 })
 
 it('removes input after selection when reset=true', async () => {
@@ -256,4 +260,3 @@ it('removes input after selection when reset=true', async () => {
   // exper input to be reset
   expect(searchInput).toHaveValue('')
 })
-

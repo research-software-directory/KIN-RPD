@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: 2022 - 2024 dv4all
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 // SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -28,10 +28,6 @@ import ImportLicensesFromDoi from './ImportLicensesFromDoi'
 import EditLicenseModal from './EditLicenseModal'
 import {config} from './config'
 
-export type SoftwareLicensesProps = {
-  items: AutocompleteOption<License>[]
-  concept_doi?: string
-}
 
 type LicenseModalProps={
   open: boolean,
@@ -195,7 +191,7 @@ export default function AutosaveSoftwareLicenses() {
   function renderAddOption(props: HTMLAttributes<HTMLLIElement>,
     option: AutocompleteOption<License>) {
     return (
-      <li {...props} key={option.key}>
+      <li {...props} key={option.key} data-testid="add-license-option">
         {/* if new option (has input) show label and count  */}
         <strong>{`Add "${option.label}"`}</strong>
       </li>
@@ -203,8 +199,8 @@ export default function AutosaveSoftwareLicenses() {
   }
 
   function renderOption(props: HTMLAttributes<HTMLLIElement>,
-    option: AutocompleteOption<License>,
-    state: object) {
+    option: AutocompleteOption<License>
+  ) {
     // console.log('renderOption...', option)
     // when value is not found option returns input prop
     if (option?.input) {

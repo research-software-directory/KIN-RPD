@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -16,6 +16,8 @@ import RsdAdminSection from './RsdAdminSection'
 
 export default function OrganisationGeneralSettings() {
   const {user} = useSession()
+  // extract organisation values from hook
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {isMaintainer,...organisation} = useOrganisationContext()
   const methods = useForm<OrganisationForOverview>({
     mode: 'onChange',
@@ -23,15 +25,14 @@ export default function OrganisationGeneralSettings() {
   })
   // extract used methods
   const {
-    watch, register, formState
+    watch, register
   } = methods
-  // const {isValid, isDirty} = formState
+
   const [name,website,short_description]=watch(['name','website','short_description'])
 
   // console.group('OrganisationGeneralSettings')
   // console.log('short_description...', short_description)
   // console.log('website....', website)
-  // console.log('isMaintainer....', isMaintainer)
   // console.groupEnd()
 
   return (
@@ -79,7 +80,7 @@ export default function OrganisationGeneralSettings() {
             rules={config.short_description.validation}
           />
           <div className="py-4"></div>
-          <section className="grid grid-cols-[1fr,1fr] gap-8">
+          <section className="grid grid-cols-[1fr_1fr] gap-8">
             <AutosaveOrganisationTextField
               options={{
                 name: 'website',

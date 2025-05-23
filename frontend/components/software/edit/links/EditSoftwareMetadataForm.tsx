@@ -19,6 +19,7 @@ type EditSoftwareMetadataFormProps={
   licenses: AutocompleteOption<License>[]
   keywords: KeywordForSoftware[]
   categories: CategoriesForSoftware
+  categoryIds: Set<string>
 }
 
 /**

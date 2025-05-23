@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
-// SPDX-FileCopyrightText: 2023 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2023 dv4all
 // SPDX-FileCopyrightText: 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
@@ -19,7 +19,10 @@ import {app} from '~/config/app'
 import {getBaseUrl} from '~/utils/fetchHelpers'
 import {highlightsListUrl} from '~/utils/postgrestUrl'
 import {ssrSoftwareParams} from '~/utils/extractQueryParam'
+import {getSoftwareList} from '~/utils/getSoftware'
+import {getUserSettings, setDocumentCookie} from '~/utils/userSettings'
 import {SoftwareOverviewItemProps} from '~/types/SoftwareTypes'
+import useRsdSettings from '~/config/useRsdSettings'
 import MainContent from '~/components/layout/MainContent'
 import PageBackground from '~/components/layout/PageBackground'
 import FiltersPanel from '~/components/filter/FiltersPanel'
@@ -38,14 +41,12 @@ import {
   highlightKeywordsFilter,
   highlightLanguagesFilter,
   highlightLicensesFilter,
+  softwareCategoriesFilter,
 } from '~/components/software/overview/filters/softwareFiltersApi'
 import SoftwareFiltersModal from '~/components/software/overview/filters/SoftwareFiltersModal'
-import {getUserSettings, setDocumentCookie} from '~/utils/userSettings'
 import {highlightOrderOptions} from '~/components/software/overview/filters/OrderSoftwareBy'
 import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
-import useRsdSettings from '~/config/useRsdSettings'
-import {getSoftwareList} from '~/utils/getSoftware'
-
+import {CategoryOption} from '~/components/filter/CategoriesFilter'
 
 type SpotlightsOverviewProps = {
   search?: string | null
@@ -55,6 +56,8 @@ type SpotlightsOverviewProps = {
   languagesList: LanguagesFilterOption[],
   licenses?: string[] | null,
   licensesList: LicensesFilterOption[],
+  categories?: string[] | null,
+  categoriesList?: CategoryOption[]
   order?: string | null,
   page: number,
   rows: number,
@@ -72,6 +75,7 @@ export default function SpotlightsOverviewPage({
   order, page, rows,
   count, layout,
   keywordsList, languagesList,
+  categories, categoriesList,
   licensesList, highlights
 }: SpotlightsOverviewProps) {
   const smallScreen = useMediaQuery('(max-width:640px)')
@@ -98,6 +102,8 @@ export default function SpotlightsOverviewPage({
   // console.log('languagesList...', languagesList)
   // console.log('licensesList...', licensesList)
   // console.log('software...', highlights)
+  // console.log('categories...', categories)
+  // console.log('categoriesList...', categoriesList)
   // console.groupEnd()
 
   function getFilterCount() {
@@ -105,6 +111,7 @@ export default function SpotlightsOverviewPage({
     if (keywords) count++
     if (prog_lang) count++
     if (licenses) count++
+    if (categories) count++
     if (search) count++
     return count
   }
@@ -142,7 +149,7 @@ export default function SpotlightsOverviewPage({
             <p>{host.software_highlights?.description}</p>
           }
           {/* Page grid with 2 sections: left filter panel and main content */}
-          <div className="flex-1 grid md:grid-cols-[2fr,3fr] lg:grid-cols-[1fr,3fr] xl:grid-cols-[1fr,4fr] my-4 gap-8">
+          <div className="flex-1 grid md:grid-cols-[2fr_3fr] lg:grid-cols-[1fr_3fr] xl:grid-cols-[1fr_4fr] my-4 gap-8">
             {/* Filters panel large screen */}
             {smallScreen===false &&
               <FiltersPanel>
@@ -153,6 +160,8 @@ export default function SpotlightsOverviewPage({
                   languagesList={languagesList}
                   licenses={licenses ?? []}
                   licensesList={licensesList}
+                  categories={categories ?? []}
+                  categoryList={categoriesList ?? []}
                   orderBy={order ?? ''}
                   filterCnt={filterCnt}
                   highlightsOnly={true}
@@ -214,6 +223,8 @@ export default function SpotlightsOverviewPage({
           languagesList={languagesList}
           licenses={licenses ?? []}
           licensesList={licensesList}
+          categories={categories ?? []}
+          categoryList={categoriesList ?? []}
           order={order ?? ''}
           filterCnt={filterCnt}
           setModal={setModal}
@@ -228,11 +239,11 @@ export default function SpotlightsOverviewPage({
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   let orderBy='slug.asc', offset=0
   // extract params from page-query
-  const {search, keywords, prog_lang, licenses, order, rows, page} = ssrSoftwareParams(context.query)
+  const {search, keywords, prog_lang, licenses, categories, order, rows, page} = ssrSoftwareParams(context.query)
   // extract user settings from cookie
   const {rsd_page_layout, rsd_page_rows} = getUserSettings(context.req)
   // use url param if present else user settings
-  let page_rows = rows ?? rsd_page_rows
+  const page_rows = rows ?? rsd_page_rows
   // calculate offset when page & rows present
   if (page_rows && page) {
     offset = page_rows * (page - 1)
@@ -253,6 +264,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     keywords,
     licenses,
     prog_lang,
+    categories,
     order: orderBy,
     limit: page_rows,
     offset
@@ -268,12 +280,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     highlights,
     keywordsList,
     languagesList,
-    licensesList
+    licensesList,
+    categoriesList
   ] = await Promise.all([
     getSoftwareList({url}),
-    highlightKeywordsFilter({search, keywords, prog_lang, licenses}),
-    highlightLanguagesFilter({search, keywords, prog_lang, licenses}),
-    highlightLicensesFilter({search, keywords, prog_lang, licenses}),
+    highlightKeywordsFilter({search, keywords, prog_lang, licenses, categories}),
+    highlightLanguagesFilter({search, keywords, prog_lang, licenses, categories}),
+    highlightLicensesFilter({search, keywords, prog_lang, licenses, categories}),
+    softwareCategoriesFilter({search, keywords, prog_lang, licenses, categories},'highlight_category_filter')
   ])
 
   // passed as props to the page
@@ -287,6 +301,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       languagesList,
       licenses,
       licensesList,
+      categories,
+      categoriesList,
       page,
       order,
       rows: page_rows,

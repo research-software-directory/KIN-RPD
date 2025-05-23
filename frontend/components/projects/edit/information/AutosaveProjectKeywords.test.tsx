@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all) (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
+// SPDX-FileCopyrightText: 2024 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {fireEvent, render, screen, waitFor, act, within} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {WithAppContext, mockSession} from '~/utils/jest/WithAppContext'
 
 import AutosaveProjectKeywords from './AutosaveProjectKeywords'
@@ -11,15 +13,16 @@ import AutosaveProjectKeywords from './AutosaveProjectKeywords'
 
 // MOCKS
 import projectKeywords from './__mocks__/projectKeywords.json'
-
 // MOCK searchForKeyword
 import keywords from '~/components/keyword/__mocks__/keywords.json'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSearchForProjectKeyword = jest.fn(props=>Promise.resolve(keywords))
 jest.mock('./searchForKeyword', () => ({
   searchForProjectKeyword: jest.fn(props=>mockSearchForProjectKeyword(props))
 }))
 
 // MOCK addKeywordsToProject
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockAddKeywordsToProject = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK'
@@ -31,10 +34,12 @@ const mockCreateOrGetKeyword = jest.fn(props => Promise.resolve({
     value: props.keyword
   }
 }))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockDeleteKeywordFromProject = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK'
 }))
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockSilentKeywordDelete = jest.fn(props => Promise.resolve({
   status: 200,
   message: 'OK'
@@ -84,8 +89,8 @@ it('can add keyword from option list', async() => {
   )
 
   // initially we call search with ""
-  expect(mockSearchForProjectKeyword).toBeCalledTimes(1)
-  expect(mockSearchForProjectKeyword).toBeCalledWith({
+  expect(mockSearchForProjectKeyword).toHaveBeenCalledTimes(1)
+  expect(mockSearchForProjectKeyword).toHaveBeenCalledWith({
     searchFor:''
   })
 
@@ -105,8 +110,8 @@ it('can add keyword from option list', async() => {
   fireEvent.click(options[0])
 
   await waitFor(() => {
-    expect(mockAddKeywordsToProject).toBeCalledTimes(1)
-    expect(mockAddKeywordsToProject).toBeCalledWith({
+    expect(mockAddKeywordsToProject).toHaveBeenCalledTimes(1)
+    expect(mockAddKeywordsToProject).toHaveBeenCalledWith({
       'data': [
         {
           'keyword': keywords[0].id,
@@ -117,7 +122,7 @@ it('can add keyword from option list', async() => {
     })
   })
   // wait for keyword chip to be loaded
-  const chips = await screen.findAllByTestId('keyword-chip')
+  await screen.findAllByTestId('keyword-chip')
   // confirm first keyword is added
   const firstKeyword = screen.getByText(keywords[0].keyword)
   expect(firstKeyword).toBeInTheDocument()
@@ -135,8 +140,8 @@ it('can add NEW keyword', async () => {
   )
 
   // initially we call search with ""
-  expect(mockSearchForProjectKeyword).toBeCalledTimes(1)
-  expect(mockSearchForProjectKeyword).toBeCalledWith({
+  expect(mockSearchForProjectKeyword).toHaveBeenCalledTimes(1)
+  expect(mockSearchForProjectKeyword).toHaveBeenCalledWith({
     searchFor:''
   })
 
@@ -154,7 +159,7 @@ it('can add NEW keyword', async () => {
   })
 
   // validate search is called with searchFor
-  expect(mockSearchForProjectKeyword).toBeCalledWith({
+  expect(mockSearchForProjectKeyword).toHaveBeenCalledWith({
     searchFor
   })
 
@@ -162,8 +167,8 @@ it('can add NEW keyword', async () => {
   fireEvent.click(addOption)
 
   await waitFor(() => {
-    expect(mockCreateOrGetKeyword).toBeCalledTimes(1)
-    expect(mockCreateOrGetKeyword).toBeCalledWith({
+    expect(mockCreateOrGetKeyword).toHaveBeenCalledTimes(1)
+    expect(mockCreateOrGetKeyword).toHaveBeenCalledWith({
       'keyword': searchFor,
       'token': mockSession.token,
     })
@@ -195,15 +200,15 @@ it('can REMOVE keyword', async () => {
 
   await waitFor(() => {
     // validate remove keyword from project
-    expect(mockDeleteKeywordFromProject).toBeCalledTimes(1)
-    expect(mockDeleteKeywordFromProject).toBeCalledWith({
+    expect(mockDeleteKeywordFromProject).toHaveBeenCalledTimes(1)
+    expect(mockDeleteKeywordFromProject).toHaveBeenCalledWith({
       'keyword': projectKeywords[0].id,
       'project': projectKeywords[0].project,
       'token': mockSession.token,
     })
     // validate silent keyword delete is called
-    expect(mockSilentKeywordDelete).toBeCalledTimes(1)
-    expect(mockSilentKeywordDelete).toBeCalledWith({
+    expect(mockSilentKeywordDelete).toHaveBeenCalledTimes(1)
+    expect(mockSilentKeywordDelete).toHaveBeenCalledWith({
       'keyword': projectKeywords[0].keyword,
       'token': mockSession.token,
     })
