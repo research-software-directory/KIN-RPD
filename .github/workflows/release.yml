@@ -133,7 +133,7 @@ jobs:
       - name: zip deployment files
         run: |
           zip --junk-paths deployment.zip \
-            ./deployment/nginx.conf \
+            ./nginx/nginx.conf \
             ./deployment/docker-compose.yml \
             ./deployment/.env.example \
             ./deployment/README.md
