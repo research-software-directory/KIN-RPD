@@ -87,7 +87,7 @@ services:
 
   scrapers:
     container_name: scrapers
-    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v2.29.0
+    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.3.0
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -195,7 +195,6 @@ services:
     networks:
       - net
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - lets-encrypt:/etc/letsencrypt
     restart: unless-stopped
 
