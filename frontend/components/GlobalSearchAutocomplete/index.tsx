@@ -41,6 +41,7 @@ export default function GlobalSearchAutocomplete(props: Props) {
   const [searchResults, setSearchResults] = useState<GlobalSearchResults[]>([])
   const [searchCombo, setSearchCombo] = useState('Ctrl K')
   const {hasRemotes} = useHasRemotes()
+
   const lastValue = useDebounce(inputValue, 150)
   const inputRef = useRef<HTMLInputElement>(null)
   const {showErrorMessage} = useSnackbar()
@@ -83,6 +84,10 @@ export default function GlobalSearchAutocomplete(props: Props) {
   if (host.modules?.includes('communities')) {
     defaultValues.push({name: 'Go to Communities page', slug: '', source: 'communities', domain: null, rsd_host: null})
   }
+  if (host.modules?.includes('persons')) {
+    defaultValues.push({name: 'Go to Persons page', slug: '', source: 'persons', domain: null, rsd_host: null})
+  }
+
 
   async function fetchData(search: string) {
     // Fetch api

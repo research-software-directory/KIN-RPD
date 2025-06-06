@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: 2022 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Jesús García Gonzalez (Netherlands eScience Center) <j.g.gonzalez@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -50,10 +50,10 @@ const nextConfig: NextConfig = {
         destination: '/communities/:slug/software',
         permanent: true,
       },
-      // profile default page
+      // forward old links to new location
       {
-        source: '/profile/:orcid',
-        destination: '/profile/:orcid/software',
+        source: '/profile/:orcid*',
+        destination: '/persons/:orcid*',
         permanent: true,
       },
     ]
