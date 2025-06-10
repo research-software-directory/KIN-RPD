@@ -20,7 +20,7 @@
       "description": null
     },
     "orcid_search": false,
-    "modules":["projects","organisations","news","persons"]
+    "modules":["projects","organisations","persons","news"]
   },
   "links": [
     {
