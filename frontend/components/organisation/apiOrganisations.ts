@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2022 - 2023 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 - 2023 dv4all
 // SPDX-FileCopyrightText: 2022 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 // SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -26,10 +26,10 @@ export function organisationListUrl({search, rows = 12, page = 0}: {
   // NOTE 1! selectList need to include all columns used in filtering
   // NOTE 2! ensure selectList uses identical props as defined in OrganisationList type
   const selectList = 'id,parent,name,short_description,country,website,is_tenant,ror_names_string,rsd_path,logo_id,software_cnt,project_cnt,score'
-  let url = `${getBaseUrl()}/rpc/organisations_overview?parent=is.null&score=gt.0&order=project_cnt.desc.nullslast,name.asc&select=${selectList}`
+  let url = `${getBaseUrl()}/rpc/organisations_overview?parent=is.null&score=gt.0&order=is_tenant.desc,score.desc.nullslast,name.asc&select=${selectList}`
   // add search params
   if (search) {
-    url += `&or=(name.ilike.*${search}*, website.ilike.*${search}*, ror_names_string.ilike.*${search}*)`
+    url += `&or=(name.ilike."*${search}*", website.ilike."*${search}*", ror_names_string.ilike."*${search}*")`
   }
   // add pagination params
   url += paginationUrlParams({

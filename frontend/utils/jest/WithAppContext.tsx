@@ -12,12 +12,15 @@ import {RsdSettingsState,defaultRsdSettings} from '~/config/rsdSettingsReducer'
 import {RsdSettingsProvider} from '~/config/RsdSettingsContext'
 import {UserSettingsProps, UserSettingsProvider} from '~/config/UserSettingsContext'
 import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
+import {LoginProvidersProvider} from '~/auth/loginProvidersContext'
+import {Provider} from '~/auth/api/getLoginProviders'
 
 export type WrapProps = {
   props?: any
   session?: Session
   settings?: RsdSettingsState
   user?: UserSettingsProps
+  providers?: Provider[]
 }
 
 type WithAppContextProps = {
@@ -59,6 +62,8 @@ export function WithAppContext({children,options}:WithAppContextProps) {
   const {muiTheme} = loadMuiTheme(settings.theme)
   // user settings
   const user = options?.user ?? defaultUserSettings
+  // providers list
+  const providers = options?.providers ?? []
 
   // console.group('WithAppContext')
   // console.log('session...', session)
@@ -72,7 +77,10 @@ export function WithAppContext({children,options}:WithAppContextProps) {
         <RsdSettingsProvider settings={settings}>
           {/* User settings rows, page layout etc. */}
           <UserSettingsProvider user={user}>
-            {children}
+            {/* Login providers list */}
+            <LoginProvidersProvider providers = {providers}>
+              {children}
+            </LoginProvidersProvider>
           </UserSettingsProvider>
         </RsdSettingsProvider>
       </AuthProvider>

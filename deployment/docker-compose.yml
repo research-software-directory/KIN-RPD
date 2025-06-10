@@ -5,7 +5,7 @@
 services:
   database:
     container_name: database
-    image: ghcr.io/research-software-directory/rsd-saas/database:v3.3.0
+    image: ghcr.io/research-software-directory/rsd-saas/database:v3.4.1
     expose:
       - 5432
     environment:
@@ -25,7 +25,7 @@ services:
 
   backend:
     container_name: backend
-    image: ghcr.io/research-software-directory/rsd-saas/backend:v3.3.0
+    image: ghcr.io/research-software-directory/rsd-saas/backend:v3.4.1
     expose:
       - 3500
     environment:
@@ -43,7 +43,7 @@ services:
 
   auth:
     container_name: auth
-    image: ghcr.io/research-software-directory/rsd-saas/auth:v3.3.0
+    image: ghcr.io/research-software-directory/rsd-saas/auth:v3.4.1
     expose:
       - 7000
     environment:
@@ -59,6 +59,7 @@ services:
       - HELMHOLTZID_REDIRECT
       - HELMHOLTZID_WELL_KNOWN_URL
       - HELMHOLTZID_SCOPES
+      - HELMHOLTZID_ALLOW_EXTERNAL_USERS
       - ORCID_CLIENT_ID
       - ORCID_REDIRECT
       - ORCID_REDIRECT_COUPLE
@@ -67,11 +68,12 @@ services:
       - AZURE_REDIRECT
       - AZURE_WELL_KNOWN_URL
       - AZURE_ORGANISATION
+      - AZURE_DISPLAY_NAME
+      - AZURE_DESCRIPTION_HTML
       - LINKEDIN_CLIENT_ID
       - LINKEDIN_REDIRECT
       - LINKEDIN_REDIRECT_COUPLE
       - LINKEDIN_WELL_KNOWN_URL
-      - HELMHOLTZID_ALLOW_EXTERNAL_USERS
       - AUTH_SURFCONEXT_CLIENT_SECRET
       - AUTH_HELMHOLTZID_CLIENT_SECRET
       - AUTH_ORCID_CLIENT_SECRET
@@ -87,7 +89,7 @@ services:
 
   scrapers:
     container_name: scrapers
-    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.3.0
+    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.4.1
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -108,7 +110,7 @@ services:
     restart: unless-stopped
 
   background-services:
-    image: ghcr.io/research-software-directory/rsd-saas/background-services:v3.3.0
+    image: ghcr.io/research-software-directory/rsd-saas/background-services:v3.4.1
     environment:
     # it uses values from .env file
       - POSTGRES_DB_HOST
@@ -125,42 +127,26 @@ services:
     container_name: frontend
     image: ghcr.io/research-software-directory/kin-rpd/frontend:latest
     environment:
-       # it uses values from .env file
+      # it uses values from .env file
       - POSTGREST_URL
       - PGRST_JWT_SECRET
-      - RSD_AUTH_URL
-      - RSD_AUTH_PROVIDERS
-      - RSD_AUTH_COUPLE_PROVIDERS
       - RSD_REVERSE_PROXY_URL
+      - RSD_AUTH_URL
+      - CROSSREF_CONTACT_EMAIL
       - MATOMO_URL
       - MATOMO_ID
-      - SURFCONEXT_CLIENT_ID
-      - SURFCONEXT_REDIRECT
-      - SURFCONEXT_WELL_KNOWN_URL
-      - SURFCONEXT_SCOPES
-      - SURFCONEXT_RESPONSE_MODE
-      - HELMHOLTZID_CLIENT_ID
-      - HELMHOLTZID_REDIRECT
-      - HELMHOLTZID_WELL_KNOWN_URL
-      - HELMHOLTZID_SCOPES
-      - HELMHOLTZID_RESPONSE_MODE
+      # link your orcid account
+      - RSD_AUTH_COUPLE_PROVIDERS
       - ORCID_CLIENT_ID
       - ORCID_REDIRECT
       - ORCID_REDIRECT_COUPLE
       - ORCID_WELL_KNOWN_URL
       - ORCID_SCOPES
-      - AZURE_CLIENT_ID
-      - AZURE_REDIRECT
-      - AZURE_WELL_KNOWN_URL
-      - AZURE_SCOPES
-      - AZURE_LOGIN_PROMPT
-      - AZURE_DISPLAY_NAME
-      - AZURE_DESCRIPTION_HTML
+      # link your linkedin account
       - LINKEDIN_CLIENT_ID
       - LINKEDIN_REDIRECT
       - LINKEDIN_REDIRECT_COUPLE
       - LINKEDIN_WELL_KNOWN_URL
-      - CROSSREF_CONTACT_EMAIL
     expose:
       - 3000
     depends_on:

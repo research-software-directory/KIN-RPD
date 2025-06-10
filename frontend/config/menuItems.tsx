@@ -43,7 +43,8 @@ export const menuItems:MenuItemType[] = [
   {path: '/software', match:'/software', label:'Software', module:'software'},
   {path: '/projects', match: '/projects', label: 'Projects', module:'projects'},
   {path: '/organisations', match: '/organisations', label: 'Organisations', module:'organisations'},
-  {path: '/communities', match: '/communities', label: 'Communities', module:'communities'}
+  {path: '/communities', match: '/communities', label: 'Communities', module:'communities'},
+  {path: '/persons', match: '/persons', label: 'Persons', module:'persons'}
 ]
 
 // ListItemButton styles for menus used on the edit pages
@@ -156,15 +157,17 @@ export const userMenuItems: MenuItemType[] = [
     module: 'user',
     type: 'divider',
     label: 'divider3',
-    active: ({role})=>['rsd_admin'].includes(role),
+    // news devider
+    active: ({role, modules})=>['rsd_admin'].includes(role) && modules.includes('news'),
   }, {
     module: 'user',
     type: 'link',
     label: 'News',
-    active: ({role})=>['rsd_admin'].includes(role),
+    // news menu item
+    active: ({role,modules})=>['rsd_admin'].includes(role) && modules.includes('news'),
     path: '/news',
     icon: <CalendarViewMonthIcon />,
-  }, {
+  },{
     module: 'user',
     type: 'divider',
     label: 'divider4',
@@ -181,3 +184,4 @@ export const userMenuItems: MenuItemType[] = [
     }
   },
 ]
+
