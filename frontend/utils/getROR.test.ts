@@ -66,7 +66,7 @@ it('findInROR calls fetch with search param and json header', async () => {
 
   expect(mockFetch).toHaveBeenCalledTimes(1)
   expect(mockFetch).toHaveBeenCalledWith(
-    `https://api.ror.org/organizations?query=${searchFor}`,
+    `https://api.ror.org/v1/organizations?query=${searchFor}`,
     {'headers': {'Content-Type': 'application/json'}}
   )
 })

@@ -15,7 +15,7 @@ import logger from './logger'
 export async function findInROR({searchFor}:{searchFor:string}) {
   try {
     // this query will match organisation by name or website values
-    const url = `https://api.ror.org/organizations?query=${encodeURIComponent(searchFor)}`
+    const url = `https://api.ror.org/v1/organizations?query=${encodeURIComponent(searchFor)}`
 
     // make request
     const resp = await fetch(url, {
@@ -24,7 +24,6 @@ export async function findInROR({searchFor}:{searchFor:string}) {
         ...createJsonHeaders(undefined),
       }
     })
-
     if (resp.status === 200) {
       const json: any = await resp.json()
       const options = buildAutocompleteOptions(json['items'])
