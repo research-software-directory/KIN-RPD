@@ -29,7 +29,7 @@ export type OrganisationCardProps = {
   project_cnt: number | null
 }
 
-export default function OrganisationCard({organisation}: { organisation: OrganisationCardProps }) {
+export default function OrganisationCard({organisation}: {organisation: OrganisationCardProps}) {
 
   return (
     <div className="relative">

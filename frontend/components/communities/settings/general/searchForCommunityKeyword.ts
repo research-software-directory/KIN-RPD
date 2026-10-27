@@ -10,7 +10,7 @@ import {getBaseUrl} from '~/utils/fetchHelpers'
 
 // this is always frontend call
 export async function searchForCommunityKeyword(
-  {searchFor}: { searchFor: string }
+  {searchFor}: {searchFor: string}
 ) {
   try {
     const searchForEncoded = encodeURIComponent(searchFor)

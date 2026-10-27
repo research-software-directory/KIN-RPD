@@ -20,7 +20,7 @@ export type AccountInvite = NewAccountInvite & {
   updated_at?: string
 }
 
-export async function getRsdInvites({token}: { token: string }) {
+export async function getRsdInvites({token}: {token: string}) {
   try {
     const query = 'order=expires_at'
     const url = `${getBaseUrl()}/account_invite?${query}`
@@ -43,7 +43,7 @@ export async function getRsdInvites({token}: { token: string }) {
   }
 }
 
-export async function createRsdInvite({invite, token}: { invite: NewAccountInvite, token: string }) {
+export async function createRsdInvite({invite, token}: {invite: NewAccountInvite, token: string}) {
   try {
     // POST
     const url = `${getBaseUrl()}/account_invite`
@@ -80,7 +80,7 @@ export async function createRsdInvite({invite, token}: { invite: NewAccountInvit
   }
 }
 
-export async function deleteRsdInvite({id, token}: { id: string, token: string }) {
+export async function deleteRsdInvite({id, token}: {id: string, token: string}) {
   try {
     const query = `id=eq.${id}`
     const url = `${getBaseUrl()}/account_invite?${query}`

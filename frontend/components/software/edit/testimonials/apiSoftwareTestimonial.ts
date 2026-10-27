@@ -19,7 +19,7 @@ export type SoftwareTestimonial = NewSoftwareTestimonial & {
 }
 
 export async function getTestimonialsForSoftware({software, token}:
-  {software: string, token?: string}) {
+{software: string, token?: string}) {
   try {
 
     const url = `${getBaseUrl()}/testimonial?software=eq.${software}&order=position.asc`
@@ -48,7 +48,7 @@ export async function getTestimonialsForSoftware({software, token}:
   }
 }
 
-export async function postTestimonial({testimonial, token}: { testimonial: NewSoftwareTestimonial, token: string }) {
+export async function postTestimonial({testimonial, token}: {testimonial: NewSoftwareTestimonial, token: string}) {
   try {
     const url = `${getBaseUrl()}/testimonial`
     const resp = await fetch(url, {
@@ -87,7 +87,7 @@ export async function postTestimonial({testimonial, token}: { testimonial: NewSo
 }
 
 
-export async function patchTestimonial({testimonial, token}: { testimonial: SoftwareTestimonial, token: string }) {
+export async function patchTestimonial({testimonial, token}: {testimonial: SoftwareTestimonial, token: string}) {
   try {
     const url = `${getBaseUrl()}/testimonial?id=eq.${testimonial.id}`
     const resp = await fetch(url, {
@@ -107,7 +107,7 @@ export async function patchTestimonial({testimonial, token}: { testimonial: Soft
   }
 }
 
-export async function patchTestimonialPositions({testimonials, token}: { testimonials: Testimonial[], token: string }) {
+export async function patchTestimonialPositions({testimonials, token}: {testimonials: Testimonial[], token: string}) {
   try {
     // if the array is empty return
     if (testimonials.length === 0) return {status:200,message:'OK'}
@@ -139,7 +139,7 @@ export async function patchTestimonialPositions({testimonials, token}: { testimo
 }
 
 
-export async function deleteTestimonialById({id, token}: { id: string, token: string }) {
+export async function deleteTestimonialById({id, token}: {id: string, token: string}) {
   try {
     const url = `${getBaseUrl()}/testimonial?id=eq.${id}`
     const resp = await fetch(url, {

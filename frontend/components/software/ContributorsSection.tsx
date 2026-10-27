@@ -32,7 +32,7 @@ function clasifyContributors(contributors: Person[]) {
 
 // shared component with project page for team members
 export default function ContributorsSection({contributors, title='Contributors'}:
-  { contributors: Person[], title?:string }) {
+{contributors: Person[], title?:string}) {
   // do not show section if no content
   if (typeof contributors == 'undefined' || contributors?.length===0) return null
   // clasify

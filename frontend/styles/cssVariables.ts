@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {Theme} from '@mui/material/styles/createTheme'
+import {Theme} from '@mui/material/styles'
 
 export type CssVariableProps = {
   [key:string]:string | number

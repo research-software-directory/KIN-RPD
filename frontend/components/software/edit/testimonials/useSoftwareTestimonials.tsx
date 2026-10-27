@@ -53,7 +53,7 @@ export default function useSoftwareTestimonals() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[software.id,token])
 
-  const updateTestimonial = useCallback(async({data, pos}: { data: Testimonial, pos: number })=>{
+  const updateTestimonial = useCallback(async({data, pos}: {data: Testimonial, pos: number})=>{
     if (typeof pos == 'number' && data.id) {
       const testimonial = {
         ...data,

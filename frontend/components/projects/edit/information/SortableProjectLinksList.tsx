@@ -9,7 +9,7 @@ import SortableProjectLinksItem from './SortableProjectLinkItem'
 
 type SortableProjectLinksListProps = {
   links: ProjectLink[],
-	onEdit: (pos: number) => void
+  onEdit: (pos: number) => void
   onDelete: (pos: number) => void
   onSorted: (link:ProjectLink[])=>void
 }

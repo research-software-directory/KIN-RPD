@@ -124,13 +124,13 @@ export type PackageManager = NewPackageManager & {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getPackageManagers({software, token}: { software: string, token: string }) {
+export async function getPackageManagers({software, token}: {software: string, token: string}) {
   // console.log('getPackageManagers...default MOCK')
   return mockPackageManagers
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function postPackageManager({data, token}: { data: NewPackageManager, token: string }) {
+export async function postPackageManager({data, token}: {data: NewPackageManager, token: string}) {
   // console.log('postPackageManager...default MOCK')
   return {
     status: 200,
@@ -139,7 +139,7 @@ export async function postPackageManager({data, token}: { data: NewPackageManage
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function patchPackageManagers({items, token}: { items: PackageManager[], token: string }) {
+export async function patchPackageManagers({items, token}: {items: PackageManager[], token: string}) {
   // console.log('patchPackageManagers...default MOCK')
   return {
     status: 200,
@@ -148,7 +148,7 @@ export async function patchPackageManagers({items, token}: { items: PackageManag
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function deletePackageManager({id, token}: { id: string, token: string }) {
+export async function deletePackageManager({id, token}: {id: string, token: string}) {
   // console.log('deletePackageManager...default MOCK')
   return {
     status: 200,

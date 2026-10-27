@@ -196,7 +196,7 @@ export async function linkMentionToEntity({ids, table, entityName, entityId, tok
   }
 }
 
-export async function addMentions({mentions, token}: { mentions: MentionItemProps[], token: string }) {
+export async function addMentions({mentions, token}: {mentions: MentionItemProps[], token: string}) {
   try {
     const url = '/api/v1/mention'
     const resp = await fetch(url, {

@@ -30,7 +30,7 @@ export default function AddOutput() {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={onNewOutput}>
-          Create
+            Create
           </Button>
         </div>
       </CreateMentionInfoPanel>

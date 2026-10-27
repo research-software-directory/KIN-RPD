@@ -24,7 +24,7 @@ export type AggregatedPerson = {
   sources: SourceType[]
 }
 
-const orcidKeys: { targetKey: keyof AggregatedPerson, sourceKey: keyof OrcidRecord }[] = [
+const orcidKeys: {targetKey: keyof AggregatedPerson, sourceKey: keyof OrcidRecord}[] = [
   {targetKey: 'email_options', sourceKey: 'email'},
   {targetKey: 'affiliation_options', sourceKey: 'institution-name'}
 ]
@@ -38,7 +38,7 @@ const rsdKeys: {targetKey: keyof AggregatedPerson, sourceKey: keyof UniqueRsdPer
 
 export function groupByOrcid(rsdPersons: UniqueRsdPerson[], orcidPersons: OrcidRecord[]) {
   try {
-    const personsByOrcid: { [key: string]: AggregatedPerson } = {}
+    const personsByOrcid: {[key: string]: AggregatedPerson} = {}
     const persons: AggregatedPerson[] = []
 
     // ORCID entries first

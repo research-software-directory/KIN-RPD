@@ -25,7 +25,7 @@ type EditTestimonialModalProps = {
   config: any,
   open: boolean,
   onCancel: () => void,
-  onSubmit: ({data, pos}: { data: Testimonial|NewTestimonial, pos?: number }) => void,
+  onSubmit: ({data, pos}: {data: Testimonial|NewTestimonial, pos?: number}) => void,
   testimonial?: Testimonial|NewTestimonial,
   // item position in the array
   pos?: number

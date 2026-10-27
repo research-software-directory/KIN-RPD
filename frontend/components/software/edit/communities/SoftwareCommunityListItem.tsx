@@ -40,7 +40,7 @@ export default function SoftwareCommunityListItem({community, onEdit, onDelete}:
                 onEdit(community)
               }
             }}
-			        disabled={onEdit === undefined}
+            disabled={onEdit === undefined}
           >
             <CategoryIcon />
           </IconButton>

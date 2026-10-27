@@ -120,7 +120,7 @@ export async function deleteProjectTestimonial({id,token}:{id:string,token:strin
  * @param param0
  * @returns
  */
-export async function patchTestimonialPositions({testimonials, token}: { testimonials: Testimonial[], token: string }) {
+export async function patchTestimonialPositions({testimonials, token}: {testimonials: Testimonial[], token: string}) {
   try {
     // if the array is empty return
     if (testimonials.length === 0) return {status:200,message:'OK'}

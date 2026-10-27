@@ -1,13 +1,15 @@
 // SPDX-FileCopyrightText: 2022 - 2024 dv4all
-// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2026 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2023 - 2024 Dusan Mijatovic (dv4all) (dv4all)
-// SPDX-FileCopyrightText: 2023 - 2025 Dusan Mijatovic (Netherlands eScience Center)
+// SPDX-FileCopyrightText: 2023 - 2026 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useEffect, useRef, JSX} from 'react'
+'use client'
+
+import {useEffect, useRef, JSX, useId} from 'react'
 import {Controller} from 'react-hook-form'
 import TextField, {TextFieldProps} from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -50,7 +52,13 @@ export default function ControlledTextField<T>({options, control, rules}:Control
     }
   }, [options.autofocus])
 
+
   if (options?.useNull && options?.defaultValue==='') options.defaultValue=null
+
+  // Stable ID generation for accessibility mapping
+  const reactId = useId()
+  const inputId = `${reactId}-${options.name.toString()}`
+  const helperId = `${reactId}-helper-text`
 
   return (
     <Controller
@@ -64,12 +72,12 @@ export default function ControlledTextField<T>({options, control, rules}:Control
 
         return (
           <TextField
-            id={options.name.toString() ?? `input-${Math.floor(Math.random()*10000)}`}
+            id={inputId}
             inputRef={inputRef}
             disabled={options?.disabled ?? false}
             autoComplete={options?.autoComplete ?? 'off'}
             multiline={options?.multiline ?? false}
-            minRows={options?.maxRows ?? undefined}
+            minRows={options?.minRows ?? undefined}
             maxRows={options?.maxRows ?? undefined}
             rows={options?.rows ?? undefined}
             error={error ? true : false}
@@ -86,15 +94,20 @@ export default function ControlledTextField<T>({options, control, rules}:Control
                 endAdornment: options?.endAdornment ? <InputAdornment position="end">{options?.endAdornment}</InputAdornment> : undefined
               },
               formHelperText:{
+                // Force a matched programmatic ID string
+                id: helperId,
                 sx:{
                   display: 'flex',
                   justifyContent:'space-between'
                 }
               },
+              // a11y link the input to the text helper block
+              htmlInput: {
+                'aria-describedby': helperId
+              },
             }}
             helperText={
               <HelperTextWithCounter
-                // message={options?.helperTextMessage ?? ''}
                 message={error?.message ?? options?.helperTextMessage ?? ''}
                 count={options?.helperTextCnt ?? ''}
               />

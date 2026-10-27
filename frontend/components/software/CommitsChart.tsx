@@ -33,7 +33,7 @@ export function ArchivedRepo({archived}:Readonly<{archived:boolean|null}>){
   )
 }
 
-export function StarCount({star_count}:Readonly<{star_count:number|null}>){
+export function StarCount({star_count}:Readonly<{star_count?:number|null}>){
   if (star_count===null || star_count===undefined) return null
   return (
     <span data-testid="star-count">
@@ -42,7 +42,7 @@ export function StarCount({star_count}:Readonly<{star_count:number|null}>){
   )
 }
 
-export function ForkCount({fork_count}:Readonly<{fork_count:number|null}>){
+export function ForkCount({fork_count}:Readonly<{fork_count?:number|null}>){
   if (fork_count===null || fork_count===undefined) return null
   return (
     <span data-testid="fork-count">

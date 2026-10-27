@@ -147,7 +147,7 @@ export default function ProjectTeam() {
     })
   }
 
-  function onSubmitMember({member, pos}: { member: FormPerson, pos?: number }) {
+  function onSubmitMember({member, pos}: {member: FormPerson, pos?: number}) {
     hideModals()
     if (typeof pos == 'undefined'){
       addMember(member)

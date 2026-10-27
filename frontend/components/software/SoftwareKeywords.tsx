@@ -12,7 +12,7 @@ import {KeywordForSoftware} from '~/types/SoftwareTypes'
 import {ssrSoftwareUrl} from '~/utils/postgrestUrl'
 import TagChipFilter from '~/components/layout/TagChipFilter'
 
-export default function SoftwareKeywords({keywords = []}: { keywords: KeywordForSoftware[] }) {
+export default function SoftwareKeywords({keywords = []}: {keywords: KeywordForSoftware[]}) {
   function renderTags() {
     if (keywords.length === 0) {
       return (

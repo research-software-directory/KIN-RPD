@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {useEffect, useRef, JSX} from 'react'
+import {useEffect, useRef, JSX, useId} from 'react'
 import TextField from '@mui/material/TextField'
 import HelperTextWithCounter from './HelperTextWithCounter'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -30,8 +30,9 @@ type TextFieldWidthCounterType = {
 }
 
 export default function TextFieldWithCounter({options, register}:
-  { options: TextFieldWidthCounterType, register: any}) {
+{options: TextFieldWidthCounterType, register: any}) {
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const uid = useId()
 
   useEffect(() => {
     if (options.autofocus === true && inputRef.current) {
@@ -48,7 +49,7 @@ export default function TextFieldWithCounter({options, register}:
       rows={options?.rows ?? undefined}
       maxRows={options?.maxRows ?? undefined}
       error={options?.error ?? false}
-      id={options?.label ?? `input-${Math.floor(Math.random()*10000)}`}
+      id={options?.label ?? `input-${uid}`}
       label={options?.label ?? 'Label not provided'}
       type={options?.type ?? 'text'}
       fullWidth={options?.fullWidth ?? true }

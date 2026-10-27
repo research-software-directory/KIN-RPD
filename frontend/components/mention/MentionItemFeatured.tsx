@@ -13,7 +13,7 @@ import {MentionItemProps} from '../../types/Mention'
 import MentionAuthors from './MentionAuthors'
 import MentionPublisherItem from './MentionPublisherItem'
 
-export default function MentionItemFeatured({mention}: { mention: MentionItemProps }) {
+export default function MentionItemFeatured({mention}: {mention: MentionItemProps}) {
   // do not render if no data or no url
   if (!mention || mention.url===null) return null
 

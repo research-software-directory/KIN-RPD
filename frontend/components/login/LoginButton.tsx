@@ -65,7 +65,7 @@ export default function LoginButton() {
         tabIndex={0}
         onClick={()=>setOpen(true)}
       >
-          Sign in
+        Sign in
       </button>
       <LoginDialog
         providers={providers}

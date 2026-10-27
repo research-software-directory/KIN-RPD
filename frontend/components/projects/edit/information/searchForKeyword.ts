@@ -16,7 +16,7 @@ export type Keyword = {
 
 // this is always frontend call
 export async function searchForProjectKeyword({searchFor}:
-  { searchFor: string }) {
+{searchFor: string}) {
   try {
     // GET top 30 matches
     const url = `/api/v1/rpc/keyword_count_for_projects?keyword=ilike.*${searchFor}*&order=cnt.desc.nullslast,keyword.asc&limit=30`

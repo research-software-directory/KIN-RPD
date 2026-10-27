@@ -12,7 +12,7 @@ import {ProjectLink} from '~/types/Project'
 import ProjectSidebarSection from '../layout/SidebarSection'
 import ProjectSidebarTitle from '../layout/SidebarTitle'
 
-export default function ProjectLinks({links}: { links: ProjectLink[] }) {
+export default function ProjectLinks({links}: {links: ProjectLink[]}) {
   if (!links || links?.length === 0) {
     return (
       <ProjectSidebarSection>

@@ -58,7 +58,7 @@ export function getRedirectUrl(props: RedirectToProps) {
 }
 
 export async function claimProjectMaintainerInvite({id, token, frontend = false}:
-  {id: string, token?: string, frontend?:boolean}) {
+{id: string, token?: string, frontend?:boolean}) {
   try {
     const query = 'rpc/accept_invitation_project'
     let url = `${process.env.POSTGREST_URL}/${query}`
@@ -103,7 +103,7 @@ export async function claimProjectMaintainerInvite({id, token, frontend = false}
 
 
 export async function claimSoftwareMaintainerInvite({id, token, frontend = false}:
-  { id: string, token?: string, frontend?: boolean }) {
+{id: string, token?: string, frontend?: boolean}) {
   try {
     const query = 'rpc/accept_invitation_software'
     let url = `${process.env.POSTGREST_URL}/${query}`
@@ -147,7 +147,7 @@ export async function claimSoftwareMaintainerInvite({id, token, frontend = false
 }
 
 export async function claimOrganisationMaintainerInvite({id, token, frontend = false}:
-  { id: string, token?: string, frontend?: boolean }) {
+{id: string, token?: string, frontend?: boolean}) {
   try {
     const query = 'rpc/accept_invitation_organisation'
     let url = `${process.env.POSTGREST_URL}/${query}`
@@ -192,7 +192,7 @@ export async function claimOrganisationMaintainerInvite({id, token, frontend = f
 
 
 export async function claimCommunityMaintainerInvite({id, token}:
-  { id: string, token?: string}) {
+{id: string, token?: string}) {
   try {
     const query = 'rpc/accept_invitation_community'
     const url = `${getBaseUrl()}/${query}`

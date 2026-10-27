@@ -18,6 +18,9 @@ beforeEach(() => {
 })
 
 it('sets content security policy header for development', () => {
+  // @ts-expect-error workaround to get security upgrades (Next.js 16.3.4) working
+  process.env.NODE_ENV = 'development'
+
   const nonce = setContentSecurityPolicyHeader(res as any)
   const policyName = 'Content-Security-Policy-Report-Only'
   const policyText = `default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*; base-uri 'none'; object-src 'none'; script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' https:`
@@ -28,6 +31,7 @@ it('sets content security policy header for development', () => {
 })
 
 it('sets content security policy header for production', () => {
+  // @ts-expect-error workaround to get security upgrades (Next.js 16.3.4) working
   process.env.NODE_ENV = 'production'
   process.env.MATOMO_URL = 'https://mamtomo.com/test-url'
   const nonce = setContentSecurityPolicyHeader(res as any)

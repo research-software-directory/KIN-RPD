@@ -81,13 +81,10 @@ export default function OrganisationSignUpDialog({
       fullScreen={fullScreen}
       open={open}
       onClose={(e, reason) => {
-        if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-          // console.log('do nothing')
-        } else {
+        if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
           closeAndReset()
         }
       }}
-      disableEscapeKeyDown
       aria-labelledby="responsive-dialog-title"
     >
       <div className="h-full w-full bg-[#232323] p-6">

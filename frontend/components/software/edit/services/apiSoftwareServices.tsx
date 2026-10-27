@@ -32,11 +32,11 @@ export type PackageManagerService = {
   software:string
   url: string,
   package_manager: PackageManagerTypes,
-	download_count_scraped_at: string|null,
-	download_count_last_error: string|null,
+  download_count_scraped_at: string|null,
+  download_count_last_error: string|null,
   download_count_scraping_disabled_reason: string|null,
-	reverse_dependency_count_scraped_at: string|null,
-	reverse_dependency_count_last_error: string|null,
+  reverse_dependency_count_scraped_at: string|null,
+  reverse_dependency_count_last_error: string|null,
   reverse_dependency_count_scraping_disabled_reason: string|null,
 }
 
@@ -170,7 +170,7 @@ export function useSoftwareServices(){
 }
 
 export async function deleteServiceDataFromDb({dbprops, software, token}:
-  {dbprops:string[], software: string, token:string}){
+{dbprops:string[], software: string, token:string}){
   try {
     const query = `repository_url?software=eq.${software}`
     const url = `${getBaseUrl()}/${query}`

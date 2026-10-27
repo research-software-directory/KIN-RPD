@@ -23,11 +23,11 @@ const nextConfig: NextConfig = {
   // disable strict mode if you want react to render component once
   // see for more info https://nextjs.org/docs/api-reference/next.config.js/react-strict-mode
   reactStrictMode: false,
-  eslint: {
-    // Run ESLint in these directories during production builds (next build)
-    // by default next runs linter only in pages/, components/, and lib/
-    dirs: ['auth', 'components', 'config', 'pages', 'styles', 'types', 'utils']
-  },
+  // eslint: {
+  //   // Run ESLint in these directories during production builds (next build)
+  //   // by default next runs linter only in pages/, components/, and lib/
+  //   dirs: ['auth', 'components', 'config', 'pages', 'styles', 'types', 'utils']
+  // },
   // only in development
   rewrites: async () => rewritesConfig,
 

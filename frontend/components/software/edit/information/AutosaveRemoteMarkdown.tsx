@@ -133,7 +133,7 @@ export default function AutosaveRemoteMarkdown({rules,options,onSaveField}: Auto
                     variant="contained"
                     disabled = {!state.error?.rawUrl}
                     onClick={useSuggestedUrl}>
-                      Use suggestion
+                    Use suggestion
                   </Button>
                 </div>
               </>

@@ -9,7 +9,7 @@
 
 import {createContext, Dispatch, SetStateAction, useState, useContext, useEffect} from 'react'
 import {IncomingMessage, OutgoingMessage} from 'http'
-import {parse} from 'cookie'
+import {parseCookie} from 'cookie'
 import logger from '~/utils/logger'
 import verifyJwt, {decodeJwt} from './jwtUtils'
 import {refreshSession} from './refreshSession'
@@ -199,7 +199,7 @@ export function getRsdTokenNode(req: IncomingMessage){
   // check for cookies
   if (req?.headers?.cookie) {
     // parse cookies from node request
-    const cookies = parse(req.headers.cookie)
+    const cookies = parseCookie(req.headers.cookie)
     // validate and decode
     const token = cookies?.rsd_token
     return token

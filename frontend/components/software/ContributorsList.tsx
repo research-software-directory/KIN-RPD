@@ -67,7 +67,7 @@ function ShowButton({showAll,showLess,onShowAll,onShowLess}:GetMoreIconButtonPro
   return null
 }
 
-export default function ContributorsList({contributors,section='software'}: { contributors: Person[],section:'software'|'projects'}) {
+export default function ContributorsList({contributors,section='software'}: {contributors: Person[],section:'software'|'projects'}) {
   // show top 12 items
   const topItems = 12
   const [limit,setLimit] = useState(topItems)

@@ -34,7 +34,7 @@ const GivenBy = styled('div')(({theme}) => ({
   paddingLeft:'6rem'
 }))
 
-export default function TestimonialItem({item}: { item: Testimonial }) {
+export default function TestimonialItem({item}: {item: Testimonial}) {
 
   return (
     <div>

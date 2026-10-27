@@ -58,22 +58,29 @@ jest.mock('rehype-external-links', jest.fn((...props) => {
   return props
 }))
 
-
-// MOCK useRouter
+// MOCK app router (next/navigation)
 jest.mock('next/router', () => ({
   useRouter() {
     return {
-      // pathname: 'testPaths',
-      asPath: 'test-path',
-      // ... whatever else you call on `router`
-      query: {
-        test: 'query',
-        slug: 'test-slug'
-      }
+      route: '/',
+      pathname: '',
+      query: {slug: 'test-slug', tab: 'overview', order: 'asc'},
+      asPath: '',
+      isReady: true, // 💡 Essential since your hook likely guards on this now
+      push: jest.fn().mockImplementation(() => Promise.resolve(true)),
+      replace: jest.fn().mockImplementation(() => Promise.resolve(true)),
+      reload: jest.fn(),
+      back: jest.fn(),
+      prefetch: jest.fn().mockImplementation(() => Promise.resolve()),
+      beforePopState: jest.fn(),
+      events: {
+        on: jest.fn(),
+        off: jest.fn(),
+        emit: jest.fn(),
+      },
     }
   },
 }))
-
 
 // mock console log
 global.console = {
@@ -86,6 +93,13 @@ global.console = {
 
 // MOCK scrollTo used in markdown component (not present in jsdom)
 window.scrollTo = jest.fn()
+
+// global search
+jest.mock('~/components/GlobalSearchAutocomplete/apiGlobalSearch')
+jest.mock('~/components/GlobalSearchAutocomplete/useHasRemotes')
+
+// categories api
+jest.mock('~/components/category/apiCategories')
 
 // TOKEN
 // process.env.PGRST_JWT_SECRET='reallyreallyreallyreallyverysafe'

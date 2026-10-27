@@ -63,7 +63,7 @@ export async function isMaintainerOfCommunity({community, account, token}: isCom
 }
 
 export async function getCommunitiesOfMaintainer({token}:
-  {token?: string}) {
+{token?: string}) {
   try {
     // without token api request is not needed
     if (!token) return []

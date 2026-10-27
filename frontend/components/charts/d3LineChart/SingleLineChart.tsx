@@ -17,7 +17,7 @@ export type Point = {
   y: number
 }
 
-export default function SingleLineChart({data = []}: { data: Point[] }) {
+export default function SingleLineChart({data = []}: {data: Point[]}) {
   const theme = useTheme()
   const svgRef: any = useRef(undefined)
   const divRef: any = useRef(undefined)

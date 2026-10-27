@@ -25,6 +25,7 @@
  */
 
 // get theme variables
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const defaultSettings = require('./public/data/settings.json')
 // console.log('defaultSettings...', defaultSettings)
 // load colors and typography
@@ -35,6 +36,7 @@ const typography = defaultSettings.theme.typography
 
 module.exports = {
   darkMode: 'class',
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [require('@tailwindcss/typography')],
   content: [
     './auth/**/*.{js,ts,jsx,tsx}',

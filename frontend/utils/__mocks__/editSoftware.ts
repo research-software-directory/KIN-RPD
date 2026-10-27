@@ -8,7 +8,7 @@
 import {NewSoftwareItem} from '~/types/SoftwareTypes'
 
 export async function addSoftware({software, token}:
-  { software: NewSoftwareItem, token: string }) {
+{software: NewSoftwareItem, token: string}) {
   // console.log('Mocked addSoftware...')
   return {
     status: 201,
@@ -20,7 +20,7 @@ export async function addSoftware({software, token}:
 }
 
 export async function getSoftwareToEdit({slug, token, baseUrl}:
-  { slug: string, token: string, baseUrl?: string }) {
+{slug: string, token: string, baseUrl?: string}) {
   return {
     status: 200,
     message: {

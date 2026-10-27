@@ -168,7 +168,7 @@ export function classifyMentionsByType(mentions: MentionItemProps[]) {
  * @returns MentionItem
  */
 export async function addOrGetMentionItem({mention, token}:
-  { mention: MentionItemProps, token: string }) {
+{mention: MentionItemProps, token: string}) {
   const url = '/api/v1/mention'
   try {
     // check if publication is already
@@ -231,7 +231,7 @@ export async function addOrGetMentionItem({mention, token}:
  * @returns
  */
 export async function replaceMentionItem({mention,token}:
-  { mention: MentionItemProps, token: string }){
+{mention: MentionItemProps, token: string}){
   try {
     let resp
     if (mention.id) {
@@ -275,7 +275,7 @@ export async function replaceMentionItem({mention,token}:
  * @returns MentionItem
  */
 export async function updateMentionItem({mention, token}:
-  { mention: MentionItemProps, token: string }) {
+{mention: MentionItemProps, token: string}) {
   if (!mention.id) {
     return {
       status: 400,
@@ -313,7 +313,7 @@ export async function updateMentionItem({mention, token}:
 // WE do not allow update of mentions with DOI from FE
 // Dusan 2022-10-19
 export async function updateDoiItem({rsdItem, token}:
-  { rsdItem: MentionItemProps, token: string }) {
+{rsdItem: MentionItemProps, token: string}) {
   if (!rsdItem || rsdItem.id === null) return {
     status: 400,
     message: 'Failed to update item. Missing payload'
@@ -371,7 +371,7 @@ export function newMentionItem(title?: string) {
  * delete existing mention item in the mention table
  */
 export async function deleteMentionItem({id, token}:
-  {id: string, token: string }) {
+{id: string, token: string}) {
 
   const url = `/api/v1/mention?id=eq.${id}`
   try {

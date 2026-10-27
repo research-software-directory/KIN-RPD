@@ -17,7 +17,7 @@ import PageBackground from '~/components/layout/PageBackground'
 import MainContent from '~/components/layout/MainContent'
 import ReactMarkdownWithSettings from '~/components/layout/ReactMarkdownWithSettings'
 
-export default function PublicPage({title,markdown}: {title:string, markdown: string }) {
+export default function PublicPage({title,markdown}: {title:string, markdown: string}) {
   const pageTitle=`${title} | ${app.title}`
   const description = markdown.split('\n')[0] ?? ''
   return (

@@ -131,7 +131,7 @@ services:
       # dockerfile to use for build
       dockerfile: Dockerfile
     # update version number to correspond to frontend/package.json
-    image: kin-rpd/frontend:1.0.0
+    image: kin-rpd/frontend:1.1.2
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -173,7 +173,7 @@ services:
       context: ./documentation
       # dockerfile to use for build
       dockerfile: Dockerfile
-    image: kin-rpd/documentation:1.0.0
+    image: kin-rpd/documentation:1.1.2
     expose:
       - "80"
     networks:
@@ -182,7 +182,7 @@ services:
   nginx:
     build:
       context: ./nginx
-    image: kin-rpd/nginx:1.0.0
+    image: kin-rpd/nginx:1.1.2
     ports:
       - "80:80"
       - "443:443"
@@ -203,7 +203,7 @@ services:
   #----------------------------------------------
   data-generation:
     build: ./data-generation
-    image: kin-rpd/generation:1.0.0
+    image: kin-rpd/generation:1.1.2
     environment:
       # it needs to be here to use values from .env file
       - PGRST_JWT_SECRET

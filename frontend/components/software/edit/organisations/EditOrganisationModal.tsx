@@ -29,7 +29,7 @@ import ControlledImageInput, {FormInputsForImage} from '~/components/form/Contro
 type EditOrganisationModalProps = {
   open: boolean,
   onCancel: () => void,
-  onSubmit: ({data, pos}: { data: EditOrganisation, pos?: number }) => void,
+  onSubmit: ({data, pos}: {data: EditOrganisation, pos?: number}) => void,
   // onDeleteLogo: (logo_id:string) => void,
   organisation?: EditOrganisation,
   // item position in the array

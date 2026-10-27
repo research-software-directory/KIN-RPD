@@ -101,7 +101,7 @@ function calculateScore(element:ProjectQualityProps) {
 }
 
 
-export function useProjectQuality({token, showAll}: { token: string, showAll: boolean }) {
+export function useProjectQuality({token, showAll}: {token: string, showAll: boolean}) {
   const [data, setData] = useState<ProjectQualityProps[]>([])
   const [dataLoaded, setDataLoaded] = useState(false)
 

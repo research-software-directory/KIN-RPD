@@ -19,7 +19,7 @@ it('returns settings SSR', async () => {
   // resolve getRsdSettings
   mockResolvedValueOnce(defaultSettings)
 
-  const resp = await getSettingsServerSide(mockReq, {})
+  const resp = await getSettingsServerSide(mockReq)
 
   expect(resp).toEqual({
     ...defaultSettings,

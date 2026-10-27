@@ -16,7 +16,7 @@ import SaveIcon from '@mui/icons-material/Save'
 type SubmitButtonProps = {
   formId: string
   disabled: boolean
-};
+}
 
 export default function SubmitButtonWithListener({disabled,formId}: SubmitButtonProps) {
   const btnRef:any = useRef(undefined)

@@ -24,7 +24,7 @@ export async function getRsdAccounts({page, rows, token, searchFor}: getLoginApi
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function deleteRsdAccount({id, token}: { id: string, token: string }) {
+export async function deleteRsdAccount({id, token}: {id: string, token: string}) {
   // console.log('deleteRsdAccount...mock DEFAULT')
 
   return {

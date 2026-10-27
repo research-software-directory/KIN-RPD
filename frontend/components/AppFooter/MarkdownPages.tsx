@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {RsdLink} from '~/config/rsdSettingsReducer'
 
 
-export default function MarkdownPages({pages=[]}: { pages: RsdLink[] }) {
+export default function MarkdownPages({pages=[]}: {pages: RsdLink[]}) {
   // if no custom markdown pages return null
   if (pages.length === 0) return null
 

@@ -63,7 +63,7 @@ function LinkToVersionDoi({tag,doi}:{tag: string | null,doi:string|null}) {
 }
 
 
-export default function ReleaseItem({release}: { release: SoftwareReleaseInfo }) {
+export default function ReleaseItem({release}: {release: SoftwareReleaseInfo}) {
   const releaseDate = new Date(release.release_date)
   return (
     <article

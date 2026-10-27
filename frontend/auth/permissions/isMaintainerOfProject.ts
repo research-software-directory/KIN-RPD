@@ -7,7 +7,7 @@ import {createJsonHeaders} from '../../utils/fetchHelpers'
 import logger from '../../utils/logger'
 
 export async function isMaintainerOfProject({slug, account, token, frontend = true}:
-  { slug?: string, account?: string, token?: string, frontend?: boolean }) {
+{slug?: string, account?: string, token?: string, frontend?: boolean}) {
   try {
     // return false directly when missing info
     if (!slug || !account || !token) return false

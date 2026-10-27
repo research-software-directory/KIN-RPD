@@ -17,7 +17,7 @@ import {AnnouncementItem, saveAnnouncement} from './apiAnnouncement'
 
 const formId = 'announcements-form'
 
-export default function AnnouncementsForm({data}: { data: AnnouncementItem|null }) {
+export default function AnnouncementsForm({data}: {data: AnnouncementItem|null}) {
   const {token} = useSession()
   const {showErrorMessage} = useSnackbar()
   const {handleSubmit, register, control, reset, formState} = useForm<AnnouncementItem>({

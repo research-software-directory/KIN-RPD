@@ -30,7 +30,7 @@ export function isOrcid(stringToCheck: string): boolean {
   return stringToCheck.match(orcidRegex) !== null
 }
 
-export async function searchORCID({searchFor, limit=30}: { searchFor: string, limit?:number }) {
+export async function searchORCID({searchFor, limit=30}: {searchFor: string, limit?:number}) {
   try {
     const rows = `&start=0&rows=${limit}`
     const query = buildSearchQuery(searchFor)

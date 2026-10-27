@@ -26,6 +26,7 @@ describe('dateFn.daysDiff',()=>{
   })
 
   it('returns null if no date provided',()=>{
+    // @ts-expect-error wrong argument type on purpose to see if undefined is returned
     const diff = daysDiff('')
     expect(diff).toBe(undefined)
   })
@@ -58,6 +59,7 @@ describe('dateFn.olderThanXDays',()=>{
     expect(value).toEqual(false)
   })
   it('returns true for undefined',()=>{
+    // @ts-expect-error wrong argument type on purpose to see if true is returned
     const value = olderThanXDays(undefined,7)
     expect(value).toEqual(true)
   })

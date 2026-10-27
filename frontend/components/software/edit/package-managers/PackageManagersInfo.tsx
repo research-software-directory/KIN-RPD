@@ -35,7 +35,7 @@ export default function PackageManagersInfo() {
       {
         managers.length > 0 ?
           <p className="py-2">
-          Supported package managers<br/> <strong>{managers.join(', ')}</strong>.
+            Supported package managers<br/> <strong>{managers.join(', ')}</strong>.
           </p>
           :null
       }

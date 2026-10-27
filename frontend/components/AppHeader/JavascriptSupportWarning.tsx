@@ -18,7 +18,7 @@ export default function JavascriptSupportWarning() {
           marginTop: '1rem',
           zIndex:9
         }}>
-          Limited functionality: Your browser does not support JavaScript.
+        Limited functionality: Your browser does not support JavaScript.
       </Alert>
     </noscript>
   )

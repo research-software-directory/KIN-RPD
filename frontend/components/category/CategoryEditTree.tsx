@@ -87,7 +87,7 @@ export default function CategoryEditTree({roots, community, organisation, title,
           :
           !showAddChildForm &&
           <Alert severity="info" sx={{margin:'2rem 0rem'}}>
-              There are no categories, add one using &quot;Add&quot; button above.
+            There are no categories, add one using &quot;Add&quot; button above.
           </Alert>
         }
       </div>

@@ -63,7 +63,6 @@ export default function RorIdOptionsModal({open,options,onSelect}:RorIdOptionsMo
 
   return (
     <Dialog
-      disableEscapeKeyDown
       open={open}
       onClose={handleClose}
     >

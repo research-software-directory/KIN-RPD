@@ -79,7 +79,7 @@ export async function getRsdAccounts({page,rows,token,searchFor,adminsOnly,inact
   }
 }
 
-export async function deleteRsdAccount({id,token}:{ id: string, token: string }) {
+export async function deleteRsdAccount({id,token}:{id: string, token: string}) {
   try {
 
     const url = `${getBaseUrl()}/rpc/delete_account`
@@ -101,7 +101,7 @@ export async function deleteRsdAccount({id,token}:{ id: string, token: string })
   }
 }
 
-export async function addRsdAdmin({id,token}:{ id: string, token: string }){
+export async function addRsdAdmin({id,token}:{id: string, token: string}){
   try {
 
     const url = `${getBaseUrl()}/admin_account`
@@ -123,7 +123,7 @@ export async function addRsdAdmin({id,token}:{ id: string, token: string }){
   }
 }
 
-export async function removeRsdAdmin({id,token}:{ id: string, token: string }){
+export async function removeRsdAdmin({id,token}:{id: string, token: string}){
   try {
     if (!id) return {
       status: 400,

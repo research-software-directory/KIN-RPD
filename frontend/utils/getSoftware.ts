@@ -28,7 +28,7 @@ import {createJsonHeaders, getBaseUrl} from './fetchHelpers'
  * Software list for the software overview page
  * Note! url should contain all query params. Use softwareUrl helper fn to construct url.
  */
-export async function getSoftwareList({url,token}:{url:string,token?:string }){
+export async function getSoftwareList({url,token}:{url:string,token?:string}){
   try{
     const resp = await fetch(url, {
       method: 'GET',
@@ -365,7 +365,7 @@ export async function apiRemoteMarkdown(url:string){
 
 // RELATED PROJECTS FOR SOFTWARE
 export async function getRelatedProjectsForSoftware({software, token, frontend, approved=true}:
-  { software: string, token?: string, frontend?: boolean, approved?:boolean }) {
+{software: string, token?: string, frontend?: boolean, approved?:boolean}) {
   try {
     // construct api url based on request source
     let query = `rpc/related_projects_for_software?software_id=${software}&order=current_state.desc,date_start.desc,title.asc`

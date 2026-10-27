@@ -16,7 +16,7 @@ export type Community={
   logo_id: string|null
 }
 
-export async function validCommunitySlug({slug, token}: { slug: string, token: string }) {
+export async function validCommunitySlug({slug, token}: {slug: string, token: string}) {
   try{
     // use server side when available
     const baseUrl = getBaseUrl()

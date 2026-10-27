@@ -22,7 +22,7 @@ export function calcTreeLevelDepth(tree: TreeNode<CategoryEntry>): number {
 }
 
 export type CategoryTableProps = Readonly<{
-   tree: TreeNode<CategoryEntry>
+  tree: TreeNode<CategoryEntry>
 }>
 export const CategoryTable = ({tree}: CategoryTableProps) => {
   const category = tree.getValue()

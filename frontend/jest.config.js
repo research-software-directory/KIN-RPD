@@ -7,7 +7,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// jest.config.js
+// import does not work, so we need to use require here
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const nextJest = require('next/jest')
 
 const createJestConfig = nextJest({
@@ -30,6 +31,7 @@ const customJestConfig = {
   ],
   // coverage only from specific folders
   collectCoverageFrom: [
+    './app/**/*.{js,jsx,ts,tsx}',
     './auth/**/*.{js,jsx,ts,tsx}',
     './components/**/*.{js,jsx,ts,tsx}',
     './config/**/*.{js,jsx,ts,tsx}',
@@ -52,9 +54,18 @@ const customJestConfig = {
 
   // ignore .next folder
   modulePathIgnorePatterns: ['.next'],
-  // d3 solution that does not work
-  // transformIgnorePatterns: ['/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)'],
+
 }
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
+// customJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
+// use async wrapper to override next/jest defaults:
+module.exports = async () => {
+  const makeConfig = await createJestConfig(customJestConfig)()
+
+  // Force Jest to compile the 'cookie' package
+  makeConfig.transformIgnorePatterns = [
+    '/node_modules/(?!cookie/)',
+  ]
+
+  return makeConfig
+}

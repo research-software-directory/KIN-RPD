@@ -16,7 +16,7 @@ export default function OurProgramsSection() {
       <h2
         className="flex justify-start text-3xl lg:text-4xl font-rsd-titles font-bold mt-6"
         data-aos="fade" data-aos-duration="400" data-aos-easing="ease-in-out">
-          Our Programs
+        Our Programs
       </h2>
 
       <div className="grid gap-20 grid-cols-1 md:grid-cols-2 pt-14">

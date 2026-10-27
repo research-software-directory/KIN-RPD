@@ -8,7 +8,7 @@ import {app} from '../../config/app'
 import {useCanonicalUrl} from './CanonicalUrl'
 
 export default function OgMetaTags({title, description}:
-  { title: string, description: string}) {
+{title: string, description: string}) {
   const canonicalUrl = useCanonicalUrl()
   return (
     <Head>

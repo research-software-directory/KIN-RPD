@@ -70,7 +70,7 @@ export default function CookieConsentMatomo({matomo, route}: CookieConsentMatomo
             className="w-full block leading-normal text-base-800 text-md mb-3">We use&nbsp;
             <span className="text-primary">
               <Link href="/cookies" passHref target="_blank" className="text-primary" rel="noopener noreferrer">
-                  cookies
+                cookies
               </Link>
             </span> with&nbsp;
             <Link href="https://matomo.org/" target="_blank" className="text-primary" rel="noopener noreferrer">

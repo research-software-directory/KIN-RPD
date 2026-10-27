@@ -17,6 +17,7 @@ it('return false when no clipboard', async () => {
 
 it('copies to clipboard', async () => {
   // mock clipboard
+  // @ts-expect-error workaround to get security upgrades (Next.js 16.3.4) working
   global.navigator.clipboard = {
     writeText: mockWriteText
   }

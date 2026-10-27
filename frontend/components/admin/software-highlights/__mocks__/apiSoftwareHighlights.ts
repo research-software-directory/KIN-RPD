@@ -29,7 +29,7 @@ export async function getSoftwareHighlights({page, rows, token, searchFor, order
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function addSoftwareHighlight({id, position, token}: { id: string, position: number, token: string }) {
+export async function addSoftwareHighlight({id, position, token}: {id: string, position: number, token: string}) {
   // console.log('addSoftwareHighlight...mocks DEFAULT')
 
   return {
@@ -39,7 +39,7 @@ export async function addSoftwareHighlight({id, position, token}: { id: string, 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function patchSoftwareHighlights({highlights, token}: { highlights: SoftwareHighlight[], token: string }) {
+export async function patchSoftwareHighlights({highlights, token}: {highlights: SoftwareHighlight[], token: string}) {
   // console.log('patchSoftwareHighlights...mocks DEFAULT')
 
   return {
@@ -49,7 +49,7 @@ export async function patchSoftwareHighlights({highlights, token}: { highlights:
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function deleteSoftwareHighlight({id, token}: { id: string, token: string }) {
+export async function deleteSoftwareHighlight({id, token}: {id: string, token: string}) {
   // console.log('deleteSoftwareHighlight...mocks DEFAULT')
 
   return {

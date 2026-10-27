@@ -31,7 +31,7 @@ type InviteOrganisationMaintainerProps = {
 }
 
 export default function InviteOrganisationMaintainer({organisationInfo, error}:
-  InviteOrganisationMaintainerProps) {
+InviteOrganisationMaintainerProps) {
   // console.group('InviteOrganisationMaintainer')
   // console.log('organisationInfo..', organisationInfo)
   // console.log('error..', error)

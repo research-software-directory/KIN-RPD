@@ -180,6 +180,7 @@ export const userMenuItems: MenuItemType[] = [
     fn: () => {
       // forward to logout route
       // it removes cookies and resets the authContext
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       location.href = '/logout'
     }
   },

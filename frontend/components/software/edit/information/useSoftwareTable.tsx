@@ -11,7 +11,7 @@ import logger from '~/utils/logger'
 export type EditSoftwareDescriptionProps = SoftwareTableItem & EditSoftwareImage
 
 export async function getSoftwareTable({slug, token}:
-  { slug: string, token: string }) {
+{slug: string, token: string}) {
   try {
     // GET
     const url = `${getBaseUrl()}/software?slug=eq.${slug}`

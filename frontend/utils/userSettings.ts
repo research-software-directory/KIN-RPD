@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {IncomingMessage} from 'http'
-import {parse} from 'cookie'
+import {parseCookie} from 'cookie'
 import logger from '~/utils/logger'
 import {rowsPerPageOptions} from '~/config/pagination'
 import {LayoutType} from '~/components/software/overview/search/ViewToggleGroup'
@@ -22,7 +22,7 @@ export function getUserSettings(req: IncomingMessage) {
   // check for cookies
   if (req?.headers?.cookie) {
     // parse cookies from node request
-    const cookies = parse(req.headers.cookie)
+    const cookies = parseCookie(req.headers.cookie)
     // validate and decode
     return {
       rsd_page_layout: cookies?.rsd_page_layout as LayoutType ?? 'grid' as LayoutType,
@@ -69,7 +69,7 @@ export function getDocumentCookie(name: string, defaultValue: any) {
     return defaultValue
   }
   if (document.cookie) {
-    const cookies = parse(document.cookie)
+    const cookies = parseCookie(document.cookie)
     if (cookies.hasOwnProperty(name)) {
       return cookies[name]
     }

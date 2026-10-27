@@ -13,7 +13,7 @@ import keywordCountForSoftware from './keywordCountForSoftware.json'
 // this is always frontend call
 export async function searchForSoftwareKeyword(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  {searchFor}: { searchFor: string }
+  {searchFor}: {searchFor: string}
 ) {
   try {
     return keywordCountForSoftware

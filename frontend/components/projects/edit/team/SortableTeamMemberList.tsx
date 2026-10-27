@@ -16,8 +16,8 @@ import SortableList from '~/components/layout/SortableList'
 import SortableTeamMemberItem from './SortableTeamMemberItem'
 
 type TeamMemberListProps = {
-	members: TeamMember[],
-	onEdit: (pos: number) => void
+  members: TeamMember[],
+  onEdit: (pos: number) => void
   onDelete: (pos: number) => void
   onSorted: (members:TeamMember[])=>void
 }
@@ -31,7 +31,7 @@ export default function SortableTeamMemberList({members, onEdit, onDelete, onSor
         severity="warning" sx={{marginTop: '0.5rem'}}>
         <AlertTitle sx={{fontWeight:500}}>No team members</AlertTitle>
         Add team member using the <strong>search form!</strong>
-		  </Alert>
+      </Alert>
     )
   }
 

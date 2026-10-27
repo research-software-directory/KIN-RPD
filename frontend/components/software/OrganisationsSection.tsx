@@ -19,7 +19,7 @@ export const OrganisationGridSection = styled('section')(({theme}) => ({
   gridTemplateColumns: 'repeat(auto-fit,minmax(5rem,13rem))'
 }))
 
-export default function OrganisationsSection({organisations = []}: { organisations: ParticipatingOrganisationProps[] }) {
+export default function OrganisationsSection({organisations = []}: {organisations: ParticipatingOrganisationProps[]}) {
   // do not render section if no data
   if (organisations?.length === 0) return null
 

@@ -27,7 +27,7 @@ export type ProjectProjectLinkModalProps = {
   open: boolean,
   url_for_project: ProjectLink | undefined,
   onCancel: () => void,
-  onSubmit: ({data, pos}: { data: ProjectLink, pos?: number }) => void,
+  onSubmit: ({data, pos}: {data: ProjectLink, pos?: number}) => void,
 }
 
 const formId='edit-link-modal'

@@ -17,18 +17,18 @@ import {paginationUrlParams} from '~/utils/postgrestUrl'
 
 export type ProjectByMaintainer={
   id: string
-	slug: string,
-	title: string,
-	subtitle: string | null
-	current_state: string
-	date_start: string
+  slug: string,
+  title: string,
+  subtitle: string | null
+  current_state: string
+  date_start: string
   date_end: string
-	updated_at: string
-	is_published: boolean
-	image_contain: boolean,
-	image_id: string | null
-	impact_cnt: number
-	output_cnt: number
+  updated_at: string
+  is_published: boolean
+  image_contain: boolean,
+  image_id: string | null
+  impact_cnt: number
+  output_cnt: number
 }
 
 type UserProjectsProp = {

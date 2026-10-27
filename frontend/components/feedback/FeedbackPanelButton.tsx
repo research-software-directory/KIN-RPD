@@ -132,7 +132,7 @@ User Agent: ${navigator.userAgent}`
             <div className="text-sm mt-8 mb-6 text-[#B7B7B7]">
               We will send your feedback using your default email application,
               or you can open a new <a className="text-primary" href={issues_page_url} target="_blank" rel="noreferrer">
-              issue</a>
+                issue</a>
             </div>
           </div>
         </div>

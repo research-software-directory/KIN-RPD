@@ -38,7 +38,7 @@ function prepareFundingOrganisations(organisations:OrganisationsOfProject[]) {
 }
 
 async function getProjectInfoForEdit({slug,token}:
-  {slug:string,token:string}):Promise<EditProject|undefined> {
+{slug:string,token:string}):Promise<EditProject|undefined> {
 
   const project = await getProjectItem({
     slug,
@@ -75,7 +75,7 @@ async function getProjectInfoForEdit({slug,token}:
 }
 
 export default function useProjectToEdit({slug,token}:
-  {slug:string,token:string,reload?:boolean}) {
+{slug:string,token:string,reload?:boolean}) {
   const [project, setProject] = useState<EditProject>()
   const [loading, setLoading] = useState(true)
   const [loadedSlug, setLoadedSlug] = useState<string>('')

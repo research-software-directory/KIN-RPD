@@ -28,7 +28,7 @@ import {useSession} from '~/auth'
 export type EditMentionModalProps = {
   open: boolean,
   onCancel: () => void,
-  onSubmit: ({data, pos}: { data: MentionItemProps, pos?: number }) => void,
+  onSubmit: ({data, pos}: {data: MentionItemProps, pos?: number}) => void,
   item?: MentionItemProps,
   // item position in the array
   pos?: number

@@ -7,7 +7,7 @@ import {CategoriesForSoftware, CategoryForSoftwareIds,} from '~/types/SoftwareTy
 import {CategoryPath} from '~/types/Category'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getSoftwareList({url,token}:{url:string,token?:string }){
+export async function getSoftwareList({url,token}:{url:string,token?:string}){
   return []
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,6 +104,6 @@ export function getRemoteMarkdownTest(url: string) {
 // RELATED PROJECTS FOR SORFTWARE
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getRelatedProjectsForSoftware({software, token, frontend, approved=true}:
-  { software: string, token?: string, frontend?: boolean, approved?:boolean }) {
+{software: string, token?: string, frontend?: boolean, approved?:boolean}) {
   return []
 }

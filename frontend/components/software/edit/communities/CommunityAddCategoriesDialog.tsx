@@ -178,7 +178,7 @@ export default function CommunityAddCategoriesDialog({
             {(categories === null || categories.length === 0)
               ?
               <Alert severity="info" sx={{'padding': '2rem'}}>
-                  This community doesn&lsquo;t have any categories.
+                This community doesn&lsquo;t have any categories.
               </Alert>
               :
               <RecursivelyGenerateItems

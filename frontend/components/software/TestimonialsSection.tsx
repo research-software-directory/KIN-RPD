@@ -9,7 +9,7 @@ import {Testimonial} from '../../types/Testimonial'
 import PageContainer from '../layout/PageContainer'
 import TestimonialItem from './TestimonialItem'
 
-export default function TestimonialSection({testimonials = []}: { testimonials: Testimonial[] }) {
+export default function TestimonialSection({testimonials = []}: {testimonials: Testimonial[]}) {
   // do not render section if no data
   if (testimonials?.length === 0) return null
 

@@ -16,7 +16,10 @@ const mockCommunity: CommunityListProps = {
   'logo_id': null,
   'software_cnt': 1,
   'primary_maintainer': '91c2ffa7-bce6-4488-be00-6613a2d99f52',
-  'description': '# About page\n\nThis is short text for about page.\n\n## Subtitle\n\nThis is subtitle.'
+  'description': '# About page\n\nThis is short text for about page.\n\n## Subtitle\n\nThis is subtitle.',
+  'pending_cnt':0,
+  'rejected_cnt':0,
+  'keywords':[]
 }
 
 export default mockCommunity
