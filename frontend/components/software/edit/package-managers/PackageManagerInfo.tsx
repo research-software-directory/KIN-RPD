@@ -24,7 +24,7 @@ function PlatformPlaceholder() {
   )
 }
 
-export default function PackageManagerInfo({pm_key}: { pm_key: PackageManagerTypes|null }) {
+export default function PackageManagerInfo({pm_key}: {pm_key: PackageManagerTypes|null}) {
 
   if (typeof pm_key==='undefined' || pm_key===null) return <PlatformPlaceholder />
 

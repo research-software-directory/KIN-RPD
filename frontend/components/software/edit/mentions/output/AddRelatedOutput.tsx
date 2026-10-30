@@ -31,7 +31,7 @@ export default function AddRelatedOutput() {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={onNewItem}>
-          Create
+            Create
           </Button>
         </div>
       </CreateMentionInfoPanel>

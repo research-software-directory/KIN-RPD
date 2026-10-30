@@ -9,7 +9,7 @@
 import {JSX} from 'react'
 
 export default function SoftwareOverviewGrid({children,fullWidth=false}: {
-  children: JSX.Element | JSX.Element[], fullWidth?:boolean }) {
+  children: JSX.Element | JSX.Element[], fullWidth?:boolean}) {
   // default
   let md=1,lg=2,xl=3
   // update number of items

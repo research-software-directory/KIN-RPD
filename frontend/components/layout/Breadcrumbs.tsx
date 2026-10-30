@@ -15,7 +15,7 @@ export type SlugInfo = {
 }
 
 export default function Breadcrumbs({segments}:
-  {segments: SlugInfo[] }) {
+{segments: SlugInfo[]}) {
 
   if (segments.length === 0) return null
 

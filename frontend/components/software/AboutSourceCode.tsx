@@ -11,7 +11,7 @@ import {CodePlatform} from '~/types/SoftwareTypes'
 import GitlabIcon from '~/assets/logos/gitlab-icon-rgb.svg'
 
 
-export default function AboutSourceCode({repository,platform}: { repository: string | null, platform: CodePlatform}) {
+export default function AboutSourceCode({repository,platform}: {repository: string | null, platform: CodePlatform}) {
   const code = '</>'
 
   function getIcon() {

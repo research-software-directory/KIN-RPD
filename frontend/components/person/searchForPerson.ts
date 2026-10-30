@@ -16,7 +16,7 @@ import {rsdPublicProfiles, rsdUniquePersonEntries, UniqueRsdPerson} from './find
 import {AggregatedPerson, groupByOrcid, personsToAutocompleteOptions} from './groupByOrcid'
 
 export async function searchForPerson({searchFor,token,include_orcid=true}:
-  {searchFor: string,token:string,include_orcid?:boolean}) {
+{searchFor: string,token:string,include_orcid?:boolean}) {
   try {
 
     const persons = await getAggregatedPersons({searchFor,token,include_orcid})
@@ -31,7 +31,7 @@ export async function searchForPerson({searchFor,token,include_orcid=true}:
 }
 
 export async function getAggregatedPersons({searchFor,token,include_orcid}:
-  {searchFor:string,token:string, include_orcid?:boolean}) {
+{searchFor:string,token:string, include_orcid?:boolean}) {
   try {
     const [rsdPersons, orcidPersons, profiles] = await Promise.all([
       rsdUniquePersonEntries({searchFor, token, limit:30}),

@@ -6,7 +6,7 @@
 import {createJsonHeaders, extractReturnMessage} from '~/utils/fetchHelpers'
 
 export async function patchOrganisationTable({id, data, token}:
-  {id:string, data: any, token: string }) {
+{id:string, data: any, token: string}) {
   try {
     // extract only required items
     const url = `/api/v1/organisation?id=eq.${id}`

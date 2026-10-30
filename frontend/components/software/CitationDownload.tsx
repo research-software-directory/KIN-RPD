@@ -36,7 +36,7 @@ export default function CitationDownload({doi}: {doi:string}) {
     return `${baseName}.${download.ext}`
   }
 
-  function onFormatChange({target}: { target: SelectChangeEvent['target'] }) {
+  function onFormatChange({target}: {target: SelectChangeEvent['target']}) {
     if (target?.value) {
       setSelected(target.value)
     }

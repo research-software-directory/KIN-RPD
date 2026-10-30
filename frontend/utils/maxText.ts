@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export function maxText({text, maxLen = 100, dots=true}:
-  { text: string|null, maxLen?: number, dots?: boolean}) {
+{text: string|null, maxLen?: number, dots?: boolean}) {
   try {
     if (text===null) return null
     // return complete content if smaller than max

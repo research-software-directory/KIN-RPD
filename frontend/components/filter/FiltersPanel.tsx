@@ -6,7 +6,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export default function FiltersPanel({children}: { children: any }) {
+export default function FiltersPanel({children}: {children: any}) {
   return (
     <div
       data-testid="filters-panel"

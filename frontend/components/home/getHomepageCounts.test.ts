@@ -28,8 +28,8 @@ it('makes call to api', async () => {
   // validate counts received propely
   expect(counts).toEqual(mockResponse)
   // validate call
-  expect(global.fetch).toBeCalledTimes(1)
-  expect(global.fetch).toBeCalledWith(expectedUrl, expectedBody)
+  expect(global.fetch).toHaveBeenCalledTimes(1)
+  expect(global.fetch).toHaveBeenCalledWith(expectedUrl, expectedBody)
 })
 
 it('returns null values on error', async () => {

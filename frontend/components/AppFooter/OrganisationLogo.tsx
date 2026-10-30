@@ -7,7 +7,7 @@ import {RsdHost} from '~/config/rsdSettingsReducer'
 import LogoAvatar from '../layout/LogoAvatar'
 
 
-export default function OrganisationLogo({host}: { host: RsdHost }) {
+export default function OrganisationLogo({host}: {host: RsdHost}) {
   if (host?.logo_url && host?.website) {
     const {name,logo_url,website}=host
     return (

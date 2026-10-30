@@ -173,7 +173,7 @@ export async function getPackageManagers({software, token}: {
   }
 }
 
-export async function postPackageManager({data, token}: { data: NewPackageManager, token: string }) {
+export async function postPackageManager({data, token}: {data: NewPackageManager, token: string}) {
   try {
     const url = `${getBaseUrl()}/package_manager`
 
@@ -231,7 +231,7 @@ export async function patchPackageManager({id, data, token}: {
   }
 }
 
-export async function patchPackageManagers({items, token}: { items: PackageManager[], token: string }) {
+export async function patchPackageManagers({items, token}: {items: PackageManager[], token: string}) {
   try {
     // create all requests
     const requests = items.map(item => {
@@ -264,7 +264,7 @@ export async function patchPackageManagers({items, token}: { items: PackageManag
 }
 
 export async function patchPackageManagerItem({id, key, value, token}:
-                                                { id: string, key: string, value: any, token: string }) {
+{id: string, key: string, value: any, token: string}) {
   try {
     const url = `/api/v1/package_manager?id=eq.${id}`
     const resp = await fetch(url, {
@@ -288,7 +288,7 @@ export async function patchPackageManagerItem({id, key, value, token}:
   }
 }
 
-export async function deletePackageManager({id, token}: { id: string, token: string }) {
+export async function deletePackageManager({id, token}: {id: string, token: string}) {
   try {
     const url = `/api/v1/package_manager?id=eq.${id}`
     const resp = await fetch(url, {

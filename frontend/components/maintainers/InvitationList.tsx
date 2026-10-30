@@ -21,11 +21,11 @@ import EditSectionTitle from '~/components/layout/EditSectionTitle'
 export type InvitationType = 'software' | 'project' | 'organisation' | 'community' | 'rsd'
 
 export type Invitation = {
-    id: string,
-    created_at: string,
-    expires_at: string,
-    type: InvitationType,
-    uses_left?: number | null
+  id: string,
+  created_at: string,
+  expires_at: string,
+  type: InvitationType,
+  uses_left?: number | null
 }
 
 type InvitationListProps=Readonly<{

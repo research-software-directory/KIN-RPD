@@ -17,14 +17,14 @@ import {paginationUrlParams} from '~/utils/postgrestUrl'
 
 export type SoftwareByMaintainer={
   id:string ,
-	slug:string,
-	brand_name:string,
-	short_statement:string,
-	is_published:boolean,
-	image_id:string|null
-	updated_at:string,
-	contributor_cnt:number,
-	mention_cnt:number
+  slug:string,
+  brand_name:string,
+  short_statement:string,
+  is_published:boolean,
+  image_id:string|null
+  updated_at:string,
+  contributor_cnt:number,
+  mention_cnt:number
 }
 
 export type UserSoftwareProp = {

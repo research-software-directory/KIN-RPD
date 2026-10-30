@@ -11,7 +11,7 @@
  * @returns items not in reference list
  */
 export function itemsNotInReferenceList<T>({list, referenceList, key}:
-  {list: T[], referenceList: T[], key: keyof T}) {
+{list: T[], referenceList: T[], key: keyof T}) {
   if (list.length > 0) {
     // items not present in reference list should be removed from db
     const notInReferenceList = list.filter(item => {
@@ -35,7 +35,7 @@ export function itemsNotInReferenceList<T>({list, referenceList, key}:
  * @returns items not in reference list
  */
 export function itemsNotInListByKeys<T>({list, referenceList, keys}:
-  {list: T[], referenceList: T[], keys: unknown[]}) {
+{list: T[], referenceList: T[], keys: unknown[]}) {
   if (list.length > 0) {
     // items not present in reference list should be removed from db
     const notInReferenceList = list.filter(item => {

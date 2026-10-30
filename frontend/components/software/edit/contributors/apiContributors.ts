@@ -15,7 +15,7 @@ import {createJsonHeaders, extractReturnMessage, getBaseUrl} from '~/utils/fetch
 import {Contributor, NewContributor, PatchContributor, Person} from '~/types/Contributor'
 
 export async function getContributorsForSoftware({software, token}:
-  { software: string, token?: string}) {
+{software: string, token?: string}) {
   try {
     // build url
     const query = `software_id=${software}&order=position.asc,given_names.asc`
@@ -43,7 +43,7 @@ export async function getContributorsForSoftware({software, token}:
 }
 
 export async function postContributor({contributor, token}:
-  { contributor: NewContributor, token: string }) {
+{contributor: NewContributor, token: string}) {
   try {
     const url = `${getBaseUrl()}/contributor`
 
@@ -76,7 +76,7 @@ export async function postContributor({contributor, token}:
 }
 
 export async function patchContributor({contributor, token}:
-  { contributor: PatchContributor, token: string }) {
+{contributor: PatchContributor, token: string}) {
   try {
     const url = `${getBaseUrl()}/contributor?id=eq.${contributor.id}`
     const resp = await fetch(url, {
@@ -97,7 +97,7 @@ export async function patchContributor({contributor, token}:
 }
 
 export async function patchContributorPositions({contributors, token}:
-  { contributors: Contributor[], token: string }) {
+{contributors: Contributor[], token: string}) {
   try {
     if (contributors.length === 0) return {
       status: 400,

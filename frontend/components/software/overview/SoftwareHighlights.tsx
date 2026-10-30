@@ -16,7 +16,7 @@ import {useRouter} from 'next/router'
 import Button from '@mui/material/Button'
 import {KeyboardDoubleArrowRight} from '@mui/icons-material'
 
-export default function SoftwareHighlights({highlights}: { highlights: SoftwareHighlight[] }) {
+export default function SoftwareHighlights({highlights}: {highlights: SoftwareHighlight[]}) {
   // console.group('SoftwareHighlights')
   // console.log('loading...', loading)
   // console.log('highlights...', highlights)

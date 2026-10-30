@@ -15,9 +15,10 @@ export async function postAccountsToBackend(amount = 100) {
 	const accounts = [];
 	for (let i = 0; i < amount; i++) {
 		accounts.push({
-			public_orcid_profile: !!faker.helpers.maybe(() => true, {
-				probability: 0.8,
-			}),
+			// moved to user_profile
+			// public_orcid_profile: !!faker.helpers.maybe(() => true, {
+			// 	probability: 0.8,
+			// }),
 			agree_terms: !!faker.helpers.maybe(() => true, {probability: 0.8}),
 			notice_privacy_statement: !!faker.helpers.maybe(() => true, {
 				probability: 0.8,

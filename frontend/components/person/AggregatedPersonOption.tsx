@@ -11,7 +11,7 @@ import {AutocompleteOption} from '~/types/AutocompleteOptions'
 import ContributorAvatar from '~/components/software/ContributorAvatar'
 import {AggregatedPerson} from './groupByOrcid'
 
-export default function AggregatedPersonOption({option}: { option: AutocompleteOption<AggregatedPerson> }) {
+export default function AggregatedPersonOption({option}: {option: AutocompleteOption<AggregatedPerson>}) {
 
   const displayName = getDisplayName(option.data)
   const displayInitials = getDisplayInitials(option.data)

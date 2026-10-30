@@ -23,7 +23,7 @@ import {projectInformation as config} from './config'
 import {patchProjectTable} from './patchProjectInfo'
 import PublishingProjectInfo from './PublishingProjectInfo'
 
-export default function ProjectInformationForm({editProject}: { editProject: EditProject }) {
+export default function ProjectInformationForm({editProject}: {editProject: EditProject}) {
   const {user} = useSession()
   // const {loading, setLoading, setProjectInfo} = useProjectContext()
   const methods = useForm<EditProject>({

@@ -12,7 +12,7 @@ import {createJsonHeaders, extractReturnMessage} from '~/utils/fetchHelpers'
 import {addOrGetMentionItem} from '~/utils/editMentions'
 
 export async function findPublicationByTitle({id, searchFor, token}:
-  { id: string, searchFor: string, token: string }) {
+{id: string, searchFor: string, token: string}) {
   const query = `id=${id}&search=${encodeURIComponent(searchFor)}&relation_type=output`
   const url = `/api/fe/mention/find_by_title?${query}`
   try {
@@ -34,7 +34,7 @@ export async function findPublicationByTitle({id, searchFor, token}:
 }
 
 export async function addNewOutputToProject({item, project, token}:
-  { item: MentionItemProps, project: string, token: string }) {
+{item: MentionItemProps, project: string, token: string}) {
   // add new item or get existing by DOI
   let resp = await addOrGetMentionItem({
     mention: item,
@@ -70,7 +70,7 @@ export async function addNewOutputToProject({item, project, token}:
   }
 }
 
-export async function addToOutputForProject({mention, project, token}: { mention: string, project: string, token: string }) {
+export async function addToOutputForProject({mention, project, token}: {mention: string, project: string, token: string}) {
   const url = '/api/v1/output_for_project'
   try {
     const resp = await fetch(url, {
@@ -94,7 +94,7 @@ export async function addToOutputForProject({mention, project, token}: { mention
 }
 
 export async function removeOutputForProject({mention, project, token}:
-  { mention: string, project: string, token: string }) {
+{mention: string, project: string, token: string}) {
   const url = `/api/v1/output_for_project?project=eq.${project}&mention=eq.${mention}`
   try {
     const resp = await fetch(url, {

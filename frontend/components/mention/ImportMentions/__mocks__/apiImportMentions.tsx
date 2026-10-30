@@ -55,7 +55,7 @@ export async function linkMentionToEntity({ids, table, entityName, entityId, tok
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function addMentions({mentions, token}: { mentions: MentionItemProps[], token: string }) {
+export async function addMentions({mentions, token}: {mentions: MentionItemProps[], token: string}) {
   // console.log('addMentions...default MOCK...mentions...', mentions)
   return {
     status: 200,

@@ -19,7 +19,7 @@ import {isMaintainerOf} from './permissions/isMaintainerOf'
  * maintainer validation is not performed.
  */
 export default function ProtectedContent({children, pageType='software', slug=''}:
-  { children: any, pageType?:'software'|'project', slug?: string }) {
+{children: any, pageType?:'software'|'project', slug?: string}) {
   const {session} = useAuth()
   // keep maintainer flag
   const [isMaintainer, setIsMaintainer] = useState(false)

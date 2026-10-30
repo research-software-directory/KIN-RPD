@@ -11,7 +11,7 @@ import remarkBreaks from 'remark-breaks'
 import rehypeExternalLinks from 'rehype-external-links'
 
 export default function ReactMarkdownWithSettings({markdown, className, breaks=true}:
-  { markdown: string, className?: string, breaks?:boolean }) {
+{markdown: string, className?: string, breaks?:boolean}) {
   // define plugins to use
   const remarkPlugins:any[] = [remarkGfm]
   // note! do not use rehype-sanitize plugin as it will remove the target

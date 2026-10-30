@@ -22,7 +22,7 @@ export type UniqueRsdPerson = {
 }
 
 export async function rsdUniquePersonEntries({searchFor,limit=30,token}:
-  { searchFor: string, limit?:number, token?: string}) {
+{searchFor: string, limit?:number, token?: string}) {
   try {
     // we search for all persons in RSD (contributors + team members)
     let url = `${getBaseUrl()}/rpc/unique_person_entries?limit=${limit}`
@@ -57,7 +57,7 @@ export async function rsdUniquePersonEntries({searchFor,limit=30,token}:
 }
 
 export async function rsdPublicProfiles({searchFor,limit=30}:
-  {searchFor: string, limit?:number}) {
+{searchFor: string, limit?:number}) {
   try {
     // we search in RSD public user profile entries
     let url = `${getBaseUrl()}/rpc/public_user_profile?limit=${limit}`

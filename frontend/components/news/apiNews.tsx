@@ -268,7 +268,7 @@ export async function addNewsItem({page,token}:{page:AddNewsItem,token:string}) 
 }
 
 
-export async function validSlugNews({date, slug, token}: {date:string, slug: string, token: string }) {
+export async function validSlugNews({date, slug, token}: {date:string, slug: string, token: string}) {
   // use server side when available
   const baseUrl = getBaseUrl()
   // get published meta pages ordered by position

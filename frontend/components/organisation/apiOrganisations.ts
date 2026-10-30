@@ -186,7 +186,7 @@ export async function getOrganisationById({uuid, token, isMaintainer = false}: {
   return undefined
 }
 
-export async function getOrganisationChildren({uuid, token}: { uuid: string, token: string }) {
+export async function getOrganisationChildren({uuid, token}: {uuid: string, token: string}) {
   const selectList = 'id,name,primary_maintainer,slug,website,logo_id,is_tenant,parent'
   const query = `organisation?parent=eq.${uuid}&order=name.asc&select=${selectList}`
   const url = `${getBaseUrl()}/${query}`
@@ -229,7 +229,7 @@ export async function getOrganisationChildren({uuid, token}: { uuid: string, tok
 //   return null
 // }
 
-export async function getOrganisationInfo({uuid, token}: { uuid: string, token?: string }) {
+export async function getOrganisationInfo({uuid, token}: {uuid: string, token?: string}) {
   const query = `organisation?id=eq.${uuid}&select=description,wikipedia_url,city,ror_types`
   const url = `${getBaseUrl()}/${query}`
   // console.log('url...', url)

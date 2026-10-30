@@ -29,7 +29,7 @@ it('does not trigger action when matomo.id is null', () => {
     consent:null
   }
   setCustomUrl(matomo)
-  expect(mockPush).not.toBeCalled()
+  expect(mockPush).not.toHaveBeenCalled()
 })
 
 it('does not trigger action when matomo.consent is false', () => {
@@ -38,10 +38,10 @@ it('does not trigger action when matomo.consent is false', () => {
     consent: false
   }
   setCustomUrl(matomo)
-  expect(mockPush).not.toBeCalled()
+  expect(mockPush).not.toHaveBeenCalled()
 })
 
-// This test ensures that we push custom page only after inital
+// This test ensures that we push custom page only after initial
 // page load. At initial page load piwik.js script will report that
 // page automatically. After that we need to push customUrl change on our
 // because we use SPA router (next.router) for navigation
@@ -53,13 +53,12 @@ it('push custom page to matomo ONLY after initial url changed', () => {
   setCustomUrl(matomo)
   // this will not trigger call to _paq
   // because previousUrl is null unchanged
-  expect(mockPush).not.toBeCalled()
+  expect(mockPush).not.toHaveBeenCalled()
   // move to another location
-  Object.defineProperty(window, 'location', {
-    value: {
-      href: 'http://test.com/page1',
-    }
-  })
+  // JEST 30 FIX: Safely update location state via native history API
+  // instead of mutating window.location.href directly
+  history.replaceState(null, '', '/page1')
+
   setCustomUrl(matomo)
   // calls push 4 times to setReferrerUrl,
   // setCustomUrl, setDocumentTitle, trackPageView

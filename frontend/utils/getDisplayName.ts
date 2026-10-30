@@ -7,7 +7,7 @@
 
 // export function getDisplayName(contributor: Contributor | undefined) {
 export function getDisplayName({given_names, family_names}:
-  {given_names?: string, family_names?: string}) {
+{given_names?: string, family_names?: string}) {
   let displayName = null
   // start with given names (first name)
   if (given_names) {
@@ -21,7 +21,7 @@ export function getDisplayName({given_names, family_names}:
 }
 
 export function getDisplayInitials({given_names, family_names}:
-  {given_names?: string, family_names?: string}) {
+{given_names?: string, family_names?: string}) {
   let displayInitials = ''
   // start with given names (first name)
   if (given_names) {
@@ -58,7 +58,7 @@ export function splitName(name: string) {
 
 
 export function combineRoleAndAffiliation({role, affiliation}:
-  { role?: string | null, affiliation?: string | null }) {
+{role?: string | null, affiliation?: string | null}) {
 
   if (role && affiliation) return `${role}, ${affiliation}`
 

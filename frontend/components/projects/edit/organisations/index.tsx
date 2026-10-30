@@ -208,7 +208,7 @@ export default function ProjectOrganisations() {
     }
   }
 
-  async function saveOrganisation({data, pos}:{data: EditOrganisation, pos?: number }) {
+  async function saveOrganisation({data, pos}:{data: EditOrganisation, pos?: number}) {
     try {
       // UPLOAD logo
       if (data.logo_b64 && data.logo_mime_type) {

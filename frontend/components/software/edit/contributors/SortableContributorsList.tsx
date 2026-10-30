@@ -13,8 +13,8 @@ import SortableList from '~/components/layout/SortableList'
 import SortableContributorItem from './SortableContributorItem'
 
 type SortableContributorsListProps = {
-	contributors: Contributor[],
-	onEdit: (pos: number) => void
+  contributors: Contributor[],
+  onEdit: (pos: number) => void
   onDelete: (pos: number) => void
   onSorted: (members:Contributor[])=>void
 }

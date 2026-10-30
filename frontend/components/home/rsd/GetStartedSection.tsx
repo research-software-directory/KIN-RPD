@@ -9,7 +9,7 @@ import {config} from './config'
 
 const {button} = config
 
-function GlowingButton({text, url, target = '_self', minWidth = '9rem'}: { text: string, url: string, target?: string, minWidth?: string }) {
+function GlowingButton({text, url, target = '_self', minWidth = '9rem'}: {text: string, url: string, target?: string, minWidth?: string}) {
   return <a
     href={url}
     className="flex gap-4 cursor-pointer"

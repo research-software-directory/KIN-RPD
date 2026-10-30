@@ -30,7 +30,7 @@ export default function AddImpact() {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={onNewImpact}>
-          Create
+            Create
           </Button>
         </div>
       </CreateMentionInfoPanel>

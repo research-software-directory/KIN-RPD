@@ -278,7 +278,7 @@ export default function CategoryEditForm({
           type="submit"
           variant="contained"
           disabled={disableSave || !formState.isValid}>
-            Save
+          Save
         </Button>
       </div>
     </form>

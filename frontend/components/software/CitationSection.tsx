@@ -16,7 +16,7 @@ import CitationDownload from './CitationDownload'
 import {SoftwareVersion} from '~/utils/getSoftware'
 
 export default function CitationSection({releases,concept_doi}:
-  {releases:SoftwareVersion[]|null, concept_doi:string|null}) {
+{releases:SoftwareVersion[]|null, concept_doi:string|null}) {
   const [version, setVersion]=useState('')
   const [citation, setCitation] = useState<SoftwareVersion>()
 

@@ -16,7 +16,7 @@ import AutosaveControlledTextField, {OnSaveProps} from '~/components/form/Autosa
 import {patchProjectTable} from './patchProjectInfo'
 
 export default function AutosaveProjectPeriod({date_start, date_end}:
-  { date_start: string | null, date_end: string | null }) {
+{date_start: string | null, date_end: string | null}) {
   const {token} = useSession()
   const {showErrorMessage} = useSnackbar()
   const {control, watch, setError, clearErrors, resetField} = useFormContext<EditProject>()

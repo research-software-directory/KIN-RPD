@@ -15,7 +15,7 @@ import {getBaseUrl} from '~/utils/fetchHelpers'
 
 // this is always frontend call
 export async function searchForSoftwareKeyword(
-  {searchFor}: { searchFor: string }
+  {searchFor}: {searchFor: string}
 ) {
   try {
     const searchForEncoded = encodeURIComponent(searchFor)

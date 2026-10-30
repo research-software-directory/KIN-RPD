@@ -26,7 +26,15 @@ export default function LoginFailed() {
       </PageTitle>
       <ContentInTheMiddle>
         <form action="/auth/login/local" method="post">
-          <TextField required inputProps={{pattern: '\\w+'}} id="username-field" label="Username" variant="standard" name="sub"/>
+          <TextField
+            required
+            slotProps={{
+              htmlInput: {pattern: '\\w+'}
+            }}
+            id="username-field"
+            label="Username"
+            variant="standard"
+            name="sub"/>
           <Button variant="contained" type='submit'>Login</Button>
         </form>
 

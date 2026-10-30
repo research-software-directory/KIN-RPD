@@ -12,7 +12,7 @@ import PageContainer from '../layout/PageContainer'
 import RelatedProjectsGrid from './RelatedProjectsGrid'
 
 export default function RelatedProjectsSection({relatedProjects}:
-  Readonly<{relatedProjects: RelatedProject[]}>) {
+Readonly<{relatedProjects: RelatedProject[]}>) {
   // use media query hook for small screen logic
   const smallScreen = useMediaQuery('(max-width:600px)')
   // adjust grid min width for mobile

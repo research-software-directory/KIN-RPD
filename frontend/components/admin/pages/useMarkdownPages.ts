@@ -136,7 +136,7 @@ export async function getPageLinks({is_published = true,token}: {is_published?: 
   }
 }
 
-export async function validPageSlug({slug, token}: { slug: string, token: string }) {
+export async function validPageSlug({slug, token}: {slug: string, token: string}) {
   // get published meta pages ordered by position
   const query = `meta_pages?select=slug,is_published&slug=eq.${slug}`
   const url = `${getBaseUrl()}/${query}`

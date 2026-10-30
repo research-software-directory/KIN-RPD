@@ -103,7 +103,7 @@ export default function ResearchUnits({units}: Readonly<ResearchUnitsProps>) {
     })
   }
 
-  async function saveOrganisation({data, pos}:{data: EditOrganisation, pos?: number }) {
+  async function saveOrganisation({data, pos}:{data: EditOrganisation, pos?: number}) {
     try {
       // console.log('saveOrganisation...', data)
       // UPLOAD logo

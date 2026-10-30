@@ -41,7 +41,7 @@ function HeaderCell<T, K extends keyof T>({column,onSort}: HeaderCellType<T,K>){
 
 
 export default function TableHeader<T, K extends keyof T>({columns, onSort}:
-  {columns: Column<T, K>[], onSort:(column:K)=>void}) {
+{columns: Column<T, K>[], onSort:(column:K)=>void}) {
   return (
     <MuiTableHead>
       <MuiTableRow data-testid="mui-table-head-row">

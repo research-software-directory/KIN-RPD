@@ -26,7 +26,7 @@ export function useParticipatingOrganisations({project, token, account}: UsePart
   useEffect(() => {
     let abort = false
     async function getOrganisations({project, token, account}:
-      { project: string, token: string, account: string }) {
+    {project: string, token: string, account: string}) {
       const resp = await getOrganisationsOfProject({
         project,
         token,

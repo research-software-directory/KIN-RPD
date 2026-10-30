@@ -13,6 +13,7 @@ const mockObserve = jest.fn()
 const mockUnobserve = jest.fn()
 // you can also pass the mock implementation
 // to jest.fn as an argument
+// @ts-expect-error workaround to get security upgrades (Next.js 16.3.4) working
 window.IntersectionObserver = jest.fn(() => ({
   observe:mockObserve,
   unobserve:mockUnobserve,

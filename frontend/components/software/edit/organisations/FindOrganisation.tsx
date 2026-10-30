@@ -14,7 +14,7 @@ import {organisationInformation as config} from '../editSoftwareConfig'
 import FindOrganisationItem from './FindOrganisationItem'
 
 export default function FindOrganisation({onAdd, onCreate}:
-  { onAdd: (item: SearchOrganisation) => void, onCreate:(name:string)=>void}) {
+{onAdd: (item: SearchOrganisation) => void, onCreate:(name:string)=>void}) {
   const [options, setOptions] = useState<AutocompleteOption<SearchOrganisation>[]>([])
   const [status, setStatus] = useState<{
     loading: boolean,

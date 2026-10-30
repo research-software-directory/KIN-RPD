@@ -7,7 +7,7 @@
 
 // Obtain refresh token from RSD auth service
 import type {NextApiRequest, NextApiResponse} from 'next'
-import {parse} from 'cookie'
+import {parseCookie} from 'cookie'
 import {createSession, Session} from '~/auth'
 import logger from '~/utils/logger'
 
@@ -64,7 +64,7 @@ export default async function RefreshToken(
       const raw_cookies = resp.headers.get('set-cookie')
       let rsd_token = null
       if (raw_cookies) {
-        rsd_token = parse(raw_cookies)?.rsd_token
+        rsd_token = parseCookie(raw_cookies)?.rsd_token
       }
       if (rsd_token && raw_cookies) {
         const session = createSession(rsd_token)

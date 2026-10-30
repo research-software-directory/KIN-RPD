@@ -15,7 +15,7 @@ export type SelectOption={
 }
 
 export default function CiteDropdown({label,options=[],value,onChange}:
-  {label:string,options:SelectOption[],value:string,onChange:any}) {
+{label:string,options:SelectOption[],value:string,onChange:any}) {
 
   return (
     <FormControl fullWidth>

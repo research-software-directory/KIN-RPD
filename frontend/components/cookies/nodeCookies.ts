@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {IncomingMessage} from 'http'
-import {parse} from 'cookie'
+import {parseCookie} from 'cookie'
 
 export type Matomo = {
   id: string | null
@@ -24,7 +24,7 @@ export function getMatomoCookies(req: IncomingMessage) {
   // check for cookies
   if (req?.headers?.cookie) {
     // parse cookies from node request
-    const cookies = parse(req.headers.cookie)
+    const cookies = parseCookie(req.headers.cookie)
     // validate and decode
     return {
       mtm_consent: cookies?.mtm_consent,

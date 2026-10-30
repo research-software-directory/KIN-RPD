@@ -11,7 +11,7 @@ import {createJsonHeaders, extractReturnMessage} from './fetchHelpers'
 import logger from './logger'
 
 export async function getRelatedSoftwareForSoftware({software, token, frontend}:
-  { software: string, token?: string, frontend?: boolean}) {
+{software: string, token?: string, frontend?: boolean}) {
   try {
     const query = `rpc/related_software_for_software?software_id=${software}&is_published=eq.true`
     const order ='order=brand_name.asc'
@@ -87,7 +87,7 @@ export async function addRelatedSoftware({origin,relation, token}: {
 }
 
 export async function deleteRelatedSoftware({origin, relation, token}:
-  { origin: string, relation: string, token: string }) {
+{origin: string, relation: string, token: string}) {
 
   const url = `/api/v1/software_for_software?origin=eq.${origin}&relation=eq.${relation}`
 

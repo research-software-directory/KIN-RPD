@@ -17,7 +17,7 @@ import {setContentSecurityPolicyHeader} from '~/utils/contentSecurityPolicy'
 // extend type with nonce received from getInitialProps
 type RsdDocumentInitialProps = DocumentInitialProps & {
   nonce: string
-};
+}
 
 export default class MyDocument extends Document<RsdDocumentInitialProps>{
   readonly matomoUrl = process.env.MATOMO_URL

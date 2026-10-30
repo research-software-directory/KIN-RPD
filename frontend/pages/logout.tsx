@@ -16,7 +16,7 @@ type RedirectProps = {
   permanent: boolean
 }
 
-export default function Logout({redirect}: { redirect: RedirectProps }) {
+export default function Logout({redirect}: {redirect: RedirectProps}) {
   const router = useRouter()
   // in case we did reach frontend page somehow?!?
   // we will redirect you (again)
@@ -32,6 +32,7 @@ export default function Logout({redirect}: { redirect: RedirectProps }) {
         <p className="py-8">
           You can now do something else :-)
         </p>
+        {/* eslint-disable-next-line @next/next/no-location-assign-relative-destination */}
         <Button onClick={() => window.location.href = '/'}>
           Home
         </Button>

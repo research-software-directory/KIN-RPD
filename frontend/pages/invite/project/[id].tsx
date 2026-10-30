@@ -30,7 +30,7 @@ type InviteProjectMaintainerProps = {
 }
 
 export default function InviteProjectMaintainer({projectInfo, error}:
-  InviteProjectMaintainerProps) {
+InviteProjectMaintainerProps) {
   // console.group('InviteProjectMaintainer')
   // console.log('projectInfo..', projectInfo)
   // console.log('error..', error)

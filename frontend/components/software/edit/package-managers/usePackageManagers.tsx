@@ -9,7 +9,7 @@ import {
   getPackageManagers, patchPackageManager, patchPackageManagers, postPackageManager
 } from './apiPackageManager'
 
-export default function usePackageManagers({token, software}: { token: string, software: string }) {
+export default function usePackageManagers({token, software}: {token: string, software: string}) {
   const [managers,setManagers]=useState<PackageManager[]>([])
   const [loading,setLoading]=useState(true)
 

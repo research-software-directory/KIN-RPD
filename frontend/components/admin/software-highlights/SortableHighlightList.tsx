@@ -99,7 +99,7 @@ export default function SortableHighlightsList({highlights, loading, onSorted, o
         body={
           <>
             <p>
-               Are you sure you want to delete software <strong>{modal?.highlight?.brand_name}</strong> from highlights?
+              Are you sure you want to delete software <strong>{modal?.highlight?.brand_name}</strong> from highlights?
             </p>
           </>
         }

@@ -11,7 +11,7 @@ import {WithAppContext} from '~/utils/jest/WithAppContext'
 import MuiSnackbarProvider from './MuiSnackbarProvider'
 import useSnackbar from './useSnackbar'
 
-function WithMuiSnackbar({type, message}: { type: string, message: string }) {
+function WithMuiSnackbar({type, message}: {type: string, message: string}) {
   const {showErrorMessage,showSuccessMessage,showInfoMessage,showWarningMessage} = useSnackbar()
 
   function showMessage() {

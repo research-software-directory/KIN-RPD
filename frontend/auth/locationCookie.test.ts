@@ -7,24 +7,27 @@
 
 import {saveLocationCookie} from './locationCookie'
 
-const orgLocation = window.location
+let cookieValue = 'status=active'
 
 beforeAll(() => {
-  // mock location
-  Object.defineProperty(window, 'location', {
-    value: new URL('http://localhost'),
-    configurable: true,
-  })
-  // mock cookie
+  // Set the initial environment route baseline safely
+  history.replaceState(null, '', 'http://localhost/')
+
+  // Mock document.cookie with dynamic getter/setter simulation
   Object.defineProperty(document, 'cookie', {
-    writable: true,
-    value: 'status=active',
+    configurable: true,
+    get() {
+      return cookieValue
+    },
+    set(val) {
+      cookieValue = val
+    },
   })
 })
 
 afterAll(() => {
-  // reset location
-  Object.defineProperty(window, 'location', orgLocation)
+  // Cleanly restore all custom descriptor overrides
+  jest.restoreAllMocks()
 })
 
 it('ignores these paths', () => {
@@ -36,9 +39,8 @@ it('ignores these paths', () => {
     '/login/failed'
   ]
   ignorePath.forEach(path => {
-    // console.log('loop...', path)
-    // should ignore this path
-    window.location.pathname = path
+    // 💡 Jest 30 Fix: Change pathname via history api instead of direct mutation
+    history.replaceState(null, '', path)
     document.cookie = ''
     // call function
     saveLocationCookie()
@@ -48,22 +50,28 @@ it('ignores these paths', () => {
 })
 
 it('when root write cookie to redirect to projects', () => {
-  // should ignore this path
-  window.location.pathname = '/'
+  // Jest 30 Fix: Set path to root safely
+  history.replaceState(null, '', '/')
+
   const expectedCookie = 'rsd_pathname=http://localhost/projects?order=impact_cnt;path=/auth;SameSite=None;Secure'
   document.cookie = ''
+
   // call function
   saveLocationCookie()
+
   // validate
   expect(document.cookie).toEqual(expectedCookie)
 })
 
 it('when path write cookie to redirect to path', () => {
-  // should ignore this path
   const testPath = '/test-path'
-  window.location.pathname = testPath
+
+  // Jest 30 Fix: Set custom test path safely
+  history.replaceState(null, '', testPath)
+
   const expectedCookie = `rsd_pathname=http://localhost${testPath};path=/auth;SameSite=None;Secure`
   document.cookie = ''
+
   // call function
   saveLocationCookie()
   // validate

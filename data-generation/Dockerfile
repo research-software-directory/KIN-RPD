@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:21.4.0-bullseye-slim
+FROM node:26.12.1-trixie-slim
 WORKDIR /usr/app
 # copy
 COPY package.json package-lock.json ./

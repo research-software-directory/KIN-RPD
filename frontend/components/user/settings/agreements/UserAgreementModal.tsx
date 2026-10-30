@@ -171,7 +171,7 @@ export default function UserAgreementModal() {
               marginRight: '1rem',
             }}
           >
-              Cancel
+            Cancel
           </Button>
           <Button
             form="user-agreement-form"

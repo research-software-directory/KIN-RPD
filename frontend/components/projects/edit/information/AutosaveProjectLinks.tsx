@@ -110,7 +110,7 @@ export default function AutosaveProjectLinks({project_id, url_for_project}: Proj
     }
   }
 
-  function updateLink({data, pos}: { data: ProjectLink, pos?: number }) {
+  function updateLink({data, pos}: {data: ProjectLink, pos?: number}) {
     if (typeof pos !== 'undefined') {
       const items = links.map((item, i) => {
         // return updated item

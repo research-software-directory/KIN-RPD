@@ -12,7 +12,7 @@ import mockData from './useProjectToEditData.json'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function useProjectToEdit({slug, token}:
-  { slug: string, token: string, reload?: boolean }) {
+{slug: string, token: string, reload?: boolean}) {
 
   const [project, setProject] = useState<EditProject>()
   const [loading, setLoading] = useState(true)

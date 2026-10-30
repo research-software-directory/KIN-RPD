@@ -37,7 +37,7 @@ export default function CategoryTree({onRemove,items,showLongNames,selectedList}
                 </Tooltip>
               </Link>
               { onRemove && selectedList?.has(category.id) ?
-				        <IconButton
+                <IconButton
                   size='small'
                   onClick={()=>onRemove(category.id)}>
                   <CancelIcon fontSize='small'/>
@@ -46,7 +46,7 @@ export default function CategoryTree({onRemove,items,showLongNames,selectedList}
               }
             </div>
             {children.length > 0 ?
-			        <CategoryTree
+              <CategoryTree
                 items={children}
                 showLongNames={showLongNames}
                 selectedList={selectedList}

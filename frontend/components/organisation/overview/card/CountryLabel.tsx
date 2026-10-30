@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-export default function CountryLabel({country}: { country: string | null }) {
+export default function CountryLabel({country}: {country: string | null}) {
 
   return (
     <div

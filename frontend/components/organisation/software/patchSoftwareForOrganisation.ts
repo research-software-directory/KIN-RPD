@@ -6,7 +6,7 @@
 import {createJsonHeaders, extractReturnMessage} from '~/utils/fetchHelpers'
 
 export async function patchSoftwareForOrganisation({software, organisation, data, token}:
-  { software: string, organisation: string, data: any, token: string }) {
+{software: string, organisation: string, data: any, token: string}) {
   try {
     const query = `software=eq.${software}&organisation=eq.${organisation}`
     const url = `/api/v1/software_for_organisation?${query}`

@@ -44,7 +44,7 @@ export async function getKeywordsByCommunity(uuid:string,token?:string){
 }
 
 export async function addKeywordsToCommunity({data, token}:
-  {data: CommunityKeyword | CommunityKeyword[], token: string }) {
+{data: CommunityKeyword | CommunityKeyword[], token: string}) {
   try {
     // POST
     const url = '/api/v1/keyword_for_community'
@@ -68,7 +68,7 @@ export async function addKeywordsToCommunity({data, token}:
 }
 
 export async function deleteKeywordFromCommunity({community, keyword, token}:
-  { community: string, keyword: string, token: string }) {
+{community: string, keyword: string, token: string}) {
   try {
     // DELETE record based on community and keyword uuid
     const query = `keyword_for_community?community=eq.${community}&keyword=eq.${keyword}`

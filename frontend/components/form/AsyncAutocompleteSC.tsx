@@ -284,42 +284,53 @@ export default function AsyncAutocompleteSC<T>({status, options, config,
             return options
           }
         }}
-        isOptionEqualToValue={(option, value) => option.key === value.key}
+        isOptionEqualToValue={(option, value) => {
+          if (typeof(value)==='string'){
+            return option.label === value
+          } else if (typeof(value)==='object'){
+            return option.label === value?.key
+          }
+          return false
+        }}
         getOptionLabel={(option) => typeof option === 'string' ? option : option?.label}
         onInputChange={onInputChange}
         onChange={onAutocompleteChange}
         options={options}
         // we use loading icon in text field
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant={config?.variant ?? 'outlined'}
-            label={config.label}
-            helperText={config.help}
-            error={config?.error ? config.error : false}
-            onKeyDown={(e) => {
-              // console.log('onKeyDown.TextField.AsyncAutocompleteSC')
-              // disable enter key when autocomplete menu options closed
-              // it seem to crash component in some configuration (probably when freeSolo===false)
-              if (e.key === 'Enter' && open === false) {
-                // stop propagation
-                e.stopPropagation()
-              }
-            }}
-            slotProps={{
-              input: {
-                ...params.InputProps,
-                'aria-label': config.label ?? 'Search',
-                endAdornment: (
-                  <>
-                    {loading ? <CircularProgress data-testid="circular-loader" color="inherit" size={20} /> : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                ),
-              }
-            }}
-          />
-        )}
+        renderInput={(params) => {
+          // split endAdornment from other input props
+          const {endAdornment, ...inputSlotProps} = params.slotProps.input
+          return (
+            <TextField
+              {...params}
+              variant={config?.variant ?? 'outlined'}
+              label={config.label}
+              helperText={config.help}
+              error={config?.error ? config.error : false}
+              onKeyDown={(e) => {
+                // console.log('onKeyDown.TextField.AsyncAutocompleteSC')
+                // disable enter key when autocomplete menu options closed
+                // it seem to crash component in some configuration (probably when freeSolo===false)
+                if (e.key === 'Enter' && open === false) {
+                  // stop propagation
+                  e.stopPropagation()
+                }
+              }}
+              slotProps={{
+                ...params.slotProps,
+                input: {
+                  ...inputSlotProps,
+                  'aria-label': config.label ?? 'Search',
+                  endAdornment: (
+                    <>
+                      {loading ? <CircularProgress data-testid="circular-loader" color="inherit" size={20} /> : null}
+                      {endAdornment}
+                    </>
+                  ),
+                }
+              }}
+            />
+          )}}
         renderOption={onRenderOption}
       />
     </>

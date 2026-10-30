@@ -58,7 +58,7 @@ export default function useProjectTestimonial(){
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[token,project.id])
 
-  const updateTestimonial = useCallback(async({data, pos}: { data: Testimonial, pos: number })=>{
+  const updateTestimonial = useCallback(async({data, pos}: {data: Testimonial, pos: number})=>{
     if (project.id && token && data.id){
       const testimonial = {
         ...data,

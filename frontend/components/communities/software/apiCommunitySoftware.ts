@@ -249,7 +249,7 @@ export async function ssrCommunitySoftwareProps({
 
 
 export async function patchSoftwareForCommunity({software, community, data, token}:
-  { software: string, community: string, data: any, token: string }) {
+{software: string, community: string, data: any, token: string}) {
   try {
     const query = `software=eq.${software}&community=eq.${community}`
     const url = `${getBaseUrl()}/software_for_community?${query}`
