@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM maven:3.9.8-eclipse-temurin-21 AS builder
+FROM maven:3.10.0-eclipse-temurin-25-noble AS builder
 WORKDIR /usr/mymaven
 RUN mkdir src
 COPY pom.xml .
@@ -11,7 +11,7 @@ RUN mvn dependency:go-offline
 COPY ./src ./src
 RUN mvn package --offline
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:25.0.4.1_1-jre-noble
 WORKDIR /usr/myjava
 COPY --from=builder /usr/mymaven/target/*-jar-with-dependencies.jar background-services.jar
 CMD java -cp background-services.jar nl.esciencecenter.rsd.MainDatabase
