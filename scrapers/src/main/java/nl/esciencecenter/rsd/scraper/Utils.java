@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2026 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
@@ -13,13 +13,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,8 +28,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
-import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utils {
 
@@ -40,7 +40,55 @@ public class Utils {
 	// Default timeout used for http connections.
 	private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
 
-	private Utils() {
+	private Utils() {}
+
+	/**
+	 * removes all leading, trailing and double white space from a string
+	 *
+	 * @param s the string to sanitise
+	 * @return the sanitised string or null if the input was null
+	 */
+	public static String sanitiseWhitespace(String s) {
+		if (s == null) {
+			return null;
+		}
+
+		return s.replaceAll("\\s+", " ").strip();
+	}
+
+	/**
+	 *
+	 * @param s the string to slugify, cannot be null
+	 * @return the input for which the letters A-Z are converted to lower case,
+	 * the digits 0-9 are unchanged,
+	 * other characters have been converted to a dash,
+	 * leading, trailing and more than one duplicate dashes have been removed
+	 */
+	public static String slugify(String s) {
+		return s.toLowerCase(Locale.ENGLISH).replaceAll("[^a-z0-9]+", "-").replaceAll("^-", "").replaceAll("-$", "");
+	}
+
+	/**
+	 *
+	 * @param s the candidate URL to check
+	 * @return if the input is a valid HTTP(S) URL
+	 */
+	public static boolean isUrl(String s) {
+		if (s == null) {
+			return false;
+		}
+
+		if (!s.startsWith("https://") && !s.startsWith("http://")) {
+			return false;
+		}
+
+		try {
+			new URI(s);
+		} catch (URISyntaxException _) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -73,11 +121,17 @@ public class Utils {
 	 * @throws InterruptedException
 	 * @throws RsdResponseException
 	 */
-	public static String get(String uri, String... headers) throws IOException, InterruptedException, RsdResponseException {
+	public static String get(String uri, String... headers)
+		throws IOException, InterruptedException, RsdResponseException {
 		HttpResponse<String> response = getAsHttpResponse(uri, headers);
 
 		if (response.statusCode() >= 300) {
-			throw new RsdResponseException(response.statusCode(), response.uri(), response.body(), "Unexpected response");
+			throw new RsdResponseException(
+				response.statusCode(),
+				response.uri(),
+				response.body(),
+				"Unexpected response"
+			);
 		}
 
 		return response.body();
@@ -86,17 +140,44 @@ public class Utils {
 	/**
 	 * Performs a GET request with given headers and returns the entire http response.
 	 *
-	 * @param uri     The encoded URI
+	 * @param uri The URI
 	 * @param headers (Optional) Variable amount of headers. Number of arguments must be a multiple of two.
 	 * @return The response as a String.
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * @throws IOException when the underlying HTTP request throws it
+	 * @throws InterruptedException when this operation is interrupted
 	 */
-	public static HttpResponse<String> getAsHttpResponse(String uri, String... headers) throws IOException, InterruptedException {
-		HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder()
-			.GET()
-			.timeout(DEFAULT_TIMEOUT)
-			.uri(URI.create(uri));
+	public static HttpResponse<String> getAsHttpResponse(URI uri, String... headers)
+		throws IOException, InterruptedException {
+		return getAsHttpResponse(uri, DEFAULT_TIMEOUT, headers);
+	}
+
+	/**
+	 * Performs a GET request with given headers and returns the entire http response.
+	 *
+	 * @param uri The encoded URI
+	 * @param headers (Optional) Variable amount of headers. Number of arguments must be a multiple of two.
+	 * @return The response as a String.
+	 * @throws IOException when the underlying HTTP request throws it
+	 * @throws InterruptedException when this operation is interrupted
+	 */
+	public static HttpResponse<String> getAsHttpResponse(String uri, String... headers)
+		throws IOException, InterruptedException {
+		return getAsHttpResponse(URI.create(uri), headers);
+	}
+
+	/**
+	 * Performs a GET request with given headers and timeout and returns the entire http response.
+	 *
+	 * @param uri The encoded URI
+	 * @param timeout the timeout of the HTTP request
+	 * @param headers (Optional) Variable amount of headers. Number of arguments must be a multiple of two.
+	 * @return The response as a String.
+	 * @throws IOException when the underlying HTTP request throws it
+	 * @throws InterruptedException when this operation is interrupted
+	 */
+	public static HttpResponse<String> getAsHttpResponse(URI uri, Duration timeout, String... headers)
+		throws IOException, InterruptedException {
+		HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().GET().timeout(timeout).uri(uri);
 		if (headers != null && headers.length > 0 && headers.length % 2 == 0) {
 			httpRequestBuilder.headers(headers);
 		}
@@ -136,7 +217,9 @@ public class Utils {
 		}
 
 		if (response.statusCode() >= 300) {
-			throw new RuntimeException("Error fetching data from endpoint " + uri + " with response: " + response.body());
+			throw new RuntimeException(
+				"Error fetching data from endpoint " + uri + " with response: " + response.body()
+			);
 		}
 		return response.body();
 	}
@@ -171,7 +254,9 @@ public class Utils {
 		}
 
 		if (response.statusCode() >= 300) {
-			throw new RuntimeException("Error fetching data from endpoint " + uri + " with response: " + response.body());
+			throw new RuntimeException(
+				"Error fetching data from endpoint " + uri + " with response: " + response.body()
+			);
 		}
 		return response.body();
 	}
@@ -208,7 +293,9 @@ public class Utils {
 		}
 
 		if (response.statusCode() >= 300) {
-			throw new RuntimeException("Error fetching data from endpoint " + uri + " with response: " + response.body());
+			throw new RuntimeException(
+				"Error fetching data from endpoint " + uri + " with response: " + response.body()
+			);
 		}
 		return response.body();
 	}
@@ -232,25 +319,21 @@ public class Utils {
 	}
 
 	public static void saveExceptionInDatabase(String serviceName, String tableName, UUID referenceId, Exception e) {
+		if (e instanceof RsdResponseException re) {
+			saveExceptionInDatabase(serviceName, tableName, referenceId, re);
+			return;
+		}
 		JsonObject logData = basicData(serviceName, tableName, referenceId, e);
 
 		postAsAdmin(Config.backendBaseUrl() + "/backend_log", logData.toString());
 	}
 
-	public static void saveExceptionInDatabase(String serviceName, String tableName, UUID referenceId, RsdResponseException e) {
-		JsonObject logData = basicData(serviceName, tableName, referenceId, e);
-
-		JsonObject other = new JsonObject();
-		other.addProperty("status_code", e.statusCode);
-		other.addProperty("URI", e.uri != null ? e.uri.toString() : null);
-		other.addProperty("response_body", e.body);
-
-		logData.add("other_data", other);
-
-		postAsAdmin(Config.backendBaseUrl() + "/backend_log", logData.toString());
-	}
-
-	public static void saveExceptionInDatabase(String serviceName, String tableName, UUID referenceId, RsdRateLimitException e) {
+	public static void saveExceptionInDatabase(
+		String serviceName,
+		String tableName,
+		UUID referenceId,
+		RsdResponseException e
+	) {
 		JsonObject logData = basicData(serviceName, tableName, referenceId, e);
 
 		JsonObject other = new JsonObject();
@@ -263,7 +346,33 @@ public class Utils {
 		postAsAdmin(Config.backendBaseUrl() + "/backend_log", logData.toString());
 	}
 
-	public static void saveErrorMessageInDatabase(String message, String tableName, String columnName, String primaryKey, String primaryKeyName, ZonedDateTime scrapedAt, String scrapedAtName) {
+	public static void saveExceptionInDatabase(
+		String serviceName,
+		String tableName,
+		UUID referenceId,
+		RsdRateLimitException e
+	) {
+		JsonObject logData = basicData(serviceName, tableName, referenceId, e);
+
+		JsonObject other = new JsonObject();
+		other.addProperty("status_code", e.statusCode);
+		other.addProperty("URI", e.uri != null ? e.uri.toString() : null);
+		other.addProperty("response_body", e.body);
+
+		logData.add("other_data", other);
+
+		postAsAdmin(Config.backendBaseUrl() + "/backend_log", logData.toString());
+	}
+
+	public static void saveErrorMessageInDatabase(
+		String message,
+		String tableName,
+		String columnName,
+		String primaryKey,
+		String primaryKeyName,
+		ZonedDateTime scrapedAt,
+		String scrapedAtName
+	) {
 		JsonObject body = new JsonObject();
 		if (columnName != null) {
 			body.addProperty(columnName, message);
@@ -304,12 +413,15 @@ public class Utils {
 			throw new RuntimeException(e);
 		}
 		if (response.statusCode() >= 300) {
-			throw new RuntimeException("Error fetching data from endpoint " + uri + " with response: " + response.body());
+			throw new RuntimeException(
+				"Error fetching data from endpoint " + uri + " with response: " + response.body()
+			);
 		}
 		return response.body();
 	}
 
-	public static String deleteAsAdmin(String uri, String... extraHeaders) throws IOException, InterruptedException, RsdResponseException {
+	public static String deleteAsAdmin(String uri, String... extraHeaders)
+		throws IOException, InterruptedException, RsdResponseException {
 		String jwtString = adminJwt();
 		HttpRequest.Builder builder = HttpRequest.newBuilder()
 			.method("DELETE", HttpRequest.BodyPublishers.noBody())
@@ -325,7 +437,12 @@ public class Utils {
 			response = client.send(request, HttpResponse.BodyHandlers.ofString());
 		}
 		if (response.statusCode() >= 300) {
-			throw new RsdResponseException(response.statusCode(), response.uri(), response.body(), "Error deleting data as admin");
+			throw new RsdResponseException(
+				response.statusCode(),
+				response.uri(),
+				response.body(),
+				"Error deleting data as admin"
+			);
 		}
 		return response.body();
 	}
@@ -343,15 +460,6 @@ public class Utils {
 		return e == null || !e.isJsonPrimitive() ? null : e.getAsString();
 	}
 
-	public static <T> T safelyGetOrNull(JsonElement element, Function<JsonElement, T> extractor) {
-		try {
-			return extractor.apply(element);
-		} catch (RuntimeException e) {
-			LOGGER.warn("Exception extracting data from JSON: " + element, e);
-			return null;
-		}
-	}
-
 	public static Integer integerOrNull(JsonElement e) {
 		return e == null || !e.isJsonPrimitive() ? null : e.getAsInt();
 	}
@@ -363,9 +471,9 @@ public class Utils {
 	 * @return the filter.
 	 */
 	public static String atLeastOneHourAgoFilter(String scrapedAtColumnName) {
-		String oneHourAgoEncoded = urlEncode(ZonedDateTime.now()
-			.minusHours(1)
-			.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+		String oneHourAgoEncoded = urlEncode(
+			ZonedDateTime.now().minusHours(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+		);
 		return "or=(%s.is.null,%s.lte.%s)".formatted(scrapedAtColumnName, scrapedAtColumnName, oneHourAgoEncoded);
 	}
 }
