@@ -4,7 +4,10 @@
 
 services:
   database:
-    image: ghcr.io/research-software-directory/rsd-saas/database:v3.4.1
+    build: ./database
+    image: kin-rpd/database:v1.1.2
+    # initial rsd image version
+    # image: ghcr.io/research-software-directory/rsd-saas/database:v3.4.1
     ports:
       # enable connection from outside (development mode)
       - "5432:5432"
@@ -23,7 +26,10 @@ services:
       - net
 
   backend:
-    image: ghcr.io/research-software-directory/rsd-saas/backend:v3.4.1
+    build: ./backend-postgrest
+    image: kin-rpd/backend:v1.1.2
+    # initial rsd image version
+    # image: ghcr.io/research-software-directory/rsd-saas/backend:v3.4.1
     expose:
       - 3500
     environment:
@@ -38,8 +44,28 @@ services:
     networks:
       - net
 
+  background-services:
+    build: ./backend-postgrest
+    image: kin-rpd/background-services:v1.1.2
+    # initial rsd image version
+    # image: ghcr.io/research-software-directory/rsd-saas/background-services:v3.4.1
+    environment:
+    # it uses values from .env file
+      - POSTGRES_DB_HOST
+      - POSTGRES_DB_HOST_PORT
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    depends_on:
+      - database
+    networks:
+      - net
+
   auth:
-    image: ghcr.io/research-software-directory/rsd-saas/auth:v3.4.1
+    build: ./authentication
+    image: kin-rpd/auth:v1.1.2
+    # initial rsd image version
+    # image: ghcr.io/research-software-directory/rsd-saas/auth:v3.4.1
     ports:
       - 5005:5005
     expose:
@@ -92,7 +118,10 @@ services:
       ]
 
   scrapers:
-    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.4.1
+    build: ./scrapers
+    image: kin-rpd/scrapers:v1.1.2
+    # initial rsd image version
+    # image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.4.1
     environment:
       # it uses values from .env file
       - POSTGREST_URL
@@ -108,20 +137,6 @@ services:
     depends_on:
       - database
       - backend
-    networks:
-      - net
-
-  background-services:
-    image: ghcr.io/research-software-directory/rsd-saas/background-services:v3.4.1
-    environment:
-    # it uses values from .env file
-      - POSTGRES_DB_HOST
-      - POSTGRES_DB_HOST_PORT
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-    depends_on:
-      - database
     networks:
       - net
 
