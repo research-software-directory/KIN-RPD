@@ -59,7 +59,7 @@ ENV NODE_ENV=production
 
 # Pass version as build argument
 ARG APP_VERSION=unknown
-ENV RSD_VERSION=$APP_VERSION
+ENV KIN_VERSION=$APP_VERSION
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

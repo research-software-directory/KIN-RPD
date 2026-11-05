@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2024 - 2025 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -7,12 +7,11 @@ package nl.esciencecenter.rsd.scraper.doi;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 class OpenAlexConnectorTest {
 
@@ -34,10 +33,29 @@ class OpenAlexConnectorTest {
 	void givenEmptyCollection_whenGettingData_thenEmptyCollectionReturned() {
 		OpenAlexConnector openAlexConnector = new OpenAlexConnector();
 
-		Collection<ExternalMentionRecord> doiMentions = Assertions.assertDoesNotThrow(() -> openAlexConnector.mentionDataByDois(Collections.emptyList(), null));
+		Collection<ExternalMentionRecord> doiMentions = Assertions.assertDoesNotThrow(() ->
+			openAlexConnector.mentionDataByDois(Collections.emptyList())
+		);
 		Assertions.assertTrue(doiMentions.isEmpty());
 
-		Collection<ExternalMentionRecord> openalexMentions = Assertions.assertDoesNotThrow(() -> openAlexConnector.mentionDataByOpenalexIds(Collections.emptyList(), null));
+		Collection<ExternalMentionRecord> openalexMentions = Assertions.assertDoesNotThrow(() ->
+			openAlexConnector.mentionDataByOpenalexIds(Collections.emptyList())
+		);
 		Assertions.assertTrue(openalexMentions.isEmpty());
+	}
+
+	@Test
+	void givenOpenAlexId_whenConvertingToCitationsUrl_thenCorrectUrlReturned() {
+		String openAlexKey = "W12345";
+		OpenalexId openalexId = OpenalexId.fromString("https://openalex.org/" + openAlexKey);
+
+		String citationsUrl = OpenAlexConnector.citationsUri(openalexId);
+
+		Assertions.assertEquals("https://api.openalex.org/works?filter=cites:" + openAlexKey, citationsUrl);
+	}
+
+	@Test
+	void givenNullOpenAlexId_whenConvertingToCitationsUrl_thenNullPointerThrown() {
+		Assertions.assertThrowsExactly(NullPointerException.class, () -> OpenAlexConnector.citationsUri(null));
 	}
 }

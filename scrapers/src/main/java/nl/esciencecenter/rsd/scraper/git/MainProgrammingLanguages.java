@@ -1,10 +1,16 @@
-// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2025 Dusan Mijatovic (Netherlands eScience Center)
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package nl.esciencecenter.rsd.scraper.git;
 
+import java.net.URI;
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import nl.esciencecenter.rsd.scraper.Config;
 import nl.esciencecenter.rsd.scraper.RsdRateLimitException;
 import nl.esciencecenter.rsd.scraper.RsdResponseException;
@@ -12,18 +18,11 @@ import nl.esciencecenter.rsd.scraper.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
 public class MainProgrammingLanguages {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainProgrammingLanguages.class);
 
 	public static void main(String[] args) {
-
 		LOGGER.info("Start scraping programming languages");
 
 		long t1 = System.currentTimeMillis();
@@ -31,6 +30,7 @@ public class MainProgrammingLanguages {
 		scrapeGithub();
 		scrapeGitLab();
 		scrape4tu();
+		scrapeCodeberg();
 
 		long time = System.currentTimeMillis() - t1;
 
@@ -38,7 +38,10 @@ public class MainProgrammingLanguages {
 	}
 
 	private static void scrapeGitLab() {
-		PostgrestConnector softwareInfoRepository = new PostgrestConnector(Config.backendBaseUrl() + "/repository_url", CodePlatformProvider.GITLAB);
+		PostgrestConnector softwareInfoRepository = new PostgrestConnector(
+			Config.backendBaseUrl() + "/repository_url",
+			CodePlatformProvider.GITLAB
+		);
 		Collection<BasicRepositoryData> dataToScrape = softwareInfoRepository.languagesData(Config.maxRequestsGitLab());
 		CompletableFuture<?>[] futures = new CompletableFuture[dataToScrape.size()];
 		ZonedDateTime scrapedAt = ZonedDateTime.now();
@@ -53,20 +56,60 @@ public class MainProgrammingLanguages {
 					if (projectPath.endsWith("/")) projectPath = projectPath.substring(0, projectPath.length() - 1);
 
 					String scrapedLanguages = new GitlabScraper(apiUrl, projectPath).languages();
-					LanguagesData updatedData = new LanguagesData(new BasicRepositoryData(programmingLanguageData.software(), null), scrapedLanguages, scrapedAt);
+					LanguagesData updatedData = new LanguagesData(
+						new BasicRepositoryData(programmingLanguageData.software(), null),
+						scrapedLanguages,
+						scrapedAt
+					);
 					softwareInfoRepository.saveLanguagesData(updatedData);
 				} catch (RsdRateLimitException e) {
-					Utils.saveExceptionInDatabase("GitLab programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase(e.getMessage(), "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", null, null);
+					Utils.saveExceptionInDatabase(
+						"GitLab programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						null,
+						null
+					);
 				} catch (RsdResponseException e) {
-					Utils.saveExceptionInDatabase("GitLab programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase(e.getMessage(), "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", scrapedAt, "languages_scraped_at");
+					Utils.saveExceptionInDatabase(
+						"GitLab programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
 				} catch (Exception e) {
-					Utils.saveExceptionInDatabase("GitLab programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase("Unknown error", "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", scrapedAt, "languages_scraped_at");
+					Utils.saveExceptionInDatabase(
+						"GitLab programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						"Unknown error",
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
 				}
 			});
 			futures[i] = future;
@@ -76,7 +119,10 @@ public class MainProgrammingLanguages {
 	}
 
 	private static void scrapeGithub() {
-		PostgrestConnector softwareInfoRepository = new PostgrestConnector(Config.backendBaseUrl() + "/repository_url", CodePlatformProvider.GITHUB);
+		PostgrestConnector softwareInfoRepository = new PostgrestConnector(
+			Config.backendBaseUrl() + "/repository_url",
+			CodePlatformProvider.GITHUB
+		);
 		Collection<BasicRepositoryData> dataToScrape = softwareInfoRepository.languagesData(Config.maxRequestsGithub());
 		CompletableFuture<?>[] futures = new CompletableFuture[dataToScrape.size()];
 		ZonedDateTime scrapedAt = ZonedDateTime.now();
@@ -88,27 +134,74 @@ public class MainProgrammingLanguages {
 
 					Optional<GithubScraper> githubScraperOptional = GithubScraper.create(repoUrl);
 					if (githubScraperOptional.isEmpty()) {
-						Utils.saveErrorMessageInDatabase("Not a valid GitHub URL: " + repoUrl, "repository_url", "languages_last_error", programmingLanguageData.software()
-							.toString(), "software", scrapedAt, "languages_scraped_at");
+						Utils.saveErrorMessageInDatabase(
+							"Not a valid GitHub URL: " + repoUrl,
+							"repository_url",
+							"languages_last_error",
+							programmingLanguageData.software().toString(),
+							"id",
+							scrapedAt,
+							"languages_scraped_at"
+						);
 						return;
 					}
 
 					GithubScraper githubScraper = githubScraperOptional.get();
 					String scrapedLanguages = githubScraper.languages();
-					LanguagesData updatedData = new LanguagesData(new BasicRepositoryData(programmingLanguageData.software(), null), scrapedLanguages, scrapedAt);
+					LanguagesData updatedData = new LanguagesData(
+						new BasicRepositoryData(programmingLanguageData.software(), null),
+						scrapedLanguages,
+						scrapedAt
+					);
 					softwareInfoRepository.saveLanguagesData(updatedData);
 				} catch (RsdRateLimitException e) {
-					Utils.saveExceptionInDatabase("GitHub programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase(e.getMessage(), "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", null, null);
+					Utils.saveExceptionInDatabase(
+						"GitHub programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						null,
+						null
+					);
 				} catch (RsdResponseException e) {
-					Utils.saveExceptionInDatabase("GitHub programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase(e.getMessage(), "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", scrapedAt, "languages_scraped_at");
+					Utils.saveExceptionInDatabase(
+						"GitHub programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
 				} catch (Exception e) {
-					Utils.saveExceptionInDatabase("GitHub programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase("Unknown error", "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", scrapedAt, "languages_scraped_at");
+					Utils.saveExceptionInDatabase(
+						"GitHub programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						"Unknown error",
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
 				}
 			});
 			futures[i] = future;
@@ -118,8 +211,11 @@ public class MainProgrammingLanguages {
 	}
 
 	private static void scrape4tu() {
-		PostgrestConnector softwareInfoRepository = new PostgrestConnector(Config.backendBaseUrl() + "/repository_url", CodePlatformProvider.FOURTU);
-		Collection<BasicRepositoryData> dataToScrape = softwareInfoRepository.languagesData(10);
+		PostgrestConnector softwareInfoRepository = new PostgrestConnector(
+			Config.backendBaseUrl() + "/repository_url",
+			CodePlatformProvider.FOURTU
+		);
+		Collection<BasicRepositoryData> dataToScrape = softwareInfoRepository.languagesData(Config.maxRequests4tu());
 		CompletableFuture<?>[] futures = new CompletableFuture[dataToScrape.size()];
 		ZonedDateTime scrapedAt = ZonedDateTime.now();
 		int i = 0;
@@ -130,20 +226,154 @@ public class MainProgrammingLanguages {
 
 					FourTuGitScraper fourTuGitScraper = new FourTuGitScraper(repoUrl);
 					String scrapedLanguages = fourTuGitScraper.languages();
-					LanguagesData updatedData = new LanguagesData(new BasicRepositoryData(programmingLanguageData.software(), null), scrapedLanguages, scrapedAt);
+					LanguagesData updatedData = new LanguagesData(
+						new BasicRepositoryData(programmingLanguageData.software(), null),
+						scrapedLanguages,
+						scrapedAt
+					);
 					softwareInfoRepository.saveLanguagesData(updatedData);
 				} catch (RsdRateLimitException e) {
-					Utils.saveExceptionInDatabase("4TU programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase(e.getMessage(), "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", null, null);
+					Utils.saveExceptionInDatabase(
+						"4TU programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						null,
+						null
+					);
 				} catch (RsdResponseException e) {
-					Utils.saveExceptionInDatabase("4TU programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase(e.getMessage(), "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", scrapedAt, "languages_scraped_at");
+					Utils.saveExceptionInDatabase(
+						"4TU programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
 				} catch (Exception e) {
-					Utils.saveExceptionInDatabase("4TU programming languages scraper", "repository_url", programmingLanguageData.software(), e);
-					Utils.saveErrorMessageInDatabase("Unknown error", "repository_url", "languages_last_error", programmingLanguageData.software()
-						.toString(), "software", scrapedAt, "languages_scraped_at");
+					Utils.saveExceptionInDatabase(
+						"4TU programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						"Unknown error",
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
+				}
+			});
+			futures[i] = future;
+			i++;
+		}
+		CompletableFuture.allOf(futures).join();
+	}
+
+	private static void scrapeCodeberg() {
+		PostgrestConnector softwareInfoRepository = new PostgrestConnector(
+			Config.backendBaseUrl() + "/repository_url",
+			CodePlatformProvider.CODEBERG
+		);
+		Collection<BasicRepositoryData> dataToScrape = softwareInfoRepository.languagesData(
+			Config.maxRequestsCodeberg()
+		);
+		CompletableFuture<?>[] futures = new CompletableFuture[dataToScrape.size()];
+		ZonedDateTime scrapedAt = ZonedDateTime.now();
+		int i = 0;
+		for (BasicRepositoryData programmingLanguageData : dataToScrape) {
+			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+				try {
+					String repoUrl = programmingLanguageData.url();
+
+					Optional<CodebergScraper> codebergScraperOptional = CodebergScraper.fromUrl(repoUrl);
+					if (codebergScraperOptional.isEmpty()) {
+						Utils.saveErrorMessageInDatabase(
+							"Not a valid Codeberg URL: " + repoUrl,
+							"repository_url",
+							"languages_last_error",
+							programmingLanguageData.software().toString(),
+							"id",
+							scrapedAt,
+							"languages_scraped_at"
+						);
+						return;
+					}
+
+					CodebergScraper codebergScraper = codebergScraperOptional.get();
+					String scrapedLanguages = codebergScraper.languages();
+					LanguagesData updatedData = new LanguagesData(
+						new BasicRepositoryData(programmingLanguageData.software(), null),
+						scrapedLanguages,
+						scrapedAt
+					);
+					softwareInfoRepository.saveLanguagesData(updatedData);
+				} catch (RsdRateLimitException e) {
+					Utils.saveExceptionInDatabase(
+						"Codeberg programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						null,
+						null
+					);
+				} catch (RsdResponseException e) {
+					Utils.saveExceptionInDatabase(
+						"Codeberg programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						e.getMessage(),
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
+				} catch (Exception e) {
+					Utils.saveExceptionInDatabase(
+						"Codeberg programming languages scraper",
+						"repository_url",
+						programmingLanguageData.software(),
+						e
+					);
+					Utils.saveErrorMessageInDatabase(
+						"Unknown error",
+						"repository_url",
+						"languages_last_error",
+						programmingLanguageData.software().toString(),
+						"id",
+						scrapedAt,
+						"languages_scraped_at"
+					);
 				}
 			});
 			futures[i] = future;

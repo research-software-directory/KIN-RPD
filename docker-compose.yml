@@ -121,18 +121,24 @@ services:
     build: ./scrapers
     image: kin-rpd/scrapers:v1.1.2
     # initial rsd image version
-    # image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.4.1
+    # image: ghcr.io/research-software-directory/rsd-saas/scrapers:v6.7.5
     environment:
       # it uses values from .env file
       - POSTGREST_URL
-      - PGRST_JWT_SECRET
       - MAX_REQUESTS_GITHUB
       - MAX_REQUESTS_GITLAB
+      - MAX_REQUESTS_4TU
+      - MAX_REQUESTS_CODEBERG
+      - MAX_REQUESTS_DOI
+      - MAX_REQUESTS_OPENALEX
       - MAX_REQUESTS_ROR
+      - ENABLE_NASSA_SCRAPER
+      - ENABLE_ESCAPE_OSSR_SCRAPER
+      - PGRST_JWT_SECRET
       - API_CREDENTIALS_GITHUB
       - ZENODO_ACCESS_TOKEN
-      - MAX_REQUESTS_DOI
       - CROSSREF_CONTACT_EMAIL
+      - OPENALEX_API_KEY
       - LIBRARIES_IO_ACCESS_TOKEN
     depends_on:
       - database
@@ -145,6 +151,10 @@ services:
       context: ./frontend
       # dockerfile to use for build
       dockerfile: Dockerfile
+      # rsd version passed into image
+      # for release the tag is passed in GH action _ghcr.yml
+      args:
+        APP_VERSION: "1.1.2"
     # update version number to correspond to frontend/package.json
     image: kin-rpd/frontend:1.1.2
     environment:

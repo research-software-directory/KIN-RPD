@@ -9,7 +9,8 @@ import app from '../../../package.json'
 
 type Data = {
   module: string,
-  version: string,
+  kin_version: string,
+  fe_version: string,
   status: string
 }
 
@@ -17,5 +18,10 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  res.status(200).json({module: 'frontend/api', version: app.version, status:'live'})
+  res.status(200).json({
+    module: 'frontend/api',
+    kin_version: process.env.KIN_VERSION || 'MISSING',
+    fe_version: app.version,
+    status:'live'
+  })
 }

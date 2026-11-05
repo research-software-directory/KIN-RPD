@@ -59,6 +59,66 @@ jobs:
           echo skipped=${{needs.release_tag.outputs.skipped}}
           echo tag=${{needs.release_tag.outputs.tag}}
 
+  auth:
+    # it needs to be checked on string value
+    if: needs.release_tag.outputs.skipped == 'false'
+    needs: release_tag
+    name: auth
+    uses: ./.github/workflows/_ghcr.yml
+    with:
+      ghcr_user: ${{github.actor}}
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/auth
+      image_tag: ${{needs.release_tag.outputs.tag}}
+      dockerfile: authentication/Dockerfile
+      docker_context: ./authentication
+    secrets:
+      token: ${{secrets.GITHUB_TOKEN}}
+
+  database:
+    # it needs to be checked on string value
+    if: needs.release_tag.outputs.skipped == 'false'
+    needs: release_tag
+    name: database
+    uses: ./.github/workflows/_ghcr.yml
+    with:
+      ghcr_user: ${{github.actor}}
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/database
+      image_tag: ${{needs.release_tag.outputs.tag}}
+      dockerfile: database/Dockerfile
+      docker_context: ./database
+    secrets:
+      token: ${{secrets.GITHUB_TOKEN}}
+
+  backend:
+    # it needs to be checked on string value
+    if: needs.release_tag.outputs.skipped == 'false'
+    needs: release_tag
+    name: backend api
+    uses: ./.github/workflows/_ghcr.yml
+    with:
+      ghcr_user: ${{github.actor}}
+      base_image_name: ghcr.io/research-software-directory/rsd-saas/backend
+      image_tag: ${{needs.release_tag.outputs.tag}}
+      dockerfile: backend-postgrest/Dockerfile
+      docker_context: ./backend-postgrest
+    secrets:
+      token: ${{secrets.GITHUB_TOKEN}}
+
+  background-services:
+    # it needs to be checked on string value
+    if: needs.release_tag.outputs.skipped == 'false'
+    needs: release_tag
+    name: background services
+    uses: ./.github/workflows/_ghcr.yml
+    with:
+      ghcr_user: ${{github.actor}}
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/background-services
+      image_tag: ${{needs.release_tag.outputs.tag}}
+      dockerfile: background-services/Dockerfile
+      docker_context: ./background-services
+    secrets:
+      token: ${{secrets.GITHUB_TOKEN}}
+
   frontend:
     # it needs to be checked on string value
     if: needs.release_tag.outputs.skipped == 'false'
