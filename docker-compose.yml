@@ -22,6 +22,12 @@ services:
       # to remove use: docker compose down --volumes
       # to inspect use: docker volume ls
       - pgdb:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "pg_isready", "--username=${POSTGRES_USER}", "--dbname=${POSTGRES_DB}"]
+      interval: 1s
+      retries: 15
+      timeout: 5s
+      start_period: 5s
     networks:
       - net
 
@@ -40,24 +46,8 @@ services:
       - PGRST_SERVER_PORT
       - PGRST_JWT_SECRET
     depends_on:
-      - database
-    networks:
-      - net
-
-  background-services:
-    build: ./backend-postgrest
-    image: kin-rpd/background-services:v1.1.2
-    # initial rsd image version
-    # image: ghcr.io/research-software-directory/rsd-saas/background-services:v3.4.1
-    environment:
-    # it uses values from .env file
-      - POSTGRES_DB_HOST
-      - POSTGRES_DB_HOST_PORT
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-    depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - net
 
@@ -105,8 +95,10 @@ services:
       - AUTH_LINKEDIN_CLIENT_SECRET
       - PGRST_JWT_SECRET
     depends_on:
-      - database
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
     entrypoint:
@@ -121,22 +113,30 @@ services:
     build: ./scrapers
     image: kin-rpd/scrapers:v1.1.2
     # initial rsd image version
-    # image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.4.1
+    # image: ghcr.io/research-software-directory/rsd-saas/scrapers:v6.7.5
     environment:
       # it uses values from .env file
       - POSTGREST_URL
-      - PGRST_JWT_SECRET
       - MAX_REQUESTS_GITHUB
       - MAX_REQUESTS_GITLAB
+      - MAX_REQUESTS_4TU
+      - MAX_REQUESTS_CODEBERG
+      - MAX_REQUESTS_DOI
+      - MAX_REQUESTS_OPENALEX
       - MAX_REQUESTS_ROR
+      - ENABLE_NASSA_SCRAPER
+      - ENABLE_ESCAPE_OSSR_SCRAPER
+      - PGRST_JWT_SECRET
       - API_CREDENTIALS_GITHUB
       - ZENODO_ACCESS_TOKEN
-      - MAX_REQUESTS_DOI
       - CROSSREF_CONTACT_EMAIL
+      - OPENALEX_API_KEY
       - LIBRARIES_IO_ACCESS_TOKEN
     depends_on:
-      - database
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
 
@@ -145,6 +145,10 @@ services:
       context: ./frontend
       # dockerfile to use for build
       dockerfile: Dockerfile
+      # rsd version passed into image
+      # for release the tag is passed in GH action _ghcr.yml
+      args:
+        APP_VERSION: "1.1.2"
     # update version number to correspond to frontend/package.json
     image: kin-rpd/frontend:1.1.2
     environment:
@@ -171,9 +175,12 @@ services:
     expose:
       - 3000
     depends_on:
-      - database
-      - backend
-      - auth
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      auth:
+        condition: service_started
     volumes:
       - ./frontend/public:/app/public
     # volumes:
@@ -224,7 +231,10 @@ services:
       - PGRST_JWT_SECRET
       - POSTGREST_URL
     depends_on:
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
     deploy:

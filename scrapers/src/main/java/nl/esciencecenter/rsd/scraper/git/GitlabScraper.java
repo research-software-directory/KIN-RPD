@@ -1,13 +1,17 @@
-// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 - 2025 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2022 - 2025 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
+// SPDX-FileCopyrightText: 2022 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2026 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2025 Paula Stock (GFZ) <paula.stock@gfz.de>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package nl.esciencecenter.rsd.scraper.git;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -15,12 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
+import java.util.Optional;
 import nl.esciencecenter.rsd.scraper.RsdRateLimitException;
 import nl.esciencecenter.rsd.scraper.RsdResponseException;
 import nl.esciencecenter.rsd.scraper.Utils;
@@ -40,15 +39,24 @@ public class GitlabScraper implements GitScraper {
 	 * @param projectPath  The full path to the project
 	 */
 	public GitlabScraper(String gitLabApiUrl, String projectPath) {
-		this.projectPath = projectPath.endsWith(".git") ? projectPath.substring(0, projectPath.length() - 4) : projectPath;
+		this.projectPath = projectPath.endsWith(".git")
+			? projectPath.substring(0, projectPath.length() - 4)
+			: projectPath;
 		this.apiUri = gitLabApiUrl + "/v4";
 		this.graphqlUri = gitLabApiUrl + "/graphql";
 		this.lastCommitHistoryTimestamp = null;
 		this.commitsPerWeek = new CommitsPerWeek();
 	}
 
-	public GitlabScraper(String gitLabApiUrl, String projectPath, ZonedDateTime lastCommitHistoryTimestamp, CommitsPerWeek existingCommitsPerWeek) {
-		this.projectPath = projectPath.endsWith(".git") ? projectPath.substring(0, projectPath.length() - 4) : projectPath;
+	public GitlabScraper(
+		String gitLabApiUrl,
+		String projectPath,
+		ZonedDateTime lastCommitHistoryTimestamp,
+		CommitsPerWeek existingCommitsPerWeek
+	) {
+		this.projectPath = projectPath.endsWith(".git")
+			? projectPath.substring(0, projectPath.length() - 4)
+			: projectPath;
 		this.apiUri = gitLabApiUrl + "/v4";
 		this.graphqlUri = gitLabApiUrl + "/graphql";
 		this.lastCommitHistoryTimestamp = lastCommitHistoryTimestamp;
@@ -98,26 +106,43 @@ public class GitlabScraper implements GitScraper {
 	 */
 	@Override
 	public CommitsPerWeek contributions() throws IOException, InterruptedException, RsdResponseException {
-		String since="";
+		String since = "";
 		if (lastCommitHistoryTimestamp != null) {
 			since = "&since=" + lastCommitHistoryTimestamp.toString();
 		}
 		String page = "1";
 		boolean done = false;
 		while (!done) {
-			HttpRequest request = HttpRequest.newBuilder().GET()
-				.uri(URI.create(apiUri + "/projects/" + Utils.urlEncode(projectPath)
-					+ "/repository/commits?per_page=100&order=default&page=" + page + since))
+			HttpRequest request = HttpRequest.newBuilder()
+				.GET()
+				.uri(
+					URI.create(
+						apiUri +
+							"/projects/" +
+							Utils.urlEncode(projectPath) +
+							"/repository/commits?per_page=100&order=default&page=" +
+							page +
+							since
+					)
+				)
 				.timeout(Duration.ofSeconds(30))
 				.build();
 			HttpResponse<String> response;
 			try (HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build()) {
 				response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			}
-			if (response.statusCode() == 429)
-				throw new RsdRateLimitException(429, response.uri(), response.body(), "API rate limit reached for GitLab");
-			if (response.statusCode() == 404)
-				throw new RsdResponseException(404, response.uri(), response.body(), "Not found, is the repository URL correct?");
+			if (response.statusCode() == 429) throw new RsdRateLimitException(
+				429,
+				response.uri(),
+				response.body(),
+				"API rate limit reached for GitLab"
+			);
+			if (response.statusCode() == 404) throw new RsdResponseException(
+				404,
+				response.uri(),
+				response.body(),
+				"Not found, is the repository URL correct?"
+			);
 
 			String body = response.body();
 			parseCommitPage(body, commitsPerWeek);
@@ -131,16 +156,58 @@ public class GitlabScraper implements GitScraper {
 	// Example URL: https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-shell/repository/contributors
 	@Override
 	public Integer contributorCount() throws IOException, InterruptedException, RsdResponseException {
-		HttpResponse<String> httpResponse = Utils.getAsHttpResponse(apiUri + "/projects/" + Utils.urlEncode(projectPath) + "/repository/contributors");
+		HttpResponse<String> httpResponse = Utils.getAsHttpResponse(
+			apiUri + "/projects/" + Utils.urlEncode(projectPath) + "/repository/contributors"
+		);
 
-		if (httpResponse.statusCode() == 429)
-			throw new RsdRateLimitException(429, httpResponse.uri(), httpResponse.body(), "Rate limit reached for GitLab");
-		if (httpResponse.statusCode() == 404)
-			throw new RsdResponseException(404, httpResponse.uri(), httpResponse.body(), "Not found, is the repository URL correct?");
+		if (httpResponse.statusCode() == 429) throw new RsdRateLimitException(
+			429,
+			httpResponse.uri(),
+			httpResponse.body(),
+			"Rate limit reached for GitLab"
+		);
+		if (httpResponse.statusCode() == 404) throw new RsdResponseException(
+			404,
+			httpResponse.uri(),
+			httpResponse.body(),
+			"Not found, is the repository URL correct?"
+		);
 
 		// see https://docs.gitlab.com/ee/api/rest/index.html#other-pagination-headers
 		String totalItemsHeader = httpResponse.headers().firstValue("x-total").orElseThrow();
 		return Integer.parseInt(totalItemsHeader);
+	}
+
+	/**
+	 *
+	 * Retrieve the URL of the raw README file.
+	 * Example URL: <a href="https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-shell">https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab-shell</a>.
+	 *
+	 * @return the URL of the raw README of the repo if present
+	 */
+	public Optional<URI> rawReadmeUrl() throws IOException, InterruptedException, RsdResponseException {
+		HttpResponse<String> httpResponse = Utils.getAsHttpResponse(
+			apiUri + "/projects/" + Utils.urlEncode(projectPath)
+		);
+
+		int status = httpResponse.statusCode();
+		if (httpResponse.statusCode() == 429) throw new RsdRateLimitException(
+			429,
+			httpResponse.uri(),
+			httpResponse.body(),
+			"Rate limit reached for GitLab"
+		);
+		if (httpResponse.statusCode() == 404) throw new RsdResponseException(
+			404,
+			httpResponse.uri(),
+			httpResponse.body(),
+			"Not found, is the repository URL correct?"
+		);
+		if (status != 200) {
+			throw new RsdResponseException(status, httpResponse.uri(), httpResponse.body(), "Unexpected response");
+		} else {
+			return parseReadmeUrl(httpResponse.body());
+		}
 	}
 
 	static void parseCommitPage(String json, CommitsPerWeek commitsToFill) {
@@ -155,21 +222,43 @@ public class GitlabScraper implements GitScraper {
 		}
 	}
 
-	private Boolean checkIfArchived() throws IOException, InterruptedException, RsdResponseException {
-		String graphqlQuery = String.format("""
-				{
-					project(fullPath: "%s/%s") {
-						archived
-					}
+	private Boolean checkIfArchived() {
+		String graphqlQuery = String.format(
+			"""
+			{
+				project(fullPath: "%s/%s") {
+					archived
 				}
-				""",
-				projectPath.substring(0, projectPath.indexOf("/")),
-				projectPath.substring(projectPath.indexOf("/") + 1));
+			}
+			""",
+			projectPath.substring(0, projectPath.indexOf("/")),
+			projectPath.substring(projectPath.indexOf("/") + 1)
+		);
 		JsonObject body = new JsonObject();
 		body.addProperty("query", graphqlQuery);
 		String response = Utils.post(graphqlUri, body.toString(), "Content-Type", "application/json");
+		return parseArchivedResponse(response);
+	}
+
+	static Boolean parseArchivedResponse(String response) {
 		JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
-		return jsonObject.getAsJsonObject("data").getAsJsonObject("project").getAsJsonPrimitive("archived").getAsBoolean();
+
+		JsonElement dataElement = jsonObject.get("data");
+		if (dataElement == null || !dataElement.isJsonObject()) {
+			return null;
+		}
+
+		JsonElement projectElement = dataElement.getAsJsonObject().get("project");
+		if (projectElement == null || !projectElement.isJsonObject()) {
+			return null;
+		}
+
+		JsonElement archivedElement = projectElement.getAsJsonObject().get("archived");
+		if (archivedElement == null || !archivedElement.isJsonPrimitive()) {
+			return null;
+		}
+
+		return archivedElement.getAsJsonPrimitive().isBoolean() ? archivedElement.getAsBoolean() : null;
 	}
 
 	static BasicGitData parseBasicData(String json, Boolean archived) {
@@ -180,13 +269,30 @@ public class GitlabScraper implements GitScraper {
 		Long starCount = jsonObject.getAsJsonPrimitive("star_count").getAsLong();
 		Integer forkCount = jsonObject.getAsJsonPrimitive("forks_count").getAsInt();
 
-		return new BasicGitData(
-			archived,
-			license,
-			starCount,
-			forkCount,
-			null
-		);
+		return new BasicGitData(archived, license, starCount, forkCount, null);
 	}
 
+	/**
+	 *
+	 * This parses the JSON response and transforms the returned "HTML" URL to a "raw" URL.
+	 *
+	 * @param json the response JSON to parse
+	 * @return the raw README URL
+	 */
+	static Optional<URI> parseReadmeUrl(String json) {
+		JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+		JsonElement htmlReadmeJson = root.get("readme_url");
+
+		if (
+			htmlReadmeJson == null ||
+			!htmlReadmeJson.isJsonPrimitive() ||
+			!htmlReadmeJson.getAsJsonPrimitive().isString()
+		) {
+			return Optional.empty();
+		}
+
+		String htmlReadmeUrl = htmlReadmeJson.getAsString();
+		String rawReadmeUrl = htmlReadmeUrl.replace("/-/blob/", "/-/raw/");
+		return Optional.of(URI.create(rawReadmeUrl));
+	}
 }

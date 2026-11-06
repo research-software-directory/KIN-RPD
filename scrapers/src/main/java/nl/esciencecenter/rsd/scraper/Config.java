@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2022 - 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
-// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
 // SPDX-FileCopyrightText: 2022 - 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2026 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
 //
@@ -9,10 +9,9 @@
 
 package nl.esciencecenter.rsd.scraper;
 
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 /**
  * Helper class to retrieve various environment variables.
@@ -23,8 +22,7 @@ public class Config {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
-	private Config() {
-	}
+	private Config() {}
 
 	/**
 	 * Retrieves the value of the environment variable with the given name. Variable is not allowed to unset, and an Error
@@ -34,7 +32,6 @@ public class Config {
 	 * @return the value of the variable.
 	 */
 	private static String getMandatoryEnv(String name) {
-
 		if (name == null || name.isBlank()) {
 			LOGGER.error("Attempting to retrieve mandatory environment variable without a name!");
 			throw new Error("Attempting to retrieve mandatory environment variable without a name!");
@@ -64,7 +61,6 @@ public class Config {
 	 * @return the value of the variable if set, or empty Optional otherwise.
 	 */
 	private static Optional<String> getOptionalEnv(String name) {
-
 		if (name == null || name.isBlank()) {
 			LOGGER.warn("Attempting to retrieve environment variable without a name!");
 			return Optional.empty();
@@ -72,7 +68,7 @@ public class Config {
 
 		try {
 			String value = System.getenv(name);
-			return (value == null || value.isBlank()) ? Optional.empty() : Optional.of(value.strip());
+			return value == null || value.isBlank() ? Optional.empty() : Optional.of(value.strip());
 		} catch (Exception e) {
 			LOGGER.warn("Failed to retrieve environment variable: {}", name, e);
 			return Optional.empty();
@@ -88,7 +84,6 @@ public class Config {
 	 * @return the value from the environment of the default value if no value could be obtained
 	 */
 	private static int getIntEnv(String name, int defaultValue) {
-
 		if (name == null || name.isBlank()) {
 			LOGGER.warn("Attempting to retrieve environment variable without a name!");
 			return defaultValue;
@@ -150,6 +145,24 @@ public class Config {
 	}
 
 	/**
+	 * The maximum requests rate for the 4TU Git API.
+	 *
+	 * @return the maximum request rate (default 6).
+	 */
+	public static int maxRequests4tu() {
+		return getIntEnv("MAX_REQUESTS_4TU", 6);
+	}
+
+	/**
+	 * The maximum requests rate for the Codeberg API.
+	 *
+	 * @return the maximum request rate (default 6).
+	 */
+	public static int maxRequestsCodeberg() {
+		return getIntEnv("MAX_REQUESTS_CODEBERG", 6);
+	}
+
+	/**
 	 * Get the maximum number of mentions to scrape in one run of the MentionScraper.
 	 *
 	 * @return the maximum number of mentions to scrape (default 6).
@@ -168,16 +181,25 @@ public class Config {
 	 * @return the maximum number of citation sources to scrape (default 5).
 	 */
 	public static int maxCitationSourcesToScrape() {
-		return getIntEnv("MAX_REQUESTS_OPENALEX", 5);
+		return getIntEnv("MAX_REQUESTS_OPENALEX", 6);
 	}
 
 	/**
-	 * Get the email contact address for crossref.
+	 * Get the email contact address for Crossref.
 	 *
-	 * @return the Get the email contact address for crossref (default unset).
+	 * @return the email contact address for Crossref (default unset).
 	 */
 	public static Optional<String> crossrefContactEmail() {
 		return getOptionalEnv("CROSSREF_CONTACT_EMAIL");
+	}
+
+	/**
+	 * Get the API key for OpenAlex.
+	 *
+	 * @return the API key for OpenAlex (default unset).
+	 */
+	public static Optional<String> openalexApiKey() {
+		return getOptionalEnv("OPENALEX_API_KEY");
 	}
 
 	/**
@@ -200,5 +222,9 @@ public class Config {
 
 	public static boolean isNassaScraperEnabled() {
 		return "true".equals(System.getenv("ENABLE_NASSA_SCRAPER"));
+	}
+
+	public static boolean isEscapeOssrScraperEnabled() {
+		return "true".equals(System.getenv("ENABLE_ESCAPE_OSSR_SCRAPER"));
 	}
 }

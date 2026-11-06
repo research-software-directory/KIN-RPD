@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2022 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2022 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2022 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2022 - 2026 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2022 Dusan Mijatovic (dv4all)
 // SPDX-FileCopyrightText: 2022 dv4all
 //
@@ -10,10 +10,6 @@ package nl.esciencecenter.rsd.scraper.doi;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import nl.esciencecenter.rsd.scraper.Config;
-import nl.esciencecenter.rsd.scraper.RsdResponseException;
-import nl.esciencecenter.rsd.scraper.Utils;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -21,17 +17,21 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import nl.esciencecenter.rsd.scraper.Config;
+import nl.esciencecenter.rsd.scraper.RsdResponseException;
+import nl.esciencecenter.rsd.scraper.Utils;
 
 public class CrossrefMention {
 
-	static final Map<String, MentionType> crossrefTypeMap;
+	private static final Map<String, MentionType> crossrefTypeMap;
 
 	static {
-		//		https://api.crossref.org/types
+		// https://api.crossref.org/types
 		crossrefTypeMap = new HashMap<>();
 
 		crossrefTypeMap.put("book-section", MentionType.bookSection);
 		crossrefTypeMap.put("monograph", MentionType.other);
+		crossrefTypeMap.put("report-component", MentionType.report);
 		crossrefTypeMap.put("report", MentionType.report);
 		crossrefTypeMap.put("peer-review", MentionType.other);
 		crossrefTypeMap.put("book-track", MentionType.book);
@@ -49,6 +49,7 @@ public class CrossrefMention {
 		crossrefTypeMap.put("proceedings-series", MentionType.conferencePaper);
 		crossrefTypeMap.put("report-series", MentionType.report);
 		crossrefTypeMap.put("proceedings", MentionType.conferencePaper);
+		crossrefTypeMap.put("database", MentionType.dataset);
 		crossrefTypeMap.put("standard", MentionType.other);
 		crossrefTypeMap.put("reference-book", MentionType.book);
 		crossrefTypeMap.put("posted-content", MentionType.other);
@@ -58,7 +59,6 @@ public class CrossrefMention {
 		crossrefTypeMap.put("dataset", MentionType.dataset);
 		crossrefTypeMap.put("book-series", MentionType.book);
 		crossrefTypeMap.put("edited-book", MentionType.book);
-		crossrefTypeMap.put("standard-series", MentionType.other);
 	}
 
 	private final Doi doi;
@@ -68,7 +68,9 @@ public class CrossrefMention {
 	}
 
 	public ExternalMentionRecord mentionData() throws IOException, InterruptedException, RsdResponseException {
-		StringBuilder crossrefUrlBuilder = new StringBuilder("https://api.crossref.org/works/" + Utils.urlEncode(doi.toString()));
+		StringBuilder crossrefUrlBuilder = new StringBuilder(
+			"https://api.crossref.org/works/" + Utils.urlEncode(doi.toString())
+		);
 		Config.crossrefContactEmail().ifPresent(email -> crossrefUrlBuilder.append("?mailto=").append(email));
 		String responseJson = Utils.get(crossrefUrlBuilder.toString());
 		JsonObject jsonTree = JsonParser.parseString(responseJson).getAsJsonObject();
@@ -101,7 +103,9 @@ public class CrossrefMention {
 		String publisher = Utils.stringOrNull(workJson.get("publisher"));
 		Integer publicationYear = null;
 		try {
-			publicationYear = Utils.integerOrNull(workJson.getAsJsonObject("published").getAsJsonArray("date-parts").get(0).getAsJsonArray().get(0));
+			publicationYear = Utils.integerOrNull(
+				workJson.getAsJsonObject("published").getAsJsonArray("date-parts").get(0).getAsJsonArray().get(0)
+			);
 		} catch (RuntimeException e) {
 			//			year not found, we leave it at null, nothing to do
 		}
@@ -115,22 +119,25 @@ public class CrossrefMention {
 			journal = journalBuilder.toString();
 		}
 		String page = Utils.stringOrNull(workJson.get("page"));
-		MentionType mentionType = crossrefTypeMap.getOrDefault(Utils.stringOrNull(workJson.get("type")), MentionType.other);
+		MentionType mentionType = crossrefTypeMap.getOrDefault(
+			Utils.stringOrNull(workJson.get("type")),
+			MentionType.other
+		);
 
 		return new ExternalMentionRecord(
-				this.doi,
-				null,
-				null,
-				mentionUrl,
-				title,
-				authors,
-				publisher,
-				publicationYear,
-				journal,
-				page,
-				mentionType,
-				"Crossref",
-				null
+			this.doi,
+			null,
+			null,
+			mentionUrl,
+			title,
+			authors,
+			publisher,
+			publicationYear,
+			journal,
+			page,
+			mentionType,
+			"Crossref",
+			null
 		);
 	}
 }

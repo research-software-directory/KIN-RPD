@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 - 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 - 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2023 - 2026 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -15,21 +15,25 @@ class CranScraperTest {
 
 	@ParameterizedTest
 	@CsvSource({
-			"https://CRAN.R-project.org/package=TIMP,TIMP",
-			"https://CRAN.R-project.org/package=TIMP/,TIMP",
-			"https://cran.r-project.org/package=splithalfr,splithalfr",
-			"https://cran.r-project.org/web/packages/GGIR,GGIR",
-			"https://cran.r-project.org/web/packages/GGIR/,GGIR",
-			"https://cran.r-project.org/web/packages/GGIR/index.html,GGIR",
-			"https://cran.r-project.org/web/packages/GGIR/index.html/,GGIR"
+		"https://CRAN.R-project.org/package=TIMP,TIMP",
+		"https://CRAN.R-project.org/package=TIMP/,TIMP",
+		"https://cran.r-project.org/package=splithalfr,splithalfr",
+		"https://cran.r-project.org/web/packages/GGIR,GGIR",
+		"https://cran.r-project.org/web/packages/GGIR/,GGIR",
+		"https://cran.r-project.org/web/packages/GGIR/index.html,GGIR",
+		"https://cran.r-project.org/web/packages/GGIR/index.html/,GGIR",
 	})
-	void givenValidCranUrl_whenCallingConstructor_thenNoExceptionThrownAndPackageNamesCorrect(String url, String expectedPackageName) {
+	void givenValidCranUrl_whenCallingConstructor_thenNoExceptionThrownAndPackageNamesCorrect(
+		String url,
+		String expectedPackageName
+	) {
 		CranScraper cranScraper = Assertions.assertDoesNotThrow(() -> new CranScraper(url));
 		Assertions.assertEquals(expectedPackageName, cranScraper.packageName);
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {
+	@ValueSource(
+		strings = {
 			"https://cran.r-project.org/web/packages/",
 			"https://cran.r-project.org/web/packages/GG IR",
 			"https://cran.r-project.org/web/packages/GGIR ",
@@ -39,8 +43,9 @@ class CranScraperTest {
 			"https://CRAN.R-project.org/package=TI MP ",
 			"https://CRAN.R-project.org/package=TIMP /",
 			"https://www.example.com",
-			""
-	})
+			"",
+		}
+	)
 	void givenInvalidCranUrl_whenCallingConstructor_thenExceptionThrown(String url) {
 		Assertions.assertThrowsExactly(RuntimeException.class, () -> new CranScraper(url));
 	}

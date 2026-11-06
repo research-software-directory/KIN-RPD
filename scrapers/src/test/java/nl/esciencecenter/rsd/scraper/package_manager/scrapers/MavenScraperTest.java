@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2024 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2024 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2024 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2024 - 2026 Netherlands eScience Center
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -31,15 +31,17 @@ class MavenScraperTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {
-		"https://central.sonatype.com/artifact",
-		"https://mvnrepository.com/artifact/",
-		"https://central.sonatype.com/artifact/org.openscience.cdk",
-		"https://mvnrepository.com/artifact/io.github.sanctuuary/",
-		"https://www.example.com",
-		"https://www.example.com/artifact/org.openscience.cdk/cdk-bundle",
-		""
-	})
+	@ValueSource(
+		strings = {
+			"https://central.sonatype.com/artifact",
+			"https://mvnrepository.com/artifact/",
+			"https://central.sonatype.com/artifact/org.openscience.cdk",
+			"https://mvnrepository.com/artifact/io.github.sanctuuary/",
+			"https://www.example.com",
+			"https://www.example.com/artifact/org.openscience.cdk/cdk-bundle",
+			"",
+		}
+	)
 	void givenInvalidUrl_whenCallingConstructor_thenExceptionThrown(String url) {
 		Assertions.assertThrowsExactly(RuntimeException.class, () -> new MavenScraper(url));
 	}

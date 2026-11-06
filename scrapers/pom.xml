@@ -3,8 +3,8 @@
 <!--
 SPDX-FileCopyrightText: 2022 - 2024 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 SPDX-FileCopyrightText: 2022 - 2024 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
-SPDX-FileCopyrightText: 2022 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-SPDX-FileCopyrightText: 2022 - 2025 Netherlands eScience Center
+SPDX-FileCopyrightText: 2022 - 2026 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+SPDX-FileCopyrightText: 2022 - 2026 Netherlands eScience Center
 SPDX-FileCopyrightText: 2022 Matthias Rüster (GFZ) <matthias.ruester@gfz-potsdam.de>
 SPDX-FileCopyrightText: 2024 Jason Maassen (Netherlands eScience Center) <j.maassen@esciencecenter.nl>
 
@@ -13,8 +13,8 @@ SPDX-License-Identifier: Apache-2.0
 
 <!--editorconfig-checker-disable-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<!--editorconfig-checker-enable-->
 	<modelVersion>4.0.0</modelVersion>
 
@@ -99,6 +99,7 @@ SPDX-License-Identifier: Apache-2.0
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- https://mvnrepository.com/artifact/org.junit/junit-bom -->
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
@@ -143,6 +144,14 @@ SPDX-License-Identifier: Apache-2.0
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<version>2.6</version>
+		</dependency>
+
+		<!-- Source: https://mvnrepository.com/artifact/io.xberg/html-to-markdown -->
+		<dependency>
+			<groupId>io.xberg</groupId>
+			<artifactId>html-to-markdown</artifactId>
+			<version>3.10.0</version>
+			<scope>compile</scope>
 		</dependency>
 
 

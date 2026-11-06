@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: 2023 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
-// SPDX-FileCopyrightText: 2023 Netherlands eScience Center
+// SPDX-FileCopyrightText: 2023 - 2025 Ewan Cahen (Netherlands eScience Center) <e.cahen@esciencecenter.nl>
+// SPDX-FileCopyrightText: 2023 - 2025 Netherlands eScience Center
 // SPDX-FileCopyrightText: 2025 Christian Meeßen (GFZ) <christian.meessen@gfz-potsdam.de>
 // SPDX-FileCopyrightText: 2025 Helmholtz Centre Potsdam - GFZ German Research Centre for Geosciences
 //
@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
-
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.Period;
@@ -31,9 +30,12 @@ public class CommitsPerWeek {
 
 	private final SortedMap<Instant, Long> data = new TreeMap<>();
 	static final Gson gson = new GsonBuilder()
-			.enableComplexMapKeySerialization()
-			.registerTypeAdapter(Instant.class, (JsonSerializer<Instant>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getEpochSecond()))
-			.create();
+		.enableComplexMapKeySerialization()
+		.registerTypeAdapter(
+			Instant.class,
+			(JsonSerializer<Instant>) (src, typeOfSrc, context) -> new JsonPrimitive(src.getEpochSecond())
+		)
+		.create();
 
 	SortedMap<Instant, Long> getData() {
 		return new TreeMap<>(data);
@@ -41,7 +43,10 @@ public class CommitsPerWeek {
 
 	public void addCommits(ZonedDateTime zonedDateTime, long count) {
 		ZonedDateTime utcTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-		Instant sundayMidnight = utcTime.truncatedTo(ChronoUnit.DAYS).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).toInstant();
+		Instant sundayMidnight = utcTime
+			.truncatedTo(ChronoUnit.DAYS)
+			.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+			.toInstant();
 		data.merge(sundayMidnight, count, Long::sum);
 	}
 
@@ -51,7 +56,7 @@ public class CommitsPerWeek {
 	}
 
 	public ZonedDateTime popLatestTimestamp() {
-		if (this.data.size() > 0) {
+		if (!this.data.isEmpty()) {
 			Instant lastTimeStamp = this.data.lastKey();
 			this.data.remove(lastTimeStamp);
 			return ZonedDateTime.ofInstant(lastTimeStamp, ZoneId.systemDefault());
@@ -69,7 +74,11 @@ public class CommitsPerWeek {
 		Instant firstWeek = data.firstKey();
 		Instant lastWeek = data.lastKey();
 
-		for (Instant currentWeek = firstWeek; currentWeek.isBefore(lastWeek); currentWeek = currentWeek.plus(Period.ofWeeks(1))) {
+		for (
+			Instant currentWeek = firstWeek;
+			currentWeek.isBefore(lastWeek);
+			currentWeek = currentWeek.plus(Period.ofWeeks(1))
+		) {
 			data.putIfAbsent(currentWeek, 0L);
 		}
 	}

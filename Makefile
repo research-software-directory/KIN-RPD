@@ -30,7 +30,7 @@ export DGID
 # ----------------------------------------------------------------
 start: clean
 	docker compose build # build all services
-	docker compose up --scale data-generation=1 --scale scrapers=0 --detach
+	docker compose up --scale data-generation=1 --detach
 	# open http://localhost to see the application running
 
 install: clean

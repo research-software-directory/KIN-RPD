@@ -5,7 +5,7 @@
 services:
   database:
     container_name: database
-    image: ghcr.io/research-software-directory/rsd-saas/database:v3.4.1
+    image: ghcr.io/research-software-directory/kin-rpd/database:latest
     expose:
       - 5432
     environment:
@@ -19,13 +19,19 @@ services:
       # to remove use: docker compose down --volumes
       # to inspect use: docker volume ls
       - pgdb:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "pg_isready", "--username=${POSTGRES_USER}", "--dbname=${POSTGRES_DB}"]
+      interval: 1s
+      retries: 15
+      timeout: 5s
+      start_period: 5s
     networks:
       - net
     restart: unless-stopped
 
   backend:
     container_name: backend
-    image: ghcr.io/research-software-directory/rsd-saas/backend:v3.4.1
+    image: ghcr.io/research-software-directory/kin-rpd/backend:latest
     expose:
       - 3500
     environment:
@@ -36,14 +42,15 @@ services:
       - PGRST_SERVER_PORT
       - PGRST_JWT_SECRET
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - net
     restart: unless-stopped
 
   auth:
     container_name: auth
-    image: ghcr.io/research-software-directory/rsd-saas/auth:v3.4.1
+    image: ghcr.io/research-software-directory/kin-rpd/auth:latest
     expose:
       - 7000
     environment:
@@ -81,47 +88,43 @@ services:
       - AUTH_LINKEDIN_CLIENT_SECRET
       - PGRST_JWT_SECRET
     depends_on:
-      - database
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
     restart: unless-stopped
 
   scrapers:
     container_name: scrapers
-    image: ghcr.io/research-software-directory/rsd-saas/scrapers:v3.4.1
+    image: ghcr.io/research-software-directory/kin-rpd/scrapers:latest
     environment:
       # it uses values from .env file
       - POSTGREST_URL
-      - PGRST_JWT_SECRET
       - MAX_REQUESTS_GITHUB
       - MAX_REQUESTS_GITLAB
-      - API_CREDENTIALS_GITHUB
-      - MAX_REQUESTS_ROR
-      - ZENODO_ACCESS_TOKEN
+      - MAX_REQUESTS_4TU
+      - MAX_REQUESTS_CODEBERG
       - MAX_REQUESTS_DOI
+      - MAX_REQUESTS_OPENALEX
+      - MAX_REQUESTS_ROR
+      - ENABLE_NASSA_SCRAPER
+      - ENABLE_ESCAPE_OSSR_SCRAPER
+      - PGRST_JWT_SECRET
+      - API_CREDENTIALS_GITHUB
+      - ZENODO_ACCESS_TOKEN
       - CROSSREF_CONTACT_EMAIL
+      - OPENALEX_API_KEY
       - LIBRARIES_IO_ACCESS_TOKEN
     depends_on:
-      - database
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
     restart: unless-stopped
-
-  background-services:
-    image: ghcr.io/research-software-directory/rsd-saas/background-services:v3.4.1
-    environment:
-    # it uses values from .env file
-      - POSTGRES_DB_HOST
-      - POSTGRES_DB_HOST_PORT
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-    depends_on:
-      - database
-    networks:
-      - net
 
   frontend:
     container_name: frontend
@@ -150,9 +153,12 @@ services:
     expose:
       - 3000
     depends_on:
-      - database
-      - backend
-      - auth
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      auth:
+        condition: service_started
     networks:
       - net
     restart: unless-stopped

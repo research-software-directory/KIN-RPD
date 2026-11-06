@@ -14,10 +14,11 @@ public enum PackageManagerType {
 	dockerhub,
 	fourtu,
 	golang,
+	julia,
 	maven,
 	npm,
 	pixi,
 	pypi,
 	sonatype,
-	other
+	other,
 }
