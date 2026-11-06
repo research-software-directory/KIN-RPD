@@ -19,6 +19,12 @@ services:
       # to remove use: docker compose down --volumes
       # to inspect use: docker volume ls
       - pgdb:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "pg_isready", "--username=${POSTGRES_USER}", "--dbname=${POSTGRES_DB}"]
+      interval: 1s
+      retries: 15
+      timeout: 5s
+      start_period: 5s
     networks:
       - net
     restart: unless-stopped
@@ -36,7 +42,8 @@ services:
       - PGRST_SERVER_PORT
       - PGRST_JWT_SECRET
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - net
     restart: unless-stopped
@@ -81,8 +88,10 @@ services:
       - AUTH_LINKEDIN_CLIENT_SECRET
       - PGRST_JWT_SECRET
     depends_on:
-      - database
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
     restart: unless-stopped
@@ -109,25 +118,13 @@ services:
       - OPENALEX_API_KEY
       - LIBRARIES_IO_ACCESS_TOKEN
     depends_on:
-      - database
-      - backend
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
     networks:
       - net
     restart: unless-stopped
-
-  background-services:
-    image: ghcr.io/research-software-directory/kin-rpd/background-services:latest
-    environment:
-    # it uses values from .env file
-      - POSTGRES_DB_HOST
-      - POSTGRES_DB_HOST_PORT
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-    depends_on:
-      - database
-    networks:
-      - net
 
   frontend:
     container_name: frontend
@@ -156,9 +153,12 @@ services:
     expose:
       - 3000
     depends_on:
-      - database
-      - backend
-      - auth
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      auth:
+        condition: service_started
     networks:
       - net
     restart: unless-stopped
