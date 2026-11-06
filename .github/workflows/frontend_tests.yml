@@ -16,11 +16,13 @@ jobs:
   fe-tests:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      # https://github.com/actions/checkout
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: "install node v20.15 and cash npm"
-        uses: actions/setup-node@v4
+        # https://github.com/actions/setup-node
+        uses: actions/setup-node@v7
         with:
           node-version: 20.15
           cache: 'npm'

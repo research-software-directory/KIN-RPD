@@ -38,19 +38,19 @@ on:
 jobs:
   build_and_push:
     name: build and push image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       image_build: ${{steps.build_image.outputs.image_build}}
       image_pushed: ${{steps.build_image.outputs.image_pushed}}
     steps:
       - name: checkout
         # https://github.com/actions/checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: build
         id: build_image
         run: |
           IMAGE_TAG_VERSION=${{inputs.base_image_name}}:${{inputs.image_tag}}
-          IMAGE_TAG_LASTEST=${{inputs.base_image_name}}:latest
+          IMAGE_TAG_LATEST=${{inputs.base_image_name}}:latest
 
           echo "Build image: $IMAGE_TAG_VERSION and pass APP_VERSION=${{inputs.image_tag}}"
 

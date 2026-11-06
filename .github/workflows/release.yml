@@ -16,7 +16,7 @@ on:
 jobs:
   release_tag:
     name: conventional changelog
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       changelog: ${{steps.changelog.outputs.clean_changelog}}
       tag: ${{steps.changelog.outputs.tag}}
@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: checkout all history
         # https://github.com/actions/checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # checkout whole history
           fetch-depth: 0
@@ -48,31 +48,18 @@ jobs:
           pre-release: ${{inputs.pre_release}}
           # initial version if no tag present
           fallback-version: 1.0.0
+          # complete a release when no fix or feat (but e.g. only chore) commits were made
+          skip-on-empty: false
 
   log_release_tag:
     needs: release_tag
     name: log version output
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: info
         run: |
           echo skipped=${{needs.release_tag.outputs.skipped}}
           echo tag=${{needs.release_tag.outputs.tag}}
-
-  auth:
-    # it needs to be checked on string value
-    if: needs.release_tag.outputs.skipped == 'false'
-    needs: release_tag
-    name: auth
-    uses: ./.github/workflows/_ghcr.yml
-    with:
-      ghcr_user: ${{github.actor}}
-      base_image_name: ghcr.io/research-software-directory/kin-rpd/auth
-      image_tag: ${{needs.release_tag.outputs.tag}}
-      dockerfile: authentication/Dockerfile
-      docker_context: ./authentication
-    secrets:
-      token: ${{secrets.GITHUB_TOKEN}}
 
   database:
     # it needs to be checked on string value
@@ -97,25 +84,40 @@ jobs:
     uses: ./.github/workflows/_ghcr.yml
     with:
       ghcr_user: ${{github.actor}}
-      base_image_name: ghcr.io/research-software-directory/rsd-saas/backend
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/backend
       image_tag: ${{needs.release_tag.outputs.tag}}
       dockerfile: backend-postgrest/Dockerfile
       docker_context: ./backend-postgrest
     secrets:
       token: ${{secrets.GITHUB_TOKEN}}
 
-  background-services:
+  auth:
     # it needs to be checked on string value
     if: needs.release_tag.outputs.skipped == 'false'
     needs: release_tag
-    name: background services
+    name: auth
     uses: ./.github/workflows/_ghcr.yml
     with:
       ghcr_user: ${{github.actor}}
-      base_image_name: ghcr.io/research-software-directory/kin-rpd/background-services
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/auth
       image_tag: ${{needs.release_tag.outputs.tag}}
-      dockerfile: background-services/Dockerfile
-      docker_context: ./background-services
+      dockerfile: authentication/Dockerfile
+      docker_context: ./authentication
+    secrets:
+      token: ${{secrets.GITHUB_TOKEN}}
+
+  scrapers:
+    # it needs to be checked on string value
+    if: needs.release_tag.outputs.skipped == 'false'
+    needs: release_tag
+    name: scrapers
+    uses: ./.github/workflows/_ghcr.yml
+    with:
+      ghcr_user: ${{github.actor}}
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/scrapers
+      image_tag: ${{needs.release_tag.outputs.tag}}
+      dockerfile: scrapers/Dockerfile
+      docker_context: ./scrapers
     secrets:
       token: ${{secrets.GITHUB_TOKEN}}
 
@@ -134,21 +136,6 @@ jobs:
     secrets:
       token: ${{secrets.GITHUB_TOKEN}}
 
-  nginx:
-    # it needs to be checked on string value
-    if: needs.release_tag.outputs.skipped == 'false'
-    needs: release_tag
-    name: nginx
-    uses: ./.github/workflows/_ghcr.yml
-    with:
-      ghcr_user: ${{github.actor}}
-      base_image_name: ghcr.io/research-software-directory/kin-rpd/nginx
-      image_tag: ${{needs.release_tag.outputs.tag}}
-      dockerfile: nginx/Dockerfile
-      docker_context: ./nginx
-    secrets:
-      token: ${{secrets.GITHUB_TOKEN}}
-
   documentation:
     # it needs to be checked on string value
     if: needs.release_tag.outputs.skipped == 'false'
@@ -164,16 +151,31 @@ jobs:
     secrets:
       token: ${{secrets.GITHUB_TOKEN}}
 
+  nginx:
+    # it needs to be checked on string value
+    if: needs.release_tag.outputs.skipped == 'false'
+    needs: release_tag
+    name: nginx
+    uses: ./.github/workflows/_ghcr.yml
+    with:
+      ghcr_user: ${{github.actor}}
+      base_image_name: ghcr.io/research-software-directory/kin-rpd/nginx
+      image_tag: ${{needs.release_tag.outputs.tag}}
+      dockerfile: nginx/Dockerfile
+      docker_context: ./nginx
+    secrets:
+      token: ${{secrets.GITHUB_TOKEN}}
+
   deployment_files:
     # it needs to be checked on string value
     if: needs.release_tag.outputs.skipped == 'false'
     needs: [release_tag,frontend,nginx,documentation]
     name: create deployment.zip
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout branch
         # https://github.com/actions/checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: update docker-compose.yml
         run: |
@@ -200,7 +202,7 @@ jobs:
 
       - name: Upload deployment.zip
         # https://github.com/actions/upload-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deployment
           path: deployment.zip
@@ -217,10 +219,10 @@ jobs:
     if: needs.release_tag.outputs.skipped == 'false'
     needs: [ release_tag, deployment_files ]
     name: create release draft
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: get deployment.zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: deployment
 
@@ -232,7 +234,7 @@ jobs:
 
       - name: create release draft
         # https://github.com/softprops/action-gh-release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         env:
           # The token is provided by Actions, you do not need to create your own token
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
