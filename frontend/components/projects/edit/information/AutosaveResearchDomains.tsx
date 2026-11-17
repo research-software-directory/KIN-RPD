@@ -182,10 +182,6 @@ export default function AutosaveResearchDomains({project_id, research_domains}: 
         <FormControl
           variant="standard"
           fullWidth
-          // sx={{
-          //   width: '100%',
-          //   // maxWidth: '30rem'
-          // }}
         >
           <InputLabel
             shrink={true}
@@ -222,10 +218,6 @@ export default function AutosaveResearchDomains({project_id, research_domains}: 
         <FormControl
           variant="standard"
           fullWidth
-          // sx={{
-          //   width: '100%',
-          //   // maxWidth: '30rem'
-          // }}
         >
           <InputLabel
             shrink={true}
@@ -253,10 +245,6 @@ export default function AutosaveResearchDomains({project_id, research_domains}: 
                     title={item.description}
                     key={item.key}
                     value={item.key}
-                    sx={{
-                    // maxWidth: '30rem',
-                      whiteSpace: 'break-spaces'
-                    }}
                   >
                     {item.name}
                   </MenuItem>
