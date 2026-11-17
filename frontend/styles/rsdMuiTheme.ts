@@ -282,6 +282,39 @@ function applyThemeConfig({colors, action, typography}: ThemeConfig) {
           },
         }
       },
+      // 1. Fix non wrapping long select menu options
+      MuiSelect: {
+        defaultProps: {
+          autoWidth: false,
+          MenuProps: {
+            slotProps: {
+              paper: {
+                sx: {
+                  // constrain dropdown menu to the exact width of select box
+                  width: 0,
+                },
+              },
+            },
+          },
+        },
+        styleOverrides: {
+          // wrap long items for selected item
+          select: {
+            whiteSpace: 'normal',
+            textOverflow: 'clip',
+            overflow: 'visible',
+          },
+        },
+      },
+      // 2. Fix non wrapping long select menu options
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            // wrap all long items in the menu list
+            whiteSpace: 'normal'
+          },
+        },
+      },
     },
   })
 }

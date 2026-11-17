@@ -12,43 +12,80 @@ on:
     paths:
       - "frontend/**"
 
+defaults:
+  run:
+    working-directory: frontend
+
 jobs:
-  fe-tests:
-    runs-on: ubuntu-22.04
+  # CHECK 1: Linter
+  fe-lint:
+    runs-on: ubuntu-24.04
     steps:
-      # https://github.com/actions/checkout
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v6
+      - name: "install node and cache npm"
+        uses: actions/setup-node@v6
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: "install node v20.15 and cash npm"
-        # https://github.com/actions/setup-node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 20.15
+          node-version: 26.12
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       - name: "install dependencies"
-        working-directory: frontend
-        run: npm install --frozen-lockfile --silent
+        run: npm ci
       - name: "run eslint check"
-        working-directory: frontend
         run: npm run lint
+
+  # CHECK 2: Unit Tests
+  fe-test:
+    name: "fe-test"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "install node and cache npm"
+        uses: actions/setup-node@v6
+        with:
+          node-version: 26.12
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: "install dependencies"
+        run: npm ci
       - name: "run unit test"
-        working-directory: frontend
         run: npm run test:coverage
-      # - name: Cache SonarCloud packages
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.sonar/cache
-      #     key: ${{ runner.os }}-sonar
-      #     restore-keys: ${{ runner.os }}-sonar
-      # - name: SonarCloud Scan frontend
-      #   uses: sonarsource/sonarcloud-github-action@master
-      #   with:
-      #     projectBaseDir: frontend
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # Save PR info inside the coverage directory for frontend_sonar.yml to use
+      - name: Save PR info
+        run: |
+          mkdir -p coverage
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "${{ github.event.pull_request.number }}" > coverage/pr_number.txt
+            echo "${{ github.event.pull_request.base.ref }}" > coverage/pr_base.txt
+            echo "PR_NUMBER: ${{ github.event.pull_request.number }}"
+          else
+            echo "false" > coverage/pr_number.txt
+            echo "false" > coverage/pr_base.txt
+            echo "Not a pull_request. Event: ${{ github.event_name }}"
+          fi
+      # Upload the coverage folder for SonarCloud (fe-sonar) to use
+      - name: "upload coverage artifact"
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          # Automatically clean up after 24 hours
+          retention-days: 1
+
+  # CHECK 3: Build Verification
+  fe-build:
+    name: "fe-build"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: "install node and cache npm"
+        uses: actions/setup-node@v6
+        with:
+          node-version: 26.12
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: "install dependencies"
+        run: npm ci
       - name: "run build test"
-        working-directory: frontend
         run: npm run build

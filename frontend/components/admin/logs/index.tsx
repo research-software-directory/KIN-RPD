@@ -53,7 +53,7 @@ export default function ScraperErrorLogs() {
       <div className="flex-1 flex py-8 md:py-0 flex-col xl:flex-row justify-start xl:items-center">
         <div className="flex-1 flex justify-start">
           <DeleteOldLogsBtn
-            onDelete={()=>deleteOldLogs()}
+            onDelete={deleteOldLogs}
             disabled={logs.length===0}
           />
           <Searchbox />

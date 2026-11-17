@@ -55,4 +55,7 @@ yarn-error.log*
 *.tsbuildinfo
 .history
 
+# next ignore
+next-env.d.ts
+
 **.tar
