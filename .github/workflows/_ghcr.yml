@@ -65,7 +65,7 @@ jobs:
           echo "Logging in to GHCR..."
 
           echo "${{secrets.token}}" | docker login https://ghcr.io -u ${{inputs.ghcr_user}} --password-stdin
-          echo push auth image with all tags
+          echo push image with all tags
           docker push ${{inputs.base_image_name}} --all-tags
 
           echo "image_pushed=true" >> $GITHUB_OUTPUT
